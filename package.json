@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/ChristianSchueler/interdimensional-cocktail-portal/issues"
   },
-  "homepage": "https://github.com/ChristianSchueler/interdimensional-cocktail-portal#readme"
+  "homepage": "https://github.com/ChristianSchueler/interdimensional-cocktail-portal#readme",
+  "dependencies": {
+    "typescript": "^4.8.4"
+  }
 }
