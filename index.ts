@@ -13,16 +13,24 @@ class Pump {
 	}
 }
 
+// aka dispenser
+// @todo rename to Dispenser
 class IngredientPump {
 	name: string;				// unique name
 	description: string;		// screen description
 	isAlcohol: boolean;
 	gpioId: number;				// which GPIO pin the pump will connect to
-	static flow_dl_m: number = 1;
+	static flow_ml_m: number = 1;
 	
 	constructor(name: string, isAlcohol: boolean, gpioId: number) {
 		console.log(`Ingredient: ${name}, ${isAlcohol ? `alcohol` : `no alcohol`}, GPIO ID: ${gpioId}`);
 	}
+	
+	async dispense(dose_ml: number) {
+	}
+}
+
+class Arm {
 }
 
 /** @class InterdimensionalCocktailPortal
