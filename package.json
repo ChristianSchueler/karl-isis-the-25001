@@ -1,0 +1,20 @@
+{
+  "name": "interdimensional-cocktail-portal",
+  "version": "1.0.0",
+  "description": "\"Rick and Morty Themed Interdimensional Cocktail Portal\" Cocktail Bot for Roboexotica 2022 - Raspberry Pi",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ChristianSchueler/interdimensional-cocktail-portal.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ChristianSchueler/interdimensional-cocktail-portal/issues"
+  },
+  "homepage": "https://github.com/ChristianSchueler/interdimensional-cocktail-portal#readme"
+}
