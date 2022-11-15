@@ -14,6 +14,9 @@ if (isWin) {
   	let Gpio = {}; 
 }
 
+function sleep(duration_ms: number) {
+	return new Promise(resolve => setTimeout(resolve, duration_ms));
+}
 
 /** @class Pump
 */
@@ -33,19 +36,27 @@ class IngredientPump {
 	description: string = "";		// screen description
 	isAlcohol: boolean = true;
 	gpioId: number = 2;				// which GPIO pin the pump will connect to
-	static flow_ml_m: number = 1;
+	static flow_ml_m: number = 60;
+	led: Gpio;
 	
 	constructor(name: string, isAlcohol: boolean, gpioId: number) {
 		console.log(`Ingredient: ${name}, ${isAlcohol ? `alcohol` : `no alcohol`}, GPIO ID: ${gpioId}`);
 
-		const led = new Gpio(2, 'out');
+		this.led = new Gpio(2, 'out');
 	}
 	
-	//async dispense(dose_ml: number) {
+	async dispense(dose_ml: number) {
 
-	//	let duration_s = dose_ml * IngredientPump.flow_ml_m / 60;
+		let duration_ms = dose_ml * IngredientPump.flow_ml_m / 60 * 1000;
+
+		console.log(duration_ms);
+		
+		await this.led.write(Gpio.HIGH);
+		await sleep(duration_ms);
+		await this.led.write(Gpio.LOW);
+
         //return "";
-    //}
+    }
 	
 	//async dispense(dose_ml: number): Promise<string> {
     //    return await Promise.resolve("OK"); 
@@ -74,8 +85,10 @@ class InterdimensionalCocktailPortal {
 		}
 	}
 	
-	run() {
+	async run() {
 		console.log("Interdimensional Cocktail Portal run...");
+
+		await this.pumps[0].dispense(10);
 	}
 }
 
