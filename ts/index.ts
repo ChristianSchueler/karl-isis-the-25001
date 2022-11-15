@@ -4,7 +4,7 @@ console.log("Interdimensional Cocktail Portal booting...");
 
 var isWin = process.platform === "win32";
 // enable this on Raspberry Pi!
-//import { Gpio } from "onoff";
+import { Gpio } from "onoff";
 
 if (isWin) {
 	console.log('Running on Windows!');
@@ -38,7 +38,7 @@ class IngredientPump {
 	constructor(name: string, isAlcohol: boolean, gpioId: number) {
 		console.log(`Ingredient: ${name}, ${isAlcohol ? `alcohol` : `no alcohol`}, GPIO ID: ${gpioId}`);
 
-		//const led = new onoff.Gpio(2, 'out');
+		const led = new Gpio(2, 'out');
 	}
 	
 	//async dispense(dose_ml: number) {
