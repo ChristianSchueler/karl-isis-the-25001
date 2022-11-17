@@ -86,6 +86,24 @@ class IngredientPump {
 }
 
 class Arm {
+
+/* 	const m1 = new onoff.Gpio(14, 'out');
+const m2 = new onoff.Gpio(15, 'out');
+
+m1.writeSync(0); m2.writeSync(0);
+
+setTimeout(() => {
+    m1.writeSync(1); m2.writeSync(0);
+}, 1000);
+
+setTimeout(() => {
+    m1.writeSync(0); m2.writeSync(1);
+}, 3000);
+
+setTimeout(() => {
+    m1.writeSync(0); m2.writeSync(0);
+}, 10000);
+ */
 }
 
 /** @class InterdimensionalCocktailPortal
