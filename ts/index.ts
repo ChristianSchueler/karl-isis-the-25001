@@ -4,7 +4,7 @@ console.log("Interdimensional Cocktail Portal booting...");
 
 var isWin = process.platform === "win32";
 
-class Gpio {
+/* class Gpio {
 	constructor(x: number, y: string) {}
 	static HIGH: number = 1;
 	static LOW: number = 0;
@@ -17,6 +17,8 @@ class Gpio {
 		return new Promise(resolve => 0);
 	}
 }
+ */
+import { Gpio } from 'onoff';
 
 if (isWin) {
 	console.log('Running on Windows!');
