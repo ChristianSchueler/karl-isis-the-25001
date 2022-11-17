@@ -3,16 +3,38 @@
 console.log("Interdimensional Cocktail Portal booting...");
 
 var isWin = process.platform === "win32";
-// enable this on Raspberry Pi!
-import { Gpio } from "onoff";
+
+class Gpio {
+	constructor(x: number, y: string) {}
+	static HIGH: number = 1;
+	static LOW: number = 0;
+	async write(x: number) {
+		await sleep(1);
+		return new Promise(resolve => 1);
+	}
+	async read(x: number) {
+		await sleep(1);
+		return new Promise(resolve => 0);
+	}
+}
 
 if (isWin) {
 	console.log('Running on Windows!');
+
+	//let Gpio = class { HIGH: boolean = true; }; 
+	//var Gpio = class {
 } else {
 	
 	console.log('Running on Raspberry Pi!');
-  	let Gpio = {}; 
+
+	let file = 'onoff';
+	//Gpio = await import(file);
 }
+
+ if (process.env.NODE_ENV === 'production') {
+ 	//const pluginName = await import('../js/plugin_name.js');
+   }
+
 
 function sleep(duration_ms: number) {
 	return new Promise(resolve => setTimeout(resolve, duration_ms));

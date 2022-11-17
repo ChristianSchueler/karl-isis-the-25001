@@ -3,9 +3,9 @@
     "display": "Node 14",
   
     "compilerOptions": {
-      "lib": ["es6"],
-      "module": "es6",
-      "target": "es2020",
+      "lib": ["ES2022"],
+      "module": "ES2022",
+      "target": "ES2022",
   
       "strict": true,
       "esModuleInterop": true,
@@ -13,6 +13,8 @@
       "forceConsistentCasingInFileNames": true,
       "allowSyntheticDefaultImports": true,
       "moduleResolution": "node",
+
+      //"sourceMap": true
 
       "outDir": "dist"
     },
