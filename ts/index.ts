@@ -134,5 +134,25 @@ class InterdimensionalCocktailPortal {
 	}
 }
 
-let bot = new InterdimensionalCocktailPortal();
-bot.run();
+//let bot = new InterdimensionalCocktailPortal();
+//bot.run();
+
+import { app, BrowserWindow } from "electron";
+
+app.on('ready', function() {
+    var mainWindow = new BrowserWindow({
+        show: false,
+    });
+    mainWindow.maximize();
+    mainWindow.loadFile('./../index.html');
+    mainWindow.show();
+});
+
+// Quit when all windows are closed.
+app.on('window-all-closed', () => {
+	// On macOS it is common for applications and their menu bar
+	// to stay active until the user quits explicitly with Cmd + Q
+	if (process.platform !== 'darwin') {
+	  app.quit()
+	}
+  })
