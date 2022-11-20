@@ -62,24 +62,40 @@ class IngredientPump {
 	gpioId: number = 2;				// which GPIO pin the pump will connect to
 	static flow_ml_m: number = 60;
 	led: Gpio;
+	isDispensing: boolean = false;
 	
 	constructor(name: string, isAlcohol: boolean, gpioId: number) {
+		
+		this.name = name;
+		//this.description = ...
+		this.isAlcohol = isAlcohol;
+		this.gpioId = gpioId;
 		console.log(`Ingredient: ${name}, ${isAlcohol ? `alcohol` : `no alcohol`}, GPIO ID: ${gpioId}`);
 
 		this.led = new Gpio(2, 'out');
+		this.isDispensing = false;
 	}
 	
 	async dispense(dose_ml: number) {
-
 		let duration_ms = dose_ml * IngredientPump.flow_ml_m / 60 * 1000;
 
-		console.log(duration_ms);
+		console.log(`Dispensing ${dose_ml} ml of ${this.name } over ${duration_ms} ms...`);
+		
+		if (this.isDispensing) {
+			console.log(`Oh no! Already dispensing ${this.name }. Cancelling new request!`);
+			return;
+		}
+		
+		this.isDispensing = true;
 		
 		await this.led.write(Gpio.HIGH);
 		await sleep(duration_ms);
 		await this.led.write(Gpio.LOW);
+		
+		console.log(`Dispensing ${this.name } finished.`);
+		this.isDispensing = false;
 
-        //return "";
+        return;
     }
 	
 	//async dispense(dose_ml: number): Promise<string> {
@@ -134,8 +150,8 @@ class InterdimensionalCocktailPortal {
 	}
 }
 
-//let bot = new InterdimensionalCocktailPortal();
-//bot.run();
+let bot = new InterdimensionalCocktailPortal();
+bot.run();
 
 import { app, BrowserWindow } from "electron";
 
@@ -143,7 +159,7 @@ app.on('ready', function() {
     var mainWindow = new BrowserWindow({
         show: false,
     });
-    mainWindow.maximize();
+    //mainWindow.maximize();
     mainWindow.loadFile('./../index.html');
     mainWindow.show();
 });
