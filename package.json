@@ -24,8 +24,6 @@
     "onoff": "^6.0.3"
   },
   "devDependencies": {
-    "@types/node": "^18.11.9",
-    "electron": "^21.3.0",
-    "typescript": "^4.8.4"
+    "@types/node": "^18.11.9"
   }
 }
