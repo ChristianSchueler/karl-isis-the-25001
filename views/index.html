@@ -4,9 +4,16 @@
         <meta charset="utf-8">
         <link rel="stylesheet" href="style.css">
         <title>Rick and Morty Themed Interdimensional Cocktail Portal</title>
+        <script type="module" src="maptastic.js"></script>
+        <script type="module" src="portal.js"></script>
     </head>
     <body>
-        <img class="house" width="1080" height="1080" src="./background-2-center.jpg" />
+        <script>
+            import { Portal } from "portal.js";
+            let portal = new Portal();
+        </script>
+
+        <img id="main" class="house" width="1080" height="1080" src="./background-2-center.jpg" />
         <b>Hello World</b>
     </body>
 </html>
