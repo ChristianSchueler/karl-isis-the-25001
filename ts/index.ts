@@ -56,7 +56,8 @@ function sleep(duration_ms: number) {
 // aka dispenser
 // @todo rename to Dispenser
 class IngredientPump {
-	static flow_ml_m: number = 60;			// fluid flow in ml per minute, MEASURE!
+	static flow_ml_m: number = 109;			// fluid flow in ml per minute, MEASURE!
+	static amountInTubes_ml: number = 50;
 	name: string = "ingredient";			// unique name
 	description: string = "";				// screen description
 	isAlcohol: boolean = true;
@@ -77,6 +78,7 @@ class IngredientPump {
 		this.isDispensing = false;
 	}
 	
+	// dispense given amount of liquid in ml
 	async dispense(dose_ml: number) {
 		let duration_ms = dose_ml / (IngredientPump.flow_ml_m / 60) * 1000;
 
@@ -99,14 +101,38 @@ class IngredientPump {
         return;
     }
 	
+	// dispenses enough liquid to fill the tubes initially
+	async fillOnStart() { 
+		await this.dispense(IngredientPump.amountInTubes_ml);
+	}
+	
+	// dispenses enough liquid to empty the tubes at the end of the day
+	async emptyOnFinish() {
+		await this.dispense(IngredientPump.amountInTubes_ml);
+	}
+	
+	// immediately stop any dispensing
+	async stop() {
+		
+		console.log(`Stopping pump ${this.name}...`);
+		
+		// stop dispensing
+		await this.pin.write(Gpio.HIGH);
+		
+		console.log(`Pump ${this.name } stopped.`);
+		this.isDispensing = false;
+
+        return;
+	}
+	
 	//async dispense(dose_ml: number): Promise<string> {
     //    return await Promise.resolve("OK"); 
     //}
 }
 
 class Arm {
-	static speed_mm_s: number = 3;			// CONFIG: movement speed of arm in mm per s, MEASURE!
-	static length_mm: number = 500;			// CONFIG: length of arm
+	static speed_mm_s: number = 450/46;		// CONFIG: movement speed of arm in mm per s, MEASURE!
+	static length_mm: number = 450;			// CONFIG: length of arm
 	pin1: Gpio;
 	pin2: Gpio;
 
@@ -134,14 +160,14 @@ class Arm {
 		console.log(`Moving arm ${distance_mm} mm over ${duration_ms} ms...`);
 		
 		if (extend) {
-			await this.pin1.write(Gpio.HIGH);
-			await this.pin2.write(Gpio.LOW);
+			await this.pin1.write(Gpio.LOW);
+			await this.pin2.write(Gpio.HIGH);
 			await sleep(duration_ms);
 			await this.stop();
 		} else
 		{
-			await this.pin1.write(Gpio.LOW);
-			await this.pin2.write(Gpio.HIGH);
+			await this.pin1.write(Gpio.HIGH);
+			await this.pin2.write(Gpio.LOW);
 			await sleep(duration_ms);
 			await this.stop();
 		}
@@ -165,24 +191,6 @@ class Arm {
 		await this.move(Arm.length_mm, false);
 		console.log("Arm retrected.");
 	}
-
-/* 	const m1 = new onoff.Gpio(14, 'out');
-const m2 = new onoff.Gpio(15, 'out');
-
-m1.writeSync(0); m2.writeSync(0);
-
-setTimeout(() => {
-    m1.writeSync(1); m2.writeSync(0);
-}, 1000);
-
-setTimeout(() => {
-    m1.writeSync(0); m2.writeSync(1);
-}, 3000);
-
-setTimeout(() => {
-    m1.writeSync(0); m2.writeSync(0);
-}, 10000);
- */
 }
 
 /** @class InterdimensionalCocktailPortal
@@ -192,15 +200,16 @@ class InterdimensionalCocktailPortal {
 	arm: Arm;
 	drinkRepository: { name: string; isAlcohol: boolean; pumpNumber: number }[] = [
 		{ name: 'vodka', isAlcohol: true, pumpNumber: 1 },
-		{ name: 'lemon-juice', isAlcohol: false, pumpNumber: 2 },
+		//{ name: 'lemon-juice', isAlcohol: false, pumpNumber: 2 },		// pump defect
 		{ name: 'strawberry-juice', isAlcohol: false, pumpNumber: 3 },
 		{ name: 'soda', isAlcohol: false, pumpNumber: 4 },
 		{ name: 'soda', isAlcohol: false, pumpNumber: 5 },
 		{ name: 'soda', isAlcohol: false, pumpNumber: 6 },
 		{ name: 'soda', isAlcohol: false, pumpNumber: 7 },
-		{ name: 'soda', isAlcohol: false, pumpNumber: 8 },
-		{ name: 'soda', isAlcohol: false, pumpNumber: 9 },
-		{ name: 'soda', isAlcohol: false, pumpNumber: 10 }];
+		{ name: 'soda', isAlcohol: false, pumpNumber: 8 }
+		//{ name: 'soda', isAlcohol: false, pumpNumber: 9 },			// out of tube				
+		//{ name: 'soda', isAlcohol: false, pumpNumber: 10 }			// out of tube
+		];
 	// this is the wiring between raspi and relais and pumps
 	pumpGpioMap: { pumpNo: number, relaisNumber: number, gpioNumber: number, pinNumber: number }[] = [
 		{ pumpNo: 1, relaisNumber: 1, gpioNumber: 2, pinNumber: 3 },
@@ -237,15 +246,34 @@ class InterdimensionalCocktailPortal {
 		this.arm = new Arm(this.motorGpioMap[0].gpioNumber1, this.motorGpioMap[0].gpioNumber2);
 	}
 	
+	// testing proper function
+	// dispenses 10 x 20 ml = 0,2 l
+	// moves out, moves in
+	async test() {
+		
+		for (let index in this.pumps) {
+			await this.pumps[index].dispense(20);
+		}
+
+		await this.arm.extend();
+		await this.arm.retract();
+		
+		return;
+	}
+	
+	async fillOnStart() {
+	}
+		
 	async run() {
 		console.log("Interdimensional Cocktail Portal run...");
 
-		for (let index in this.pumps) {
-			await this.pumps[index].dispense(1);
-		}
-
-		await this.arm.move(10, true);
-		await this.arm.move(10, false);
+		//await this.pumps[0].stop();
+		//await sleep(3000);
+ 
+		await this.test();
+		//await this.pumps[0].dispense(1000)
+		
+		process.exit(1);
 	}
 }
 
@@ -254,7 +282,7 @@ bot.run();
 
 import { app, BrowserWindow } from "electron";
 
-/*app.on('ready', function() {
+app.on('ready', function() {
     var mainWindow = new BrowserWindow({
         show: false,
         kiosk: true
@@ -278,4 +306,4 @@ app.on('window-all-closed', () => {
 	  app.quit()
 	}
   })
-*/
+
