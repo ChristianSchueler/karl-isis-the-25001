@@ -158,7 +158,14 @@ import { app, BrowserWindow } from "electron";
 app.on('ready', function() {
     var mainWindow = new BrowserWindow({
         show: false,
+        kiosk: true
     });
+    
+    mainWindow.webContents.on("crashed", (e) => {
+		app.relaunch();
+		app.quit();
+	});
+		
     //mainWindow.maximize();
     mainWindow.loadFile('./../index.html');
     mainWindow.show();
