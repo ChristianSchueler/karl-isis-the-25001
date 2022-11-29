@@ -4,7 +4,7 @@ console.log("Interdimensional Cocktail Portal booting...");
 
 var isWin = process.platform === "win32";
 
-/* class Gpio {
+class Gpio {
 	constructor(x: number, y: string) {}
 	static HIGH: number = 1;
 	static LOW: number = 0;
@@ -17,8 +17,8 @@ var isWin = process.platform === "win32";
 		return new Promise(resolve => 0);
 	}
 }
- */
-import { Gpio } from 'onoff';
+
+//import { Gpio } from 'onoff';
 
 if (isWin) {
 	console.log('Running on Windows!');
@@ -128,10 +128,32 @@ setTimeout(() => {
 */
 class InterdimensionalCocktailPortal {
 	pumps: IngredientPump[];
-	drinkRepository: { name: string; isAlcohol: boolean; gpioId: number }[] = [
-		{ name: 'vodka', isAlcohol: true, gpioId: 2 },
-		{ name: 'lemon-juice', isAlcohol: false, gpioId: 3 },
-		{ name: 'strawberry-juice', isAlcohol: false, gpioId: 4 }];
+	drinkRepository: { name: string; isAlcohol: boolean; pumpNumber: number }[] = [
+		{ name: 'vodka', isAlcohol: true, pumpNumber: 1 },
+		{ name: 'lemon-juice', isAlcohol: false, pumpNumber: 2 },
+		{ name: 'strawberry-juice', isAlcohol: false, pumpNumber: 3 },
+		{ name: 'soda', isAlcohol: false, pumpNumber: 4 },
+		{ name: 'soda', isAlcohol: false, pumpNumber: 5 },
+		{ name: 'soda', isAlcohol: false, pumpNumber: 6 },
+		{ name: 'soda', isAlcohol: false, pumpNumber: 7 },
+		{ name: 'soda', isAlcohol: false, pumpNumber: 8 },
+		{ name: 'soda', isAlcohol: false, pumpNumber: 9 },
+		{ name: 'soda', isAlcohol: false, pumpNumber: 10 }];
+	// this is the wiring between raspi and relais and pumps
+	pumpGpioMap: { pumpNo: number, relaisNumber: number, gpioNumber: number, pinNumber: number }[] = [
+		{ pumpNo: 1, relaisNumber: 1, gpioNumber: 2, pinNumber: 3 },
+		{ pumpNo: 2, relaisNumber: 2, gpioNumber: 3, pinNumber: 5 },
+		{ pumpNo: 3, relaisNumber: 3, gpioNumber: 4, pinNumber: 7 },
+		{ pumpNo: 4, relaisNumber: 4, gpioNumber: 17, pinNumber: 11 },
+		{ pumpNo: 5, relaisNumber: 5, gpioNumber: 18, pinNumber: 5 },
+		{ pumpNo: 6, relaisNumber: 6, gpioNumber: 27, pinNumber: 13 },
+		{ pumpNo: 7, relaisNumber: 16, gpioNumber: 21, pinNumber: 40 },
+		{ pumpNo: 8, relaisNumber: 15, gpioNumber: 20, pinNumber: 38 },
+		{ pumpNo: 9, relaisNumber: 13, gpioNumber: 16, pinNumber: 36 },
+		{ pumpNo: 10, relaisNumber: 14, gpioNumber: 26, pinNumber: 37 }];
+	// wiring between raspi and motor controller
+	motorGpioMap: { motorNo: number, gpioNumber1: number, pinNumber1: number, gpioNumber2: number, pinNumber2: number }[] = [
+		{ motorNo: 1, gpioNumber1: 10, pinNumber1: 19, gpioNumber2: 9, pinNumber2: 21 }];
 	
 	constructor() {
 
@@ -167,7 +189,7 @@ app.on('ready', function() {
 	});
 		
     //mainWindow.maximize();
-    mainWindow.loadFile('./../index.html');
+    mainWindow.loadFile('./../views/index.html');
     mainWindow.show();
 });
 

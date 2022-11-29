@@ -3,7 +3,7 @@
     "display": "Node 14",
   
     "compilerOptions": {
-      "lib": ["ES2022"],
+      "lib": ["ES2022", "DOM"],
       "module": "CommonJS",
       "target": "ES2022",
   
