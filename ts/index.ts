@@ -73,6 +73,7 @@ class IngredientPump {
 		console.log(`Ingredient: ${name}, ${isAlcohol ? `alcohol` : `no alcohol`}, GPIO ID: ${gpioId}`);
 
 		this.pin = new Gpio(gpioId, 'out');		// open GPIO with given number (not: pin number!) for output
+		this.pin.writeSync(Gpio.HIGH);		// disable by default
 		this.isDispensing = false;
 	}
 	
@@ -88,9 +89,9 @@ class IngredientPump {
 		
 		this.isDispensing = true;
 		
-		await this.pin.write(Gpio.HIGH);
-		await sleep(duration_ms);
 		await this.pin.write(Gpio.LOW);
+		await sleep(duration_ms);
+		await this.pin.write(Gpio.HIGH);
 		
 		console.log(`Dispensing ${this.name } finished.`);
 		this.isDispensing = false;
@@ -136,13 +137,13 @@ class Arm {
 			await this.pin1.write(Gpio.HIGH);
 			await this.pin2.write(Gpio.LOW);
 			await sleep(duration_ms);
-			await stop();
+			await this.stop();
 		} else
 		{
 			await this.pin1.write(Gpio.LOW);
 			await this.pin2.write(Gpio.HIGH);
 			await sleep(duration_ms);
-			await stop();
+			await this.stop();
 		}
 		
 		
