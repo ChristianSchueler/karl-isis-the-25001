@@ -2,7 +2,7 @@
 
 console.log("Interdimensional Cocktail Portal booting...");
 
-var isWin = process.platform === "win32";
+//var isWin = process.platform === "win32";
 
 /*class Gpio {
 	constructor(x: number, y: string) {}
@@ -20,7 +20,7 @@ var isWin = process.platform === "win32";
 
 import { Gpio } from 'onoff';
 
-if (isWin) {
+/*if (isWin) {
 	console.log('Running on Windows!');
 
 	//let Gpio = class { HIGH: boolean = true; }; 
@@ -36,7 +36,7 @@ if (isWin) {
  if (process.env.NODE_ENV === 'production') {
  	//const pluginName = await import('../js/plugin_name.js');
    }
-
+*/
 
 function sleep(duration_ms: number) {
 	return new Promise(resolve => setTimeout(resolve, duration_ms));
@@ -56,12 +56,12 @@ function sleep(duration_ms: number) {
 // aka dispenser
 // @todo rename to Dispenser
 class IngredientPump {
-	name: string = "ingredient";				// unique name
-	description: string = "";		// screen description
+	static flow_ml_m: number = 60;			// fluid flow in ml per minute, MEASURE!
+	name: string = "ingredient";			// unique name
+	description: string = "";				// screen description
 	isAlcohol: boolean = true;
-	gpioId: number = 2;				// which GPIO pin the pump will connect to
-	static flow_ml_m: number = 60;
-	led: Gpio;
+	gpioId: number = 1;						// which GPIO pin the pump will connect to
+	pin: Gpio;								// interface to GPIO using onoff
 	isDispensing: boolean = false;
 	
 	constructor(name: string, isAlcohol: boolean, gpioId: number) {
@@ -72,12 +72,12 @@ class IngredientPump {
 		this.gpioId = gpioId;
 		console.log(`Ingredient: ${name}, ${isAlcohol ? `alcohol` : `no alcohol`}, GPIO ID: ${gpioId}`);
 
-		this.led = new Gpio(2, 'out');
+		this.pin = new Gpio(gpioId, 'out');		// open GPIO with given number (not: pin number!) for output
 		this.isDispensing = false;
 	}
 	
 	async dispense(dose_ml: number) {
-		let duration_ms = dose_ml * IngredientPump.flow_ml_m / 60 * 1000;
+		let duration_ms = dose_ml / (IngredientPump.flow_ml_m / 60) * 1000;
 
 		console.log(`Dispensing ${dose_ml} ml of ${this.name } over ${duration_ms} ms...`);
 		
@@ -88,9 +88,9 @@ class IngredientPump {
 		
 		this.isDispensing = true;
 		
-		await this.led.write(Gpio.HIGH);
+		await this.pin.write(Gpio.HIGH);
 		await sleep(duration_ms);
-		await this.led.write(Gpio.LOW);
+		await this.pin.write(Gpio.LOW);
 		
 		console.log(`Dispensing ${this.name } finished.`);
 		this.isDispensing = false;
@@ -104,6 +104,66 @@ class IngredientPump {
 }
 
 class Arm {
+	static speed_mm_s: number = 3;			// CONFIG: movement speed of arm in mm per s, MEASURE!
+	static length_mm: number = 500;			// CONFIG: length of arm
+	pin1: Gpio;
+	pin2: Gpio;
+
+	constructor(m1Gpio: number, m2Gpio: number) {
+
+		console.log(`Arm: GPIO #${m1Gpio} and GPIO #${m2Gpio} constructing...`);
+
+		this.pin1 = new Gpio(m1Gpio, 'out');		// open GPIO with given number (not: pin number!) for output
+		this.pin2 = new Gpio(m2Gpio, 'out');		// open GPIO with given number (not: pin number!) for output
+	}
+
+	async stop() {
+		console.log(`Stopping arm ...`);
+		
+		// stop motor
+		await this.pin1.write(Gpio.LOW);
+		await this.pin2.write(Gpio.LOW);
+
+        return;
+    }
+
+	async move(distance_mm: number, extend: boolean) {
+		let duration_ms = distance_mm / Arm.speed_mm_s * 1000;
+
+		console.log(`Moving arm ${distance_mm} mm over ${duration_ms} ms...`);
+		
+		if (extend) {
+			await this.pin1.write(Gpio.HIGH);
+			await this.pin2.write(Gpio.LOW);
+			await sleep(duration_ms);
+			await stop();
+		} else
+		{
+			await this.pin1.write(Gpio.LOW);
+			await this.pin2.write(Gpio.HIGH);
+			await sleep(duration_ms);
+			await stop();
+		}
+		
+		
+		console.log(`Moving finished.`);
+
+        return;
+    }
+
+	async extend() {
+
+		console.log("Extending arm...");
+		await this.move(Arm.length_mm, true);
+		console.log("Arm extended.");
+	}
+
+	async retract() {
+
+		console.log("Retracting arm...");
+		await this.move(Arm.length_mm, false);
+		console.log("Arm retrected.");
+	}
 
 /* 	const m1 = new onoff.Gpio(14, 'out');
 const m2 = new onoff.Gpio(15, 'out');
@@ -177,7 +237,7 @@ class InterdimensionalCocktailPortal {
 		console.log("Interdimensional Cocktail Portal run...");
 
 		for (let index in this.pumps) {
-			await this.pumps[index].dispense(10);
+			await this.pumps[index].dispense(1);
 		}
 	}
 }
@@ -187,7 +247,7 @@ bot.run();
 
 import { app, BrowserWindow } from "electron";
 
-app.on('ready', function() {
+/*app.on('ready', function() {
     var mainWindow = new BrowserWindow({
         show: false,
         kiosk: true
@@ -211,3 +271,4 @@ app.on('window-all-closed', () => {
 	  app.quit()
 	}
   })
+*/
