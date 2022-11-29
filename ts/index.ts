@@ -187,7 +187,8 @@ setTimeout(() => {
 /** @class InterdimensionalCocktailPortal
 */
 class InterdimensionalCocktailPortal {
-	pumps: IngredientPump[];
+	pumps: IngredientPump[];				// hlding the interface to the liquid dispenser pumps
+	arm: Arm;
 	drinkRepository: { name: string; isAlcohol: boolean; pumpNumber: number }[] = [
 		{ name: 'vodka', isAlcohol: true, pumpNumber: 1 },
 		{ name: 'lemon-juice', isAlcohol: false, pumpNumber: 2 },
@@ -231,6 +232,8 @@ class InterdimensionalCocktailPortal {
 			}
 			else { console.warn(`Setup drink: #${index}: pump number #${pumpNumber} undefined! Skipping.`); }
 		}
+
+		this.arm = new Arm(this.motorGpioMap[0].gpioNumber1, this.motorGpioMap[0].gpioNumber2);
 	}
 	
 	async run() {
@@ -239,6 +242,9 @@ class InterdimensionalCocktailPortal {
 		for (let index in this.pumps) {
 			await this.pumps[index].dispense(1);
 		}
+
+		await this.arm.move(10, true);
+		await this.arm.move(10, false);
 	}
 }
 
