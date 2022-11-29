@@ -4,7 +4,7 @@ console.log("Interdimensional Cocktail Portal booting...");
 
 var isWin = process.platform === "win32";
 
-class Gpio {
+/*class Gpio {
 	constructor(x: number, y: string) {}
 	static HIGH: number = 1;
 	static LOW: number = 0;
@@ -16,9 +16,9 @@ class Gpio {
 		await sleep(1);
 		return new Promise(resolve => 0);
 	}
-}
+}*/
 
-//import { Gpio } from 'onoff';
+import { Gpio } from 'onoff';
 
 if (isWin) {
 	console.log('Running on Windows!');
@@ -160,15 +160,25 @@ class InterdimensionalCocktailPortal {
 		this.pumps = [];
 		
 		for (let index in this.drinkRepository) {
-			let p = new IngredientPump(this.drinkRepository[index].name, this.drinkRepository[index].isAlcohol, this.drinkRepository[index].gpioId);
-			this.pumps.push(p);
+			// pump responsible for this drink
+			let pumpNumber = this.drinkRepository[index].pumpNumber;
+			
+			// find punp GPIO definition
+			let pumpGpio = this.pumpGpioMap.find(x => x.pumpNo === pumpNumber);
+			if (pumpGpio !== undefined) {
+				let p = new IngredientPump(this.drinkRepository[index].name, this.drinkRepository[index].isAlcohol, pumpGpio.gpioNumber);
+				this.pumps.push(p);
+			}
+			else { console.warn(`Setup drink: #${index}: pump number #${pumpNumber} undefined! Skipping.`); }
 		}
 	}
 	
 	async run() {
 		console.log("Interdimensional Cocktail Portal run...");
 
-		await this.pumps[0].dispense(10);
+		for (let index in this.pumps) {
+			await this.pumps[index].dispense(10);
+		}
 	}
 }
 
