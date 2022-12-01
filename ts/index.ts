@@ -1,13 +1,17 @@
 // Interdimensional Cocktail Portal (c) 2022 Christian Schüler
 
+//import * as server from "server";
+
 console.log("Interdimensional Cocktail Portal booting...");
 
 //var isWin = process.platform === "win32";
 
-/*class Gpio {
+class Gpio {
 	constructor(x: number, y: string) {}
 	static HIGH: number = 1;
 	static LOW: number = 0;
+	writeSync(x: number) {};
+	readSync() {};
 	async write(x: number) {
 		await sleep(1);
 		return new Promise(resolve => 1);
@@ -16,9 +20,9 @@ console.log("Interdimensional Cocktail Portal booting...");
 		await sleep(1);
 		return new Promise(resolve => 0);
 	}
-}*/
+}
 
-import { Gpio } from 'onoff';
+//import { Gpio } from 'onoff';
 
 /*if (isWin) {
 	console.log('Running on Windows!');
@@ -294,7 +298,8 @@ app.on('ready', function() {
 	});
 		
     //mainWindow.maximize();
-    mainWindow.loadFile('./../views/index.html');
+    //mainWindow.loadFile('./../views/index.html');
+	mainWindow.loadURL("http://localhost:3000");
     mainWindow.show();
 });
 
@@ -307,3 +312,27 @@ app.on('window-all-closed', () => {
 	}
   })
 
+import { Server } from "./server";
+import { OpenAI } from "./openai";
+import { mainModule } from "process";
+
+let s = new Server();
+let ai = new OpenAI();
+
+async function main() {
+    
+	await ai.test();
+	//var value = await Promise.resolve('Hey there');
+    //console.log('inside: ' + value);
+    //return value;
+}
+
+(async () => {
+    try {
+        const text = await main();
+        //console.log(text);
+    } catch (e) {
+        // Deal with the fact the chain failed
+    }
+    // `text` is not available here
+})();
