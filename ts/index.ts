@@ -288,8 +288,11 @@ import { app, BrowserWindow } from "electron";
 
 app.on('ready', function() {
     var mainWindow = new BrowserWindow({
-        show: false,
-        kiosk: true
+        title: "Interdimensional Cocktail Portal",
+		show: false,
+		fullscreen: true,
+        kiosk: true,
+		autoHideMenuBar: true
     });
     
     mainWindow.webContents.on("crashed", (e) => {
