@@ -2,7 +2,8 @@
   "name": "es6-app",
   "version": "1.0.0",
   "description": "App built using advanced JavaScript's syntax and a guide to import npm modules in our front end application.",
-  "main": "index.js",
+  "main": "index.ts",
+  "type":"module",
   "scripts": {
     "build": "browserify index.js -o dist/bundle.js",
     "watch": "watchify index.js -o dist/bundle.js -v"
