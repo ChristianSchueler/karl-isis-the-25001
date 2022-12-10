@@ -1,51 +1,20 @@
 {
-  "name": "es6-app",
+  "name": "interdimensional-cocktail-portal-frontend",
   "version": "1.0.0",
-  "description": "App built using advanced JavaScript's syntax and a guide to import npm modules in our front end application.",
+  "description": "Interdimensional Cocktail Portal Frontend Code",
   "main": "index.ts",
-  "type":"module",
+  "type": "module",
   "scripts": {
-    "build": "browserify index.js -o dist/bundle.js",
-    "watch": "watchify index.js -o dist/bundle.js -v"
+    "build": "tsc",
+    "watch": "tsc --watch"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com/BalasubramaniM/es6-app.git"
-  },
-  "keywords": [
-    "es6",
-    "npm",
-    "browserify",
-    "watchify"
-  ],
-  "browserify": {
-    "transform": [
-      [
-        "babelify",
-        {
-          "presets": [
-            "es2015"
-          ]
-        }
-      ]
-    ]
-  },
-  "author": "Balasubramani M",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/BalasubramaniM/es6-app/issues"
-  },
-  "homepage": "https://github.com/BalasubramaniM/es6-app#readme",
+  "author": "Christian Schüler",
+  "homepage": "",
   "dependencies": {
-    "browserify": "^16.2.2",
     "gsap": "^3.11.3",
-    "maptastic": "^3.0.0",
-    "reading-time": "^1.1.3",
-    "watchify": "^3.11.0"
+    "maptastic": "^3.0.0"
   },
   "devDependencies": {
-    "babel-core": "^6.26.3",
-    "babel-preset-es2015": "^6.24.1",
-    "babelify": "^8.0.0"
+    "typescript": "^4.9.4"
   }
 }

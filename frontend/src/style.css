@@ -9,18 +9,14 @@ html, body {
 	margin: 0;
 	padding: 0;
 	cursor: none;
+	user-select: none;
 	font-family: Arial, Helvetica, sans-serif;
-	/* display: block; */
 }
 
 #screen {
 	background-color: aquamarine;
-	/* display: block; */
 	width: 1920px;
 	height: 1080px;
-
-	/* transform: scale(0.5);
-	transform-origin: 50% 50%; */
 }
 
 .house {

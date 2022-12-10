@@ -1,26 +1,5 @@
 //import * as Maptastic from 'maptastic'
-
-/**
- * @class ScaleToFitWindow scales all html elements given as selector such that their original size fits into the window
- * and maintains aspect ratio.
- */
-export class ScaleToFitWindow {
-  constructor(elementSelector: string) {
-
-    console.log("Hello");
-
-    console.log(this.constructor.name, "asdpj");
-
-    const views = document.querySelectorAll(elementSelector);
-
-    for (const view of views) {
-      console.log("View:", view);
-      const origWidth = view.clientWidth;
-      const origHeight = view.clientHeight;
-      console.log(origWidth,origHeight);
-    } 
-  }
-}
+import { ScaleToFitWindow } from "./ScaleToFitWindow.js";
 
 export class Portal {
 
@@ -59,5 +38,3 @@ export class Portal {
 new Portal();
 
 new ScaleToFitWindow("#screen");
-
-console.log("sdfsdfsdf");
