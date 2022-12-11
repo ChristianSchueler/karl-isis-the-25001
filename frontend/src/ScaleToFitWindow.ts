@@ -1,3 +1,6 @@
+import { gsap } from "gsap";
+import { Maptastic } from "maptastic";
+
 /**
  * @class ScaleToFitWindow scales all html elements given as selector such that their original size fits into the window
  * and maintains aspect ratio.
@@ -54,8 +57,15 @@ export class ScaleToFitWindow {
         }
   
         view.style.transformOrigin="0 0";
-        view.style.transform="scale(" + scale + ")";
-        console.log(scale);
+        gsap.to(view, { duration: 1, css: { scale: scale } });
+
+        // update transformation
+        
+        //view.style.transform="scale(" + scale + ")";
+        
+        console.log("Scaling to", scale);
+
+        new Maptastic(view);
       } 
     }
   }

@@ -2,19 +2,22 @@
   "name": "interdimensional-cocktail-portal-frontend",
   "version": "1.0.0",
   "description": "Interdimensional Cocktail Portal Frontend Code",
-  "main": "index.ts",
+  "main": "dist/index.js",
   "type": "module",
+  "source": "src/index.ts",
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc --watch"
+    "build": "microbundle",
+    "watch": "microbundle --watch"
   },
   "author": "Christian Schüler",
   "homepage": "",
   "dependencies": {
-    "gsap": "^3.11.3",
-    "maptastic": "^3.0.0"
+    
   },
   "devDependencies": {
+    "gsap": "^3.11.3",
+    "maptastic": "^3.0.0",
+    "microbundle": "^0.15.1",
     "typescript": "^4.9.4"
   }
 }

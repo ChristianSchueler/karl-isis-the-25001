@@ -1,5 +1,6 @@
-//import * as Maptastic from 'maptastic'
 import { ScaleToFitWindow } from "./ScaleToFitWindow.js";
+
+const screenSelector = "#screen";
 
 export class Portal {
 
@@ -33,8 +34,6 @@ export class Portal {
   }
 };
 
-//import * as gsap from "gsap";
-
 new Portal();
 
-new ScaleToFitWindow("#screen");
+new ScaleToFitWindow(screenSelector);
