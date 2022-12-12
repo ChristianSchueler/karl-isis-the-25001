@@ -20,8 +20,17 @@ html, body {
 }
 
 .house {
-    position: absolute;               /* 2 */
-    left: 50%;                         /* 3 */
-    transform: translate(-50%, 0);   /* 4 */
-    
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0);    
+}
+
+#portal {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0);    
+}
+
+#video {
+	visibility: hidden;
 }
