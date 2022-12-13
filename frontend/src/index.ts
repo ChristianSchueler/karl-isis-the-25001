@@ -1,6 +1,7 @@
 import { ScaleToFitWindow } from "./ScaleToFitWindow.js";
 import ChromaGL from 'gl-chromakey';
 import { Maptastic } from "maptastic";
+import { gsap } from "gsap";
 
 const screenSelector = "#screen";
 
@@ -42,6 +43,8 @@ export class Portal {
  
       //new ScaleToFitWindow(screenSelector);
       new Maptastic("app");
+
+      gsap.fromTo(".header-title", { x: -500, duration: 5 }, {x: 0});
   }
 
     // methods for render loop
