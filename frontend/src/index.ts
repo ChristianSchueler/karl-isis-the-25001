@@ -1,5 +1,6 @@
 import { ScaleToFitWindow } from "./ScaleToFitWindow.js";
 import ChromaGL from 'gl-chromakey';
+import { Maptastic } from "maptastic";
 
 const screenSelector = "#screen";
 
@@ -32,9 +33,12 @@ export class Portal {
       this.chroma.key({ color: [8, 39, 245], tolerance: 0.3 }) // equivalent
 
       // link to <video> element
-      video!.addEventListener('play', this.startChroma)
-      video!.addEventListener('pause', this.stopChroma)
-      video!.addEventListener('ended', this.stopChroma)
+      video!.addEventListener('play', this.startChroma);
+      video!.addEventListener('pause', this.stopChroma);
+      video!.addEventListener('ended', this.stopChroma);
+ 
+      //new ScaleToFitWindow(screenSelector);
+      new Maptastic("house");
   }
 
     // methods for render loop
@@ -126,5 +130,3 @@ export class Portal {
 };
 
 new Portal();
-
-new ScaleToFitWindow(screenSelector);

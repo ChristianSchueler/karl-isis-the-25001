@@ -14,21 +14,24 @@ html, body {
 }
 
 #screen {
-	background-color: aquamarine;
+	position: absolute;
+	background-color: firebrick;
 	width: 1920px;
 	height: 1080px;
 }
 
-.house {
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%, 0);    
+#house {
+    position: relative;
+    /* left: 50%; */
+	/* width: 1080px;
+	height: 1080px; */
+    /* transform: translate(-50%, 0);     */
 }
 
 #portal {
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%, 0);    
+    position: relative;
+    /* left: 50%;
+    transform: translate(-50%, 0);     */
 }
 
 #video {
