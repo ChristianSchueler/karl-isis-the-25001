@@ -16,21 +16,24 @@ export class Portal {
   chroma:any;
 
   constructor() {
+
+      console.log("Interdimensional Cocktail Portal, (c) 2022 Christian Schüler");
+
       this.installKeyboardDebugHandler();
 
       //this.init();
 
-      console.log("chroma key");
+      console.log("Setting up chrome keying");
       const video = document.getElementById('video');
       const canvas = document.getElementById('portal');
  
       // set source video and target canvas elements
       this.chroma = new ChromaGL(video, canvas);
-      console.log("webgl2:", this.chroma.hasWebGL2());
+      console.log("WebGL2 Support:", this.chroma.hasWebGL2());
       //this.chroma.key('auto');
       //8/39/245
       //if (r < 45 && g < 45 && b > 100) 
-      this.chroma.key({ color: [8, 39, 245], tolerance: 0.3 }) // equivalent
+      this.chroma.key({ color: [8, 39, 245], tolerance: 0.3 })  // blue
 
       // link to <video> element
       video!.addEventListener('play', this.startChroma);
@@ -38,7 +41,7 @@ export class Portal {
       video!.addEventListener('ended', this.stopChroma);
  
       //new ScaleToFitWindow(screenSelector);
-      new Maptastic("house");
+      new Maptastic("app");
   }
 
     // methods for render loop
@@ -125,7 +128,7 @@ export class Portal {
           }*/
         }, false);
  
-        console.log("Hi there");
+        //console.log("Hi there");
   }
 };
 

@@ -15,25 +15,45 @@ html, body {
 
 #screen {
 	position: absolute;
-	background-color: firebrick;
+	background-color: black;
 	width: 1920px;
 	height: 1080px;
 }
 
+#app {
+	display: block;
+	position: absolute;
+	width: 1080px;
+	height: 1080px;
+	left: 420px;
+}
+
 #house {
-    position: relative;
-    /* left: 50%; */
+	display: block;
+    position: absolute;
+	width: 1080px;
+	height: 1080px;
+    /* left: 420px; */
 	/* width: 1080px;
 	height: 1080px; */
     /* transform: translate(-50%, 0);     */
 }
 
 #portal {
-    position: relative;
-    /* left: 50%;
-    transform: translate(-50%, 0);     */
+	display: block;
+    position: absolute;
+	width: 1080px;
+	height: 1080px;
+    /* left: 420px; */
+	/* z-index: 1000; */
+    /* transform: translate(-50%, 0);     */
 }
 
 #video {
+	display: block;
+	position: absolute;
+	width: 1080px;
+	height: 1080px;
+    /* left: 420px; */
 	visibility: hidden;
 }

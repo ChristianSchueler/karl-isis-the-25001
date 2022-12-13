@@ -11,7 +11,7 @@
     <!-- <script src="https://unpkg.com/systemjs@6.1.4/dist/s.min.js"></script>
     <script src="https://unpkg.com/systemjs@6.1.4/dist/extras/named-register.min.js"></script> -->
     <!-- <script src="node_modules/gsap/dist/gsap.js"></script> -->
-    <script type="module" src="dist/index.modern.js"></script>
+    <script type="module" src="dist/bundle.js"></script>
     <!-- <script>
         System.import('./dist/index.js');
       </script> -->
@@ -20,12 +20,19 @@
 <body>
 
     <div id="screen">
-        <img id="house" width="1080" height="1080" src="src/background-2-center.jpg" />
 
-        <canvas id="portal" width="1080" height="1080" ></canvas>
+        <div id="app">
+            <!-- hidden portal video animation -->
+            <video id="video" width="1080" height="1080" src="src/portal.mp4" autoplay muted loop></video>
+
+            <!-- house image background -->
+            <img id="house" width="1080" height="1080" src="src/background-2-center.jpg" />
+
+            <!-- aniamted portal -->
+            <canvas id="portal" width="1080" height="1080" ></canvas>
+        </div>
     </div>
 
-    <video id="video" width="1080" height="1080" src="src/portal.mp4" autoplay muted loop></video>
     
 </body>
 
