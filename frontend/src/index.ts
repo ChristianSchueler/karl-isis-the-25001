@@ -25,8 +25,39 @@ export class Portal {
       
       new ScaleToFitWindow(screenSelector);
 
-      console.log("Started MapTastic: used Shift-Space to open mapping controls.");
+      console.log("Starting MapTastic");
       new Maptastic("app");
+      console.log(`
+      SHIFT + Space Toggle edit mode
+
+      While In Edit Mode
+      click or drag select and move quads/corner points
+      
+      SHIFT + drag move selcted quad/corner point with 10x precision
+      
+      ALT + drag rotate and scale selected quad
+      
+      SHIFT + ALT + drag rotate and scale selected quad with 10x precision.
+      
+      Arrow keys move selected quad/corner point
+      
+      SHIFT + Arrow keys move selected quad/corner point by 10 pixels
+      
+      ALT + Arrow keys rotate and scale selected quad
+      
+      's' Solo or unsolo the selected quad (hides all others). This helps to adjust quads when corner points are very close together.
+      
+      'c' Toggle mouse cursor crosshairs
+      
+      'b' Toggle display bounds/metrics
+      
+      'r' Rotate selected layer 90 degrees clockwise
+      
+      'h' Flip selected layer horizontally
+      
+      'v' Flip selected layer vertically
+      
+      'x' remove settings from localStorage. Hit Ctrl-R for reload.`);
   }
 
   // set up portal animation
@@ -110,15 +141,19 @@ export class Portal {
 
   // show start screen
   goStart() {
-    console.log("start");
+    console.log("screen:start");
 
     if (this.portalOpen) this.closePortal();
 
+    // fly in title
     gsap.fromTo(".header-title", { x: -500 }, { x: 0, duration: 1, ease: "bounce.out" });
+  }
 
-    setTimeout(() => { this.openPortal(); }, 2000);
+  // show portal
+  goPortal() {
+    console.log("screen:portal");
 
-    setTimeout(() => { this.closePortal(); }, 5000);
+    this.openPortal();
   }
 
   // methods for render loop
@@ -134,25 +169,15 @@ export class Portal {
       document.addEventListener('keydown', (event) => {
           const keyName = event.key;
         
-          console.log(keyName);
-          // 1, 2, 3, 4, 5,6 7, 8, 9, 0 pumps 1 to 10 on/off
-          // motor vor/zurück
+          console.log(`key pressed: ${keyName}`);
 
-          if (keyName === 'Control') {
-            // do not alert when only Control key is pressed.
-            return;
+          switch (keyName) {
+            case '0': this.goStart(); break;
+            case '1': this.goPortal(); break;
+            case 'x': window.localStorage.removeItem("maptastic.layers");
           }
-        
-          /*if (event.ctrlKey) {
-            // Even though event.key is not 'Control' (e.g., 'a' is pressed),
-            // event.ctrlKey may be true if Ctrl key is pressed at the same time.
-            alert(`Combination of ctrlKey + ${keyName}`);
-          } else {
-            alert(`Key pressed ${keyName}`);
-          }*/
+
         }, false);
- 
-        //console.log("Hi there");
   }
 };
 
