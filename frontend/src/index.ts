@@ -6,6 +6,7 @@ import { gsap } from "gsap";
 const screenSelector = "#screen";
 
 export class Portal {
+  highPerformanceMode: boolean = false;
   /*video: HTMLVideoElement|null = null;
   video2;
   c1;
@@ -24,24 +25,59 @@ export class Portal {
 
       //this.init();
 
-      console.log("Setting up chrome keying");
-      const video = document.getElementById('video');
-      const canvas = document.getElementById('portal');
- 
-      // set source video and target canvas elements
-      this.chroma = new ChromaGL(video, canvas);
-      console.log("WebGL2 Support:", this.chroma.hasWebGL2());
-      //this.chroma.key('auto');
-      //8/39/245
-      //if (r < 45 && g < 45 && b > 100) 
-      this.chroma.key({ color: [8, 39, 245], tolerance: 0.3 })  // blue
+      if (this.highPerformanceMode) {
+        console.log("High performance mode: using greenscreen chroma keying.");
 
-      // link to <video> element
-      video!.addEventListener('play', this.startChroma);
-      video!.addEventListener('pause', this.stopChroma);
-      video!.addEventListener('ended', this.stopChroma);
+        console.log("Setting up chrome keying");
+
+        const video = document.getElementById('video');
+        
+        // grab portal video and make visible
+        const canvas = document.getElementById('portal');
+        canvas?.classList.add("visible");
+        canvas?.classList.remove("invisible");
+
+        // hide portal image
+        const portalImage = document.getElementById('portal-image');
+        portalImage?.classList.add("invisible");
+        portalImage?.classList.remove("visible");
+  
+        // set source video and target canvas elements
+        this.chroma = new ChromaGL(video, canvas);
+        console.log("WebGL2 Support:", this.chroma.hasWebGL2());
+        //this.chroma.key('auto');
+        //8/39/245
+        //if (r < 45 && g < 45 && b > 100) 
+        this.chroma.key({ color: [8, 39, 245], tolerance: 0.3 })  // blue
+
+        // link to <video> element
+        video!.addEventListener('play', this.startChroma);
+        video!.addEventListener('pause', this.stopChroma);
+        video!.addEventListener('ended', this.stopChroma);
+      }
+      else {
+        console.log("Low performance mode.");
+
+        // grab portal image and make visible
+        const portalImage = document.getElementById('portal-image');
+        portalImage?.classList.add("visible");
+        portalImage?.classList.remove("invisible");
+
+        // grab portal video and make invisible
+        const canvas = document.getElementById('portal');
+        canvas?.classList.add("invisible");
+        canvas?.classList.remove("visible");
+
+        gsap.to(portalImage, { css: { rotation:360 },
+          duration: 15,
+          ease: "none",
+          repeat: -1,
+          paused: false});
+      }
  
       //new ScaleToFitWindow(screenSelector);
+      
+      console.log("Started MapTastic: used Shift-Space to open mapping controls.");
       new Maptastic("app");
 
       gsap.fromTo(".header-title", { x: -500, duration: 5 }, {x: 0});

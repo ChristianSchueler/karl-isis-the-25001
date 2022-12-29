@@ -59,6 +59,23 @@ html, body {
     /* transform: translate(-50%, 0);     */
 }
 
+#portal-image {
+	display: block;
+    position: absolute;
+	width: 760px;
+	height: 760px;
+	left: 160px;
+	top: 160px;
+}
+
+.visible {
+	display: block !important;
+}
+
+.invisible {
+	display: none !important;
+}
+
 #video {
 	display: block;
 	position: absolute;
