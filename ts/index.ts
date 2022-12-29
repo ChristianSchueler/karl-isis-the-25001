@@ -261,6 +261,23 @@ class InterdimensionalCocktailPortal {
 		this.arm = new Arm(this.motorGpioMap[0].gpioNumber1, this.motorGpioMap[0].gpioNumber2);
 	}
 	
+	async dispenseRecipe(recipe: Recipe) {
+
+		let pumps = [];
+		let amounts = [];
+
+		for (let ingredient of recipe.ingredients) {
+
+			// find pump with given ingredient
+			let p = this.pumps.find((p) => { p.name === ingredient.ingredient});
+			pumps.push(p?.dispense);	// collect dispense function
+			amounts.push(ingredient.amount);
+		}
+
+		// TODO
+		//Promise.all(pumps.map(() => {}));
+	}
+
 	// testing proper function
 	// dispenses 10 x 20 ml = 0,2 l
 	// moves out, moves in
