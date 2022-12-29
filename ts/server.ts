@@ -1,16 +1,34 @@
-//---
+const express = require('express');
+const http = require('http');
 
 export class Server {
+    server: any;
+
     constructor() {
-        const express = require('express');
+        
+        console.log("creating internal web server");
+
         const appExpress = express();
-        const http = require('http');
-        const server = http.createServer(appExpress);
+        this.server = http.createServer(appExpress);
 
         appExpress.use(express.static('frontend'));
+    }
 
-        server.listen(3000, () => {
-            console.log('listening on *:3000');
+    async start() {
+        console.log("starting internal web server....");
+
+        return new Promise((resolve, reject) => {
+            
+            this.server.listen(3000, (error: any) => {
+                
+                if (error) {
+                    reject(false);
+                }
+                else {
+                    console.log('internal web server ready: listening on *:3000');
+                    resolve(true);
+                }
+            });
         });
     }
 }

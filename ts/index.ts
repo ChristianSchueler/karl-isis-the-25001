@@ -1,6 +1,8 @@
 // Interdimensional Cocktail Portal (c) 2022 Christian Schüler
 
-//import * as server from "server";
+import { Server } from "./server";
+import { OpenAI } from "./openai";
+import { app, BrowserWindow } from "electron";
 
 console.log("Interdimensional Cocktail Portal booting...");
 
@@ -212,7 +214,9 @@ class InterdimensionalCocktailPortal {
 		{ name: 'soda', isAlcohol: false, pumpNumber: 7 },
 		{ name: 'soda', isAlcohol: false, pumpNumber: 8 }
 		//{ name: 'soda', isAlcohol: false, pumpNumber: 9 },			// out of tube				
-		//{ name: 'soda', isAlcohol: false, pumpNumber: 10 }			// out of tube
+		//{ name: 'soda', isAlcohol: false, pumpNumber: 10 },			// out of tube
+		//{ name: 'soda', isAlcohol: false, pumpNumber: 11 },			// missing pump
+		//{ name: 'soda', isAlcohol: false, pumpNumber: 12 }			// missing pump
 		];
 	// this is the wiring between raspi and relais and pumps
 	pumpGpioMap: { pumpNo: number, relaisNumber: number, gpioNumber: number, pinNumber: number }[] = [
@@ -281,13 +285,21 @@ class InterdimensionalCocktailPortal {
 	}
 }
 
-let bot = new InterdimensionalCocktailPortal();
-bot.run();
+// main entry point
+async function main() {
+ 
+	// Quit when all windows are closed.
+	app.on('window-all-closed', () => {
+		// On macOS it is common for applications and their menu bar
+		// to stay active until the user quits explicitly with Cmd + Q
+		if (process.platform !== 'darwin') {
+			app.quit()
+		}
+	})
 
-import { app, BrowserWindow } from "electron";
+	await app.whenReady();		// wait until electron window is open
 
-app.on('ready', function() {
-    var mainWindow = new BrowserWindow({
+	var mainWindow = new BrowserWindow({
         title: "Interdimensional Cocktail Portal",
 		show: false,
 		fullscreen: true,
@@ -300,42 +312,34 @@ app.on('ready', function() {
 		app.quit();
 	});
 		
+	let s = new Server();
+	await s.start();
+
+	let bot = new InterdimensionalCocktailPortal();
+	bot.run();
+
+	// let ai = new OpenAI();
+	//await ai.test();
+
     //mainWindow.maximize();
     //mainWindow.loadFile('./../views/index.html');
+	console.log("opeing URL: http://localhost:3000");
 	mainWindow.loadURL("http://localhost:3000");
     mainWindow.show();
-});
-
-// Quit when all windows are closed.
-app.on('window-all-closed', () => {
-	// On macOS it is common for applications and their menu bar
-	// to stay active until the user quits explicitly with Cmd + Q
-	if (process.platform !== 'darwin') {
-	  app.quit()
-	}
-  })
-
-import { Server } from "./server";
-import { OpenAI } from "./openai";
-import { mainModule } from "process";
-
-let s = new Server();
-let ai = new OpenAI();
-
-async function main() {
-    
-	await ai.test();
-	//var value = await Promise.resolve('Hey there');
-    //console.log('inside: ' + value);
-    //return value;
 }
 
+// execute main function in async way. main entry point.
 (async () => {
-    try {
-        const text = await main();
-        //console.log(text);
-    } catch (e) {
-        // Deal with the fact the chain failed
-    }
-    // `text` is not available here
+	let running = true;
+
+    while (running) {
+		try {
+			const text = await main();
+			console.log("exiting");
+			running = false;
+		} catch (e) {
+			console.error("error in main:", e);
+			// -> restart using a loop
+		}
+	}
 })();
