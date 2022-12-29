@@ -3,6 +3,7 @@
 import { Server } from "./server";
 import { OpenAI } from "./openai";
 import { app, BrowserWindow } from "electron";
+import { stringify } from "querystring";
 
 console.log("Interdimensional Cocktail Portal booting...");
 
@@ -199,20 +200,26 @@ class Arm {
 	}
 }
 
+interface Recipe {
+	ingredients: { ingredient: string; amount: number; }[];
+	drinkSize: number;			// in cl, centiliters
+}
+
 /** @class InterdimensionalCocktailPortal
 */
 class InterdimensionalCocktailPortal {
-	pumps: IngredientPump[];				// hlding the interface to the liquid dispenser pumps
+	maxDrinkSize_cl: number = 16;			// guess what?
+	pumps: IngredientPump[];					// hlding the interface to the liquid dispenser pumps
 	arm: Arm;
 	drinkRepository: { name: string; isAlcohol: boolean; pumpNumber: number }[] = [
 		{ name: 'vodka', isAlcohol: true, pumpNumber: 1 },
 		//{ name: 'lemon-juice', isAlcohol: false, pumpNumber: 2 },		// pump defect
 		{ name: 'strawberry-juice', isAlcohol: false, pumpNumber: 3 },
-		{ name: 'soda', isAlcohol: false, pumpNumber: 4 },
-		{ name: 'soda', isAlcohol: false, pumpNumber: 5 },
-		{ name: 'soda', isAlcohol: false, pumpNumber: 6 },
-		{ name: 'soda', isAlcohol: false, pumpNumber: 7 },
-		{ name: 'soda', isAlcohol: false, pumpNumber: 8 }
+		{ name: 'lemon', isAlcohol: false, pumpNumber: 4 },
+		{ name: 'gin', isAlcohol: false, pumpNumber: 5 },
+		{ name: 'coke', isAlcohol: false, pumpNumber: 6 },
+		{ name: 'orange-juice', isAlcohol: false, pumpNumber: 7 },
+		{ name: 'whisky', isAlcohol: false, pumpNumber: 8 }
 		//{ name: 'soda', isAlcohol: false, pumpNumber: 9 },			// out of tube				
 		//{ name: 'soda', isAlcohol: false, pumpNumber: 10 },			// out of tube
 		//{ name: 'soda', isAlcohol: false, pumpNumber: 11 },			// missing pump
@@ -271,17 +278,96 @@ class InterdimensionalCocktailPortal {
 	
 	async fillOnStart() {
 	}
-		
+	
+	getRandomIntInclusive(min: number, max: number) {
+		min = Math.ceil(min);
+		max = Math.floor(max);
+		return Math.floor(Math.random() * (max - min + 1) + min); 	// The maximum is inclusive and the minimum is inclusive
+	}
+
+	// create a random recipe from the drink repository
+	// TODO: alcohol: none, forced, random
+	createRandomRecipe(alcohol: string): Recipe {
+
+		console.log("Creating random recipe...");
+
+		// drink size: min 4 cl up to 16, maybe 20 cl.
+
+		// empty recipe
+		let recipe: Recipe = { 
+			ingredients: [],
+			drinkSize: 0
+		}
+
+		// random number of ingredients from 2 to all
+		const countIngredients = this.getRandomIntInclusive(2, this.drinkRepository.length);
+		console.log("Number of ingredients:", countIngredients);
+
+		// select unique ingredients, no duplicates
+		for (let i:number=0; i<countIngredients; i++) {
+			
+			// create a random ingredient and check whether its sttill unused
+			// WARNING: do not use thte same name twice. this might produce a deadlock
+			let alreadyUsed = false;
+			let ingredientIndex = -1;
+			let ingredientName = "NOPE";
+			do {
+				ingredientIndex = this.getRandomIntInclusive(0, this.drinkRepository.length-1);
+				ingredientName = this.drinkRepository[ingredientIndex].name;
+				
+				alreadyUsed = false;
+				for (let ingredient of recipe.ingredients) {
+					if (ingredient.ingredient === ingredientName) alreadyUsed = true;
+				}
+				console.log(ingredientName);
+			} while (alreadyUsed);
+
+			// compute amount
+			let amount = -1;
+			if (this.getRandomIntInclusive(1, 2) == 1) {
+				amount = 2;
+			}
+			else {
+				amount = 4;
+			}
+
+			// count drink size
+			recipe.drinkSize += amount;
+
+			// here we add the still unused ingredient
+			recipe.ingredients.push({ 
+				ingredient: ingredientName,
+				amount: amount
+			});
+		}
+
+		// cap larger cocktails to stay below limit
+		if (recipe.drinkSize > this.maxDrinkSize_cl) {
+			let factor = this.maxDrinkSize_cl/recipe.drinkSize;
+			for (let i in recipe.ingredients) {
+				recipe.ingredients[i].amount *= factor;
+			}
+
+			recipe.drinkSize *= factor;
+		}
+
+		return recipe;
+	}
+
 	async run() {
 		console.log("Interdimensional Cocktail Portal run...");
 
 		//await this.pumps[0].stop();
 		//await sleep(3000);
  
-		await this.test();
+		//await this.test();
+
 		//await this.pumps[0].dispense(1000)
 		
-		process.exit(1);
+		// process.exit(1);
+
+		let r: Recipe = this.createRandomRecipe("random");
+		console.log(r);
 	}
 }
 
@@ -311,12 +397,12 @@ async function main() {
 		app.relaunch();
 		app.quit();
 	});
-		
-	let s = new Server();
-	await s.start();
 
 	let bot = new InterdimensionalCocktailPortal();
 	bot.run();
+
+	let s = new Server();
+	await s.start();
 
 	// let ai = new OpenAI();
 	//await ai.test();
