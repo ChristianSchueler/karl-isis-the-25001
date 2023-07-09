@@ -1,132 +1,186 @@
 import { ScaleToFitWindow } from "./ScaleToFitWindow.js";
 import ChromaGL from 'gl-chromakey';
 import { Maptastic } from "maptastic";
+import { gsap } from "gsap";
+import { listenerCount } from "process";
+import { urlToHttpOptions } from "url";
 
 const screenSelector = "#screen";
 
+/** @class Portal */
 export class Portal {
-  /*video: HTMLVideoElement|null = null;
-  video2;
-  c1;
-  ctx1: CanvasRenderingContext2D;
-  c_tmp;
-  ctx_tmp;
-*/
-  frameId:number = -1;
-  chroma:any;
+  highPerformanceMode: boolean = true;          // whether or not to use video animation or image animation
+  portalElement: HTMLElement | null = null;
+  frameId:number = -1;                          // for video aniamtion
+  chroma:any;                                   // for video aniamtion
+  portalOpen: boolean = false;
 
   constructor() {
+
+      console.log("Interdimensional Cocktail Portal, (c) 2022 Christian Schüler");
+
       this.installKeyboardDebugHandler();
 
-      //this.init();
+      this.setupPortalAnimation();
+      
+      new ScaleToFitWindow(screenSelector);
 
-      console.log("chroma key");
+      console.log("Starting MapTastic");
+      new Maptastic("app");
+      console.log(`
+      SHIFT + Space Toggle edit mode
+
+      While In Edit Mode
+      click or drag select and move quads/corner points
+      
+      SHIFT + drag move selcted quad/corner point with 10x precision
+      
+      ALT + drag rotate and scale selected quad
+      
+      SHIFT + ALT + drag rotate and scale selected quad with 10x precision.
+      
+      Arrow keys move selected quad/corner point
+      
+      SHIFT + Arrow keys move selected quad/corner point by 10 pixels
+      
+      ALT + Arrow keys rotate and scale selected quad
+      
+      's' Solo or unsolo the selected quad (hides all others). This helps to adjust quads when corner points are very close together.
+      
+      'c' Toggle mouse cursor crosshairs
+      
+      'b' Toggle display bounds/metrics
+      
+      'r' Rotate selected layer 90 degrees clockwise
+      
+      'h' Flip selected layer horizontally
+      
+      'v' Flip selected layer vertically
+      
+      'x' remove settings from localStorage. Hit Ctrl-R for reload.`);
+  }
+
+  // set up portal animation
+  setupPortalAnimation() {
+
+    if (this.highPerformanceMode) {
+      console.log("High performance mode: using greenscreen chroma keying.");
+
+      console.log("Setting up chrome keying");
+
       const video = document.getElementById('video');
+      
+      // grab portal video and make visible
       const canvas = document.getElementById('portal');
- 
+      canvas?.classList.add("visible");
+      canvas?.classList.remove("invisible");
+
+      // hide portal image
+      const portalImage = document.getElementById('portal-image');
+      portalImage?.classList.add("invisible");
+      portalImage?.classList.remove("visible");
+
       // set source video and target canvas elements
       this.chroma = new ChromaGL(video, canvas);
-      console.log("webgl2:", this.chroma.hasWebGL2());
+      console.log("WebGL2 Support:", this.chroma.hasWebGL2());
       //this.chroma.key('auto');
       //8/39/245
       //if (r < 45 && g < 45 && b > 100) 
-      this.chroma.key({ color: [8, 39, 245], tolerance: 0.3 }) // equivalent
+      this.chroma.key({ color: [8, 39, 245], tolerance: 0.3 })  // blue
 
       // link to <video> element
       video!.addEventListener('play', this.startChroma);
       video!.addEventListener('pause', this.stopChroma);
       video!.addEventListener('ended', this.stopChroma);
- 
-      //new ScaleToFitWindow(screenSelector);
-      new Maptastic("house");
+
+      this.portalElement = canvas;
+    }
+    else {
+      console.log("Low performance mode.");
+
+      // grab portal image and make visible
+      const portalImage = document.getElementById('portal-image');
+      portalImage?.classList.add("visible");
+      portalImage?.classList.remove("invisible");
+
+      // grab portal video and make invisible
+      const canvas = document.getElementById('portal');
+      canvas?.classList.add("invisible");
+      canvas?.classList.remove("visible");
+
+      gsap.to(portalImage, { css: { rotation:-360 },
+        duration: 15,
+        ease: "none",
+        repeat: -1,
+        paused: false});
+
+      this.portalElement = portalImage;
+    }
+
+    // close portal
+    gsap.set(this.portalElement, { scale: 0 });
   }
 
-    // methods for render loop
+  /** animated opening of the portal */
+  openPortal() {
+    console.log("opening portal");
+
+    gsap.fromTo(this.portalElement, { scale: 0 }, { scale: 1, ease: "power2.inOut", duration: 1 })
+
+    this.portalOpen = true;
+  }
+
+  /** animated closing of the portal */
+  closePortal() {
+    console.log("closing portal");
+
+    gsap.fromTo(this.portalElement, { scale: 1 }, { scale: 0, ease: "power2.inOut", duration: 1 })
+
+    this.portalOpen = false;
+  }
+
+  // show start screen
+  goStart() {
+    console.log("screen:start");
+
+    if (this.portalOpen) this.closePortal();
+
+    // fly in title
+    gsap.fromTo(".header-title", { x: -500 }, { x: 0, duration: 1, ease: "bounce.out" });
+  }
+
+  // show portal
+  goPortal() {
+    console.log("screen:portal");
+
+    this.openPortal();
+  }
+
+  // methods for render loop
   startChroma = () => {
     this.frameId = requestAnimationFrame(this.startChroma);
     this.chroma.render()
   }
+
+  // methods for render loop
   stopChroma = () => cancelAnimationFrame(this.frameId)
-
-
-   /*
-  init() {
-    this.video = document.getElementById('video') as HTMLVideoElement;
-
-    this.video2 = document.createElement('video');
-    this.video2.src = "fire.mp4"
-    this.video2.muted = true;
-    this.video2.autoplay = true;
-
-    this.c1 = document.getElementById('portal');
-    this.ctx1 = this.c1.getContext('2d');
-
-    c_tmp = document.createElement('canvas');
-    c_tmp.setAttribute('width', 800);
-    c_tmp.setAttribute('height', 450);
-    ctx_tmp = c_tmp.getContext('2d');
-
-    this.video.addEventListener('play', this.computeFrame);
-  }
-
-  computeFrame() {
-
-    if (this.video.paused || this.video.ended) {
-      return;
-    }
-    ctx_tmp.drawImage(video, 0, 0, video.videoWidth , video.videoHeight );
-    let frame = ctx_tmp.getImageData(0, 0, video.videoWidth , video.videoHeight );
-
-    ctx_tmp.drawImage(video2, 0, 0, video2.videoWidth , video2.videoHeight );
-    let frame2 = ctx_tmp.getImageData(0, 0, video2.videoWidth , video2.videoHeight );
-
-    this.ctx1.clearRect();
-    let frame = this.video.getImageData(0, 0, this.video.videoWidth , this.video.videoHeight );
-
-    for (let i = 0; i < frame.data.length /4; i++) {
-      let r = frame.data[i * 4 + 0];
-      let g = frame.data[i * 4 + 1];
-      let b = frame.data[i * 4 + 2];
-
-      //8/39/245
-      if (r < 45 && g < 45 && b > 100) 
-      //if (b >= 220) 
-      //if (r > 70 && r < 160 && g > 95 && g < 220 && b > 25 && b < 150) 
-      {  
-          frame.data[i * 4 + 0] = 0;//frame2.data[i * 4 + 0];
-          frame.data[i * 4 + 1] = 0;//frame2.data[i * 4 + 1];
-          frame.data[i * 4 + 2] = 0;//frame2.data[i * 4 + 2];
-      }
-    }
-    this.ctx1.putImageData(frame, 0, 0);
-    setTimeout(this.computeFrame, 0);   // TODO: this is bad!
-  }
-*/
 
   installKeyboardDebugHandler() {
       document.addEventListener('keydown', (event) => {
           const keyName = event.key;
         
-          console.log(keyName);
-          // 1, 2, 3, 4, 5,6 7, 8, 9, 0 pumps 1 to 10 on/off
-          // motor vor/zurück
+          console.log(`key pressed: ${keyName}`);
 
-          if (keyName === 'Control') {
-            // do not alert when only Control key is pressed.
-            return;
+          switch (keyName) {
+            case '0': this.goStart(); break;
+            case '1': this.goPortal(); break;
+            case 'x': window.localStorage.removeItem("maptastic.layers");
           }
-        
-          /*if (event.ctrlKey) {
-            // Even though event.key is not 'Control' (e.g., 'a' is pressed),
-            // event.ctrlKey may be true if Ctrl key is pressed at the same time.
-            alert(`Combination of ctrlKey + ${keyName}`);
-          } else {
-            alert(`Key pressed ${keyName}`);
-          }*/
+
         }, false);
- 
-        console.log("Hi there");
   }
 };
 
-new Portal();
+// finally!
+const portal = new Portal();
+portal.goStart();
