@@ -6,7 +6,7 @@ console.log("Interdimensional Cocktail Portal booting...");
 
 //var isWin = process.platform === "win32";
 
-class Gpio {
+/*class Gpio {
 	constructor(x: number, y: string) {}
 	static HIGH: number = 1;
 	static LOW: number = 0;
@@ -20,9 +20,9 @@ class Gpio {
 		await sleep(1);
 		return new Promise(resolve => 0);
 	}
-}
+}*/
 
-//import { Gpio } from 'onoff';
+import { Gpio } from 'onoff';
 
 /*if (isWin) {
 	console.log('Running on Windows!');
@@ -204,15 +204,15 @@ class InterdimensionalCocktailPortal {
 	arm: Arm;
 	drinkRepository: { name: string; isAlcohol: boolean; pumpNumber: number }[] = [
 		{ name: 'vodka', isAlcohol: true, pumpNumber: 1 },
-		//{ name: 'lemon-juice', isAlcohol: false, pumpNumber: 2 },		// pump defect
+		{ name: 'lemon-juice', isAlcohol: false, pumpNumber: 2 },		// pump defect
 		{ name: 'strawberry-juice', isAlcohol: false, pumpNumber: 3 },
 		{ name: 'soda', isAlcohol: false, pumpNumber: 4 },
 		{ name: 'soda', isAlcohol: false, pumpNumber: 5 },
 		{ name: 'soda', isAlcohol: false, pumpNumber: 6 },
 		{ name: 'soda', isAlcohol: false, pumpNumber: 7 },
-		{ name: 'soda', isAlcohol: false, pumpNumber: 8 }
-		//{ name: 'soda', isAlcohol: false, pumpNumber: 9 },			// out of tube				
-		//{ name: 'soda', isAlcohol: false, pumpNumber: 10 }			// out of tube
+		{ name: 'soda', isAlcohol: false, pumpNumber: 8 },
+		{ name: 'soda', isAlcohol: false, pumpNumber: 9 },			// out of tube				
+		{ name: 'soda', isAlcohol: false, pumpNumber: 10 }			// out of tube
 		];
 	// this is the wiring between raspi and relais and pumps
 	pumpGpioMap: { pumpNo: number, relaisNumber: number, gpioNumber: number, pinNumber: number }[] = [
@@ -224,8 +224,8 @@ class InterdimensionalCocktailPortal {
 		{ pumpNo: 6, relaisNumber: 6, gpioNumber: 27, pinNumber: 13 },
 		{ pumpNo: 7, relaisNumber: 16, gpioNumber: 21, pinNumber: 40 },
 		{ pumpNo: 8, relaisNumber: 15, gpioNumber: 20, pinNumber: 38 },
-		{ pumpNo: 9, relaisNumber: 13, gpioNumber: 16, pinNumber: 36 },
-		{ pumpNo: 10, relaisNumber: 14, gpioNumber: 26, pinNumber: 37 }];
+		{ pumpNo: 9, relaisNumber: 14, gpioNumber: 26, pinNumber: 37 },
+		{ pumpNo: 10, relaisNumber: 13, gpioNumber: 16, pinNumber: 36 }];
 	// wiring between raspi and motor controller
 	motorGpioMap: { motorNo: number, gpioNumber1: number, pinNumber1: number, gpioNumber2: number, pinNumber2: number }[] = [
 		{ motorNo: 1, gpioNumber1: 10, pinNumber1: 19, gpioNumber2: 9, pinNumber2: 21 }];
@@ -256,11 +256,11 @@ class InterdimensionalCocktailPortal {
 	async test() {
 		
 		for (let index in this.pumps) {
-			await this.pumps[index].dispense(20);
+			await this.pumps[index].dispense(3);
 		}
 
-		await this.arm.extend();
-		await this.arm.retract();
+		//await this.arm.extend();
+		//await this.arm.retract();
 		
 		return;
 	}
@@ -284,7 +284,7 @@ class InterdimensionalCocktailPortal {
 let bot = new InterdimensionalCocktailPortal();
 bot.run();
 
-import { app, BrowserWindow } from "electron";
+/*import { app, BrowserWindow } from "electron";
 
 app.on('ready', function() {
     var mainWindow = new BrowserWindow({
@@ -301,7 +301,7 @@ app.on('ready', function() {
 	});
 		
     //mainWindow.maximize();
-    //mainWindow.loadFile('./../views/index.html');
+    //mainWindow.loadFile('./../frontend/index.html');
 	mainWindow.loadURL("http://localhost:3000");
     mainWindow.show();
 });
@@ -314,6 +314,7 @@ app.on('window-all-closed', () => {
 	  app.quit()
 	}
   })
+*/
 
 import { Server } from "./server";
 import { OpenAI } from "./openai";

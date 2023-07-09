@@ -15,7 +15,7 @@ html, body {
 
 #screen {
 	position: absolute;
-	background-color: firebrick;
+	background-color: black;
 	width: 1920px;
 	height: 1080px;
 }
