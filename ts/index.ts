@@ -65,6 +65,7 @@ function sleep(duration_ms: number) {
 class IngredientPump {
 	static flow_ml_m: number = 109;			// fluid flow in ml per minute, MEASURE!
 	static amountInTubes_ml: number = 50;
+	pumpId: number;							// unique ID of pump (what's printed on the label, i.g. 1..16)
 	name: string = "ingredient";			// unique name
 	description: string = "";				// screen description
 	isAlcohol: boolean = true;
@@ -72,8 +73,9 @@ class IngredientPump {
 	pin: Gpio;								// interface to GPIO using onoff
 	isDispensing: boolean = false;
 	
-	constructor(name: string, isAlcohol: boolean, gpioId: number) {
+	constructor(pumpId: number, name: string, isAlcohol: boolean, gpioId: number) {
 		
+		this.pumpId = pumpId;
 		this.name = name;
 		//this.description = ...
 		this.isAlcohol = isAlcohol;
@@ -89,7 +91,7 @@ class IngredientPump {
 	async dispense(dose_ml: number) {
 		let duration_ms = dose_ml / (IngredientPump.flow_ml_m / 60) * 1000;
 
-		console.log(`Dispensing ${dose_ml} ml of ${this.name } over ${duration_ms} ms...`);
+		console.log(`Dispensing ${dose_ml} ml of ${this.name } (pump #${this.pumpId}) over ${duration_ms} ms...`);
 		
 		if (this.isDispensing) {
 			console.log(`Oh no! Already dispensing ${this.name }. Cancelling new request!`);
@@ -221,7 +223,9 @@ class InterdimensionalCocktailPortal {
 		{ name: 'soda', isAlcohol: false, pumpNumber: 7 },
 		{ name: 'soda', isAlcohol: false, pumpNumber: 8 },
 		{ name: 'soda', isAlcohol: false, pumpNumber: 9 },			// out of tube				
-		{ name: 'soda', isAlcohol: false, pumpNumber: 10 }			// out of tube
+		{ name: 'soda', isAlcohol: false, pumpNumber: 10 },			// out of tube
+		{ name: 'soda', isAlcohol: false, pumpNumber: 11 },			// out of tube
+		{ name: 'soda', isAlcohol: false, pumpNumber: 12 }			// out of tube
 		];
 	// this is the wiring between raspi and relais and pumps
 	pumpGpioMap: { pumpNo: number, relaisNumber: number, gpioNumber: number, pinNumber: number }[] = [
@@ -234,7 +238,9 @@ class InterdimensionalCocktailPortal {
 		{ pumpNo: 7, relaisNumber: 16, gpioNumber: 21, pinNumber: 40 },
 		{ pumpNo: 8, relaisNumber: 15, gpioNumber: 20, pinNumber: 38 },
 		{ pumpNo: 9, relaisNumber: 14, gpioNumber: 26, pinNumber: 37 },
-		{ pumpNo: 10, relaisNumber: 13, gpioNumber: 16, pinNumber: 36 }];
+		{ pumpNo: 10, relaisNumber: 13, gpioNumber: 16, pinNumber: 36 },
+		{ pumpNo: 11, relaisNumber: 12, gpioNumber: 13, pinNumber: 33 },
+		{ pumpNo: 12, relaisNumber: 11, gpioNumber: 19, pinNumber: 35 }];
 	// wiring between raspi and motor controller
 	motorGpioMap: { motorNo: number, gpioNumber1: number, pinNumber1: number, gpioNumber2: number, pinNumber2: number }[] = [
 		{ motorNo: 1, gpioNumber1: 10, pinNumber1: 19, gpioNumber2: 9, pinNumber2: 21 }];
@@ -250,7 +256,7 @@ class InterdimensionalCocktailPortal {
 			// find punp GPIO definition
 			let pumpGpio = this.pumpGpioMap.find(x => x.pumpNo === pumpNumber);
 			if (pumpGpio !== undefined) {
-				let p = new IngredientPump(this.drinkRepository[index].name, this.drinkRepository[index].isAlcohol, pumpGpio.gpioNumber);
+				let p = new IngredientPump(pumpGpio.pumpNo, this.drinkRepository[index].name, this.drinkRepository[index].isAlcohol, pumpGpio.gpioNumber);
 				this.pumps.push(p);
 			}
 			else { console.warn(`Setup drink: #${index}: pump number #${pumpNumber} undefined! Skipping.`); }
@@ -274,6 +280,15 @@ class InterdimensionalCocktailPortal {
 
 		// TODO
 		//Promise.all(pumps.map(() => {}));
+	}
+
+	// stops all pumps
+	async stopAll() {
+
+		for (let index in this.pumps) {
+			await this.pumps[index].stop();
+		}
+		return;
 	}
 
 	// testing proper function
@@ -375,14 +390,15 @@ class InterdimensionalCocktailPortal {
 		//await this.pumps[0].stop();
 		//await sleep(3000);
  
-		//await this.test();
+		await this.stopAll();
+		await this.test();
 
 		//await this.pumps[0].dispense(1000)
 		
-		// process.exit(1);
+		process.exit(1);
 
-		let r: Recipe = this.createRandomRecipe("random");
-		console.log(r);
+		//let r: Recipe = this.createRandomRecipe("random");
+		//console.log(r);
 	}
 }
 
@@ -427,9 +443,8 @@ app.on('window-all-closed', () => {
 	  app.quit()
 	}
   })
+*/
 
-import { Server } from "./server";
-import { OpenAI } from "./openai";
 import { mainModule } from "process";
 
 let s = new Server();
@@ -437,7 +452,8 @@ let ai = new OpenAI();
 
 async function main() {
     
-	await ai.test();
+	//await ai.test();
+	
 	//var value = await Promise.resolve('Hey there');
     //console.log('inside: ' + value);
     //return value;
@@ -458,4 +474,3 @@ async function main() {
 		}
 	}
 })();
-
