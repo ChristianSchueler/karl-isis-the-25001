@@ -1,13 +1,12 @@
 {
-  "name": "interdimensional-cocktail-portal",
+  "name": "karl-isis-the-25001",
   "version": "1.0.0",
   "workspaces":[
       "portal-windows-backend",
-      "portal-windows-ui",
       "dispenser_raspi",
 	  "portalgun-raspi-zero"
   ],
-  "description": "Rick and Morty Themed Interdimensional Cocktail Portal",
+  "description": "Karl-Iris the 25001 Cocktail Bot",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -18,12 +17,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ChristianSchueler/interdimensional-cocktail-portal.git"
+    "url": "git+https://github.com/ChristianSchueler/karl-isis-the-25001.git"
   },
   "author": "Christian Schüler",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/ChristianSchueler/interdimensional-cocktail-portal/issues"
+    "url": "https://github.com/ChristianSchueler/karl-isis-the-25001/issues"
   },
-  "homepage": "https://github.com/ChristianSchueler/interdimensional-cocktail-portal#readme"
+  "homepage": "https://github.com/ChristianSchueler/karl-isis-the-25001/#readme"
 }
