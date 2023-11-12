@@ -11,7 +11,7 @@ export class Server {
         const appExpress = express();
         this.server = http.createServer(appExpress);
 
-        appExpress.use(express.static('frontend'));
+        appExpress.use(express.static('./../portal-windows-ui'));
     }
 
     async start() {

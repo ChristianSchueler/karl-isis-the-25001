@@ -1,36 +1,25 @@
 {
   "name": "interdimensional-cocktail-portal",
   "version": "1.0.0",
-  "description": "\"Rick and Morty Themed Interdimensional Cocktail Portal\" Cocktail Bot for Roboexotica 2022 - Raspberry Pi",
-  "main": "dist/index.js",
+  "workspaces":[
+      "portal-windows-backend",
+      "portal-windows-ui",
+      "dispenser_raspi",
+	  "portalgun-raspi-zero"
+  ],
+  "description": "Rick and Morty Themed Interdimensional Cocktail Portal",
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc",
-    "watch": "tsc -w",
-    "lint": "eslint -c .eslintrc --ext .ts ./src",
-    "start": "electron ./dist/index.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ChristianSchueler/interdimensional-cocktail-portal.git"
   },
-  "author": "",
+  "author": "Christian Schüler",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/ChristianSchueler/interdimensional-cocktail-portal/issues"
   },
-  "homepage": "https://github.com/ChristianSchueler/interdimensional-cocktail-portal#readme",
-  "dependencies": {
-    "dirty-json": "^0.9.2",
-    "dotenv": "^16.0.3",
-    "express": "^4.18.2",
-    "openai": "^3.1.0",
-    "onoff": "^6.0.3"
-  },
-  "devDependencies": {
-    "@types/node": "^18.11.9",
-    "electron": "^21.3.0",
-    "electron-rebuild": "^3.2.9",
-    "typescript": "^4.9.4"
-  }
+  "homepage": "https://github.com/ChristianSchueler/interdimensional-cocktail-portal#readme"
 }

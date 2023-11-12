@@ -1,0 +1,10 @@
+{
+    "sshfs.configs": [
+        {
+            "name": "raspberrypi-zero-gun",
+            "host": "raspberrypi.local",
+            "username": "christian",
+            "password": "christian"
+        }
+    ]
+}
