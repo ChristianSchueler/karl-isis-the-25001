@@ -10,7 +10,11 @@
   "description": "Rick and Morty Themed Interdimensional Cocktail Portal",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "watch": "tsc -w",
+    "lint": "eslint -c .eslintrc --ext .ts ./src",
+    "start": "node ./dist/index.js"
   },
   "repository": {
     "type": "git",
