@@ -3,14 +3,30 @@
 import { Server } from "./server";
 import { OpenAI } from "./openai";
 import { stringify } from "querystring";
-import { Gpio } from 'onoff';
+//import { Gpio } from 'onoff';
 
 console.log("Interdimensional Cocktail Portal - Dispenser booting...");
 	
 console.log('Running on Raspberry Pi!');
 
-let file = 'onoff';
+/*let file = 'onoff';
 Gpio = await import(file);
+*/
+
+class Gpio {
+	constructor(x: number, y: string) {}
+	static HIGH: number = 1;
+	static LOW: number = 0;
+	writeSync(x: number) {};
+	readSync() {};
+	async write(x: number) {
+		await sleep(1);
+		return new Promise(resolve => 1);
+	}
+	async read(x: number) {
+		await sleep(1);
+		return new Promise(resolve => 0);
+	}
 }
 
 //if (process.env.NODE_ENV === 'production') {
@@ -364,7 +380,7 @@ class InterdimensionalCocktailPortal {
 async function main() {
  
 	// Quit when all windows are closed.
-	app.on('window-all-closed', () => {
+	/*app.on('window-all-closed', () => {
 		// On macOS it is common for applications and their menu bar
 		// to stay active until the user quits explicitly with Cmd + Q
 		if (process.platform !== 'darwin') {
@@ -386,6 +402,7 @@ async function main() {
 		app.relaunch();
 		app.quit();
 	});
+*/
 
 	let bot = new InterdimensionalCocktailPortal();
 	bot.run();
@@ -398,9 +415,9 @@ async function main() {
 
     //mainWindow.maximize();
     //mainWindow.loadFile('./../views/index.html');
-	console.log("opeing URL: http://localhost:3000");
-	mainWindow.loadURL("http://localhost:3000");
-    mainWindow.show();
+	//console.log("opeing URL: http://localhost:3000");
+	//mainWindow.loadURL("http://localhost:3000");
+    //mainWindow.show();
 }
 
 // execute main function in async way. main entry point.
