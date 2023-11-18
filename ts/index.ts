@@ -1,11 +1,13 @@
-// Interdimensional Cocktail Portal (c) 2022 Christian Schüler
+// Karl-Isis the 25001 Cocktail Mixing Bot (c) 2022-2023 by Christian Schüler, christianschueler.at
 
 import { Server } from "./server";
-import { OpenAI } from "./openai";
+import { OpenAICocktailRecipes } from "./openai";
 import { stringify } from "querystring";
 import { Gpio } from 'onoff';
 import fs from 'fs';
 import util from 'util';
+
+const inProduction = false;
 
 const log_stdout = process.stdout;
 
@@ -357,11 +359,11 @@ async function main() {
 	});
 */
 
-	let ai = new OpenAI();
+	let ai = new OpenAICocktailRecipes();
 	await ai.test();
 
-	let bot = new InterdimensionalCocktailPortal();
-	bot.run();
+	//let bot = new InterdimensionalCocktailPortal();
+	//bot.run();
 
 	//let s = new Server();
 	//await s.start();
@@ -385,6 +387,7 @@ async function main() {
 			running = false;
 		} catch (e) {
 			console.error("error in main:", e);
+			if (!inProduction) running = false;	// if not in production mode, terminate immediately after first error. otherwise, continue into endless loop
 			// -> restart using a loop
 		}
 	}

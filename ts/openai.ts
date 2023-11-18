@@ -1,6 +1,7 @@
-//---
+// Karl-Isis the 25001 Cocktail Mixing Bot (c) 2022-2023 by Christian Schüler, christianschueler.at
+
 import * as dotenv from 'dotenv' // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
-import { Configuration, OpenAIApi } from "openai";
+import OpenAI from "openai";
 import * as util from 'util';
 //import * as dirtyJson from 'dirty-json';
 
@@ -18,7 +19,21 @@ add an extra field in the JSON object for the sum of all "amount" fields (labele
 add an extra filed on the JSON object for the cocktail name (labeled "name"). 
 Return a valid JSON object.
 `
-export class OpenAI {
+
+// this is what defines the scope or context of the AI bot
+let karlIsisSystem = `
+You are a cocktail mixing robot, you are able to pour cocktails with up to 12 different ingredients.
+You can use the following ingredients: vodka, gin, rum, orange juice, cherry juice, bitter lemon, tonic, pineapple juice, soda.
+What I ask you to "pour me a cocktail", you create a recipe with your available ingredients and you create a cocktail name.
+Do not repeat cocktail recipes. Be creative.
+Use ingredients such that after pouring 60 cocktails roughly 1 liter of every ingredient has been used.
+Format your response as JSON object. Each entry in the JSON object should consist of the ingredient name (labeled as "ingredient") and the amount of the ingredient in cl (labeled as "amount").
+Label the array of ingredients as "ingredients". 
+Add an extra field in the JSON object for the sum of all "amount" fields (labeled as "drinkSize"). The sum should be in cl.
+Add an extra filed on the JSON object for the cocktail name (labeled "name") containing the cocktail name.
+Return a valid JSON object.
+`
+export class OpenAICocktailRecipes {
     constructor() {
     }
 
@@ -33,19 +48,25 @@ export class OpenAI {
         }
 
         // build and set up OpenAI interface
-        const configuration = new Configuration({
-        apiKey: process.env.OPENAI_API_KEY,
+        const openai = new OpenAI({
+            apiKey: process.env.OPENAI_API_KEY,
+            organization: "org-XWXjDVcYbBQFaLvR7JTi3pyl"        // optional, but for being safe ("Personal")
         });
-        const openai = new OpenAIApi(configuration);
 
+        
         console.log("Asking for cocktail...");
-        const completion = await openai.createCompletion({
-            model: "text-davinci-002",
-            max_tokens: 2048,
-            prompt: cocktailPrompt,
+        const completion = await openai.chat.completions.create({
+            model: "gpt-3.5-turbo-1106",
+            messages: [
+                {"role": "system", "content": karlIsisSystem},
+                {"role": "user", "content": "pour me a cocktail"}
+                //{"role": "assistant", "content": "Who's there?"},
+                //{"role": "user", "content": "Orange."},
+            ]
+            //max_tokens: 2048,
         });
 
-        let result = completion.data.choices[0].text;
+        let result = completion?.choices[0].message.content;
 
         console.log("Text result:");
         console.log(result);
@@ -55,4 +76,3 @@ export class OpenAI {
         //console.dir(object, { depth: null });
     }
 }
-
