@@ -19,7 +19,8 @@ console.log = function(d) {
 	let today: Date = new Date();
 	let dateString = today.getFullYear().toString() + '-' + (today.getMonth()+1).toString().padStart(2, '0') + '-' + (today.getDay()+1).toString().padStart(2, '0');
 
-  	fs.appendFileSync(process.cwd() + '/console-' + dateString + '.log', output);
+	// TODO: uh-oh crashes when logs folder does not exist
+  	fs.appendFileSync(process.cwd() + '/logs/console-' + dateString + '.log', output);
 	log_stdout.write(output);
 };
 
