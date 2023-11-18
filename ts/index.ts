@@ -3,9 +3,9 @@
 import { Server } from "./server";
 import { OpenAI } from "./openai";
 import { stringify } from "querystring";
-//import { Gpio } from 'onoff';
+import { Gpio } from 'onoff';
 
-console.log("Interdimensional Cocktail Portal - Dispenser booting...");
+console.log("Karl-Isis the 25001 - Dispenser booting...");
 	
 console.log('Running on Raspberry Pi!');
 
@@ -13,7 +13,7 @@ console.log('Running on Raspberry Pi!');
 Gpio = await import(file);
 */
 
-class Gpio {
+/*class Gpio {
 	constructor(x: number, y: string) {}
 	static HIGH: number = 1;
 	static LOW: number = 0;
@@ -27,12 +27,14 @@ class Gpio {
 		await sleep(1);
 		return new Promise(resolve => 0);
 	}
-}
+}*/
 
 //if (process.env.NODE_ENV === 'production') {
 // 	//const pluginName = await import('../js/plugin_name.js');
 //}
 
+// async sleep
+// usage: await sleep(duration_ms);
 function sleep(duration_ms: number) {
 	return new Promise(resolve => setTimeout(resolve, duration_ms));
 }
@@ -125,69 +127,6 @@ class IngredientPump {
     //}
 }
 
-class Arm {
-	static speed_mm_s: number = 450/46;		// CONFIG: movement speed of arm in mm per s, MEASURE!
-	static length_mm: number = 450;			// CONFIG: length of arm
-	pin1: Gpio;
-	pin2: Gpio;
-
-	constructor(m1Gpio: number, m2Gpio: number) {
-
-		console.log(`Arm: GPIO #${m1Gpio} and GPIO #${m2Gpio} constructing...`);
-
-		this.pin1 = new Gpio(m1Gpio, 'out');		// open GPIO with given number (not: pin number!) for output
-		this.pin2 = new Gpio(m2Gpio, 'out');		// open GPIO with given number (not: pin number!) for output
-	}
-
-	async stop() {
-		console.log(`Stopping arm ...`);
-		
-		// stop motor
-		await this.pin1.write(Gpio.LOW);
-		await this.pin2.write(Gpio.LOW);
-
-        return;
-    }
-
-	async move(distance_mm: number, extend: boolean) {
-		let duration_ms = distance_mm / Arm.speed_mm_s * 1000;
-
-		console.log(`Moving arm ${distance_mm} mm over ${duration_ms} ms...`);
-		
-		if (extend) {
-			await this.pin1.write(Gpio.LOW);
-			await this.pin2.write(Gpio.HIGH);
-			await sleep(duration_ms);
-			await this.stop();
-		} else
-		{
-			await this.pin1.write(Gpio.HIGH);
-			await this.pin2.write(Gpio.LOW);
-			await sleep(duration_ms);
-			await this.stop();
-		}
-		
-		
-		console.log(`Moving finished.`);
-
-        return;
-    }
-
-	async extend() {
-
-		console.log("Extending arm...");
-		await this.move(Arm.length_mm, true);
-		console.log("Arm extended.");
-	}
-
-	async retract() {
-
-		console.log("Retracting arm...");
-		await this.move(Arm.length_mm, false);
-		console.log("Arm retrected.");
-	}
-}
-
 interface Recipe {
 	ingredients: { ingredient: string; amount: number; }[];
 	drinkSize: number;			// in cl, centiliters
@@ -198,7 +137,6 @@ interface Recipe {
 class InterdimensionalCocktailPortal {
 	maxDrinkSize_cl: number = 16;			// guess what?
 	pumps: IngredientPump[];					// hlding the interface to the liquid dispenser pumps
-	arm: Arm;
 	drinkRepository: { name: string; isAlcohol: boolean; pumpNumber: number }[] = [
 		{ name: 'vodka', isAlcohol: true, pumpNumber: 1 },
 		//{ name: 'lemon-juice', isAlcohol: false, pumpNumber: 2 },		// pump defect
@@ -245,8 +183,6 @@ class InterdimensionalCocktailPortal {
 			}
 			else { console.warn(`Setup drink: #${index}: pump number #${pumpNumber} undefined! Skipping.`); }
 		}
-
-		this.arm = new Arm(this.motorGpioMap[0].gpioNumber1, this.motorGpioMap[0].gpioNumber2);
 	}
 	
 	async dispenseRecipe(recipe: Recipe) {
@@ -275,8 +211,8 @@ class InterdimensionalCocktailPortal {
 			await this.pumps[index].dispense(20);
 		}
 
-		await this.arm.extend();
-		await this.arm.retract();
+		//await this.arm.extend();
+		//await this.arm.retract();
 		
 		return;
 	}
@@ -284,6 +220,7 @@ class InterdimensionalCocktailPortal {
 	async fillOnStart() {
 	}
 	
+	// compute a random integer number between min and max, including min and max
 	getRandomIntInclusive(min: number, max: number) {
 		min = Math.ceil(min);
 		max = Math.floor(max);
@@ -360,7 +297,7 @@ class InterdimensionalCocktailPortal {
 	}
 
 	async run() {
-		console.log("Interdimensional Cocktail Portal run...");
+		console.log("Karl-Isis the 25001 run...");
 
 		//await this.pumps[0].stop();
 		//await sleep(3000);
@@ -407,8 +344,8 @@ async function main() {
 	let bot = new InterdimensionalCocktailPortal();
 	bot.run();
 
-	let s = new Server();
-	await s.start();
+	//let s = new Server();
+	//await s.start();
 
 	// let ai = new OpenAI();
 	//await ai.test();
@@ -420,13 +357,13 @@ async function main() {
     //mainWindow.show();
 }
 
-// execute main function in async way. main entry point.
+// execute main function in async way and recover from error. main entry point.
 (async () => {
 	let running = true;
 
     while (running) {
 		try {
-			const text = await main();
+			await main();
 			console.log("exiting");
 			running = false;
 		} catch (e) {
