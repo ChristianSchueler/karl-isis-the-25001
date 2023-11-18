@@ -27,6 +27,7 @@ You can use the following ingredients: vodka, gin, rum, orange juice, cherry jui
 What I ask you to "pour me a cocktail", you create a recipe with your available ingredients and you create a cocktail name.
 Do not repeat cocktail recipes. Be creative.
 Use ingredients such that after pouring 60 cocktails roughly 1 liter of every ingredient has been used.
+The sum of all cocktail amounts must be at least 10 cl and at most 20 cl.
 Format your response as JSON object. Each entry in the JSON object should consist of the ingredient name (labeled as "ingredient") and the amount of the ingredient in cl (labeled as "amount").
 Label the array of ingredients as "ingredients". 
 Add an extra field in the JSON object for the sum of all "amount" fields (labeled as "drinkSize"). The sum should be in cl.
@@ -58,12 +59,34 @@ export class OpenAICocktailRecipes {
         const completion = await openai.chat.completions.create({
             model: "gpt-3.5-turbo-1106",
             messages: [
-                {"role": "system", "content": karlIsisSystem},
-                {"role": "user", "content": "pour me a cocktail"}
-                //{"role": "assistant", "content": "Who's there?"},
-                //{"role": "user", "content": "Orange."},
+                { "role": "system", "content": karlIsisSystem },
+                { "role": "user", "content": "pour me a cocktail" },
+                { "role": "assistant", "content": `
+                {
+                  "ingredients": [
+                    {"ingredient": "vodka", "amount": 5},
+                    {"ingredient": "rum", "amount": 3},
+                    {"ingredient": "orange juice", "amount": 4},
+                    {"ingredient": "cherry juice", "amount": 3}
+                  ],
+                  "drinkSize": 15,
+                  "name": "Tropical Sunset"
+                }
+` },
+                { "role": "user", "content": "pour me a drink"},
+                { "role": "assistant", "content": `
+                {
+                    "ingredients": [
+                      {"ingredient": "gin", "amount": 4},
+                      {"ingredient": "bitter lemon", "amount": 3},
+                      {"ingredient": "tonic", "amount": 3}
+                    ],
+                    "drinkSize": 10,
+                    "name": "Gin Sparkler"
+                  }
+`},
+                { "role": "user", "content": "pour me a drink"}
             ]
-            //max_tokens: 2048,
         });
 
         let result = completion?.choices[0].message.content;
