@@ -4,10 +4,26 @@ import { Server } from "./server";
 import { OpenAI } from "./openai";
 import { stringify } from "querystring";
 import { Gpio } from 'onoff';
+import fs from 'fs';
+import util from 'util';
+
+const log_stdout = process.stdout;
+
+// overload console.log
+console.log = function(d) {
+  
+	let output = util.format(d) + '\n';
+	
+	let today: Date = new Date();
+	let dateString = today.getFullYear().toString() + '-' + (today.getMonth()+1).toString().padStart(2, '0') + '-' + (today.getDay()+1).toString().padStart(2, '0');
+
+  	fs.appendFileSync(process.cwd() + '/console-' + dateString + '.log', output);
+	log_stdout.write(output);
+};
+
+console.log('Running on Raspberry Pi!');
 
 console.log("Karl-Isis the 25001 - Dispenser booting...");
-	
-console.log('Running on Raspberry Pi!');
 
 /*let file = 'onoff';
 Gpio = await import(file);
@@ -341,15 +357,16 @@ async function main() {
 	});
 */
 
+	let ai = new OpenAI();
+	await ai.test();
+
 	let bot = new InterdimensionalCocktailPortal();
 	bot.run();
 
 	//let s = new Server();
 	//await s.start();
 
-	// let ai = new OpenAI();
-	//await ai.test();
-
+	
     //mainWindow.maximize();
     //mainWindow.loadFile('./../views/index.html');
 	//console.log("opeing URL: http://localhost:3000");
@@ -364,7 +381,7 @@ async function main() {
     while (running) {
 		try {
 			await main();
-			console.log("exiting");
+			console.log("Exiting Karl-Isis the 25001. Have a nice day, bye-bye.");
 			running = false;
 		} catch (e) {
 			console.error("error in main:", e);
