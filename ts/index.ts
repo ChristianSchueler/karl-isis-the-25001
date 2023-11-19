@@ -1,5 +1,11 @@
 // Karl-Isis the 25001 Cocktail Mixing Bot (c) 2022-2023 by Christian Schüler, christianschueler.at
 
+// references
+// - https://github.com/fivdi/onoff
+//
+//
+//
+
 import { Server } from "./server";
 import { OpenAICocktailRecipes } from "./openai";
 import { stringify } from "querystring";
@@ -12,9 +18,9 @@ const inProduction = false;
 const log_stdout = process.stdout;
 
 // overload console.log
-console.log = function(d) {
+console.log = function(...d) {
   
-	let output = util.format(d) + '\n';
+	let output = util.format(...d) + '\n';
 	
 	let today: Date = new Date();
 	let dateString = today.getFullYear().toString() + '-' + (today.getMonth()+1).toString().padStart(2, '0') + '-' + (today.getDay()+1).toString().padStart(2, '0');
@@ -359,6 +365,15 @@ async function main() {
 		app.quit();
 	});
 */
+
+	// button test
+	const button = new Gpio(4, 'in', 'rising', { debounceTimeout: 30 });
+	const led = new Gpio(17, 'out');
+	led.writeSync(0)
+	button.watch((err, value) => {
+		console.log("button:", value, err);
+		led.writeSync(value);
+	});
 
 	let ai = new OpenAICocktailRecipes();
 	await ai.test();
