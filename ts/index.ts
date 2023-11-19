@@ -11,7 +11,7 @@ import { Server } from "./server";
 import { OpenAICocktailRecipes } from "./openai";
 import { stringify } from "querystring";
 import { OpenAICocktailBot } from './OpenAICocktailBot';
-import { Gpio } from 'onoff';
+//import { Gpio } from 'onoff';
 import fs from 'fs';
 import util from 'util';
 
@@ -32,16 +32,12 @@ console.log = function(...d) {
 	log_stdout.write(output);
 };
 
-console.log('Running on Raspberry Pi!');
-
 console.log("Karl-Isis the 25001 - Dispenser booting...");
 
-/*let file = 'onoff';
-Gpio = await import(file);
-*/
-
-/*class Gpio {
-	constructor(x: number, y: string) {}
+class Gpio {
+	constructor(x: number, y: string) {
+		console.log('Running on Windows - only for development!');
+	}
 	static HIGH: number = 1;
 	static LOW: number = 0;
 	writeSync(x: number) {};
@@ -54,7 +50,7 @@ Gpio = await import(file);
 		await sleep(1);
 		return new Promise(resolve => 0);
 	}
-}*/
+}
 
 //if (process.env.NODE_ENV === 'production') {
 // 	//const pluginName = await import('../js/plugin_name.js');
@@ -391,8 +387,8 @@ async function main() {
 		process.exit(1);
 	}
 
-	let bot = new OpenAICocktailBot("alcohol", "system description....", { apiKey: process.env.OPENAI_API_KEY, organization: process.env.OPENAI_ORGANIZATION, model: "gpt-3.5-turbo-1106" });
-	bot.pourMeADrink();
+	let bot = new OpenAICocktailBot("alcohol", ["a"], "system description....", { apiKey: process.env.OPENAI_API_KEY, organization: process.env.OPENAI_ORGANIZATION, model: "gpt-3.5-turbo-1106" });
+	await bot.pourMeADrink();
 	
 	//let s = new Server();
 	//await s.start();

@@ -41,6 +41,10 @@ export interface OpenAIConfig {
     model?: string;             // e.g. gpt-3.5-turbo-1106
 };
 
+export interface CocktailRecipe {
+    ingredients: Number[];      // a list of amounts of all ingridients, ordered
+}
+
 /*interface Message {
     role: string;
     content: string;
@@ -56,16 +60,18 @@ interface Messages extends Array<Message>{}*/
  */
 export class OpenAICocktailBot {
     name: string = "";			                    // unique name, used for writing files to disk
+    ingredients: string[];                          // oredred list of ingredients
     system: string = "You are a cocktail bot.";     // describes the cocktail bot, 'system' field of chatgpt
     openAI: OpenAI;                                 // manages open ai requests
     model: string;                                  // openai model to be used, eg. gpt-4
     messages: Array<OpenAI.Chat.ChatCompletionMessageParam> = [];                        // holds the conversion messages and roles, see chatgpt
 	
-    constructor(name: string, /*ingredients: string[],*/ systemDescription: string, openAIConfig: OpenAIConfig) {
+    constructor(name: string, ingredients: string[], systemDescription: string, openAIConfig: OpenAIConfig) {
 
         console.log(`OpenAICocktailBot '${name}' constructing...`);
 
         this.name = name;
+        this.ingredients = ingredients;
         this.system = systemDescription;
 
         this.model = openAIConfig.model ?? "gpt-3.5-turbo-1106";    // defaults to latest gpt-3 turbo
@@ -121,25 +127,43 @@ export class OpenAICocktailBot {
         };
     }
 
-    createRandomDrink(): string {
-        return "";
+    // generates a random cocktail recipe
+    createRandomDrink(): CocktailRecipe {
+        
+        console.log(`OpenAICocktailBot '${this.name}' creating random cocktail.`);
+
+        return {ingredients: [0]};
     }
 
-    async pourMeADrink() {
+    async pourMeADrink(): Promise<CocktailRecipe> {
 
         console.log(`OpenAICocktailBot '${this.name}' pour me a drink...`);
 
         let request = this.createChatRequest();
 
         try {
-			const completion = await openai.chat.completions.create(request);
+			const completion = await this.openAI.chat.completions.create(request);
+		
+            console.log(`OpenAICocktailBot '${this.name}' completion returned successfully.`);
 
-			console.log("Exiting Karl-Isis the 25001. Have a nice day, bye-bye.");
-			
-		} catch (e) {
+            console.log(util.inspect(completion));
+            console.log(util.inspect(completion?.choices[0].message));
+            
+
+            return { ingredients: [0] }
+
+		} catch (err) {
+
+            // https://github.com/openai/openai-node
+            if (err instanceof OpenAI.APIError) {
+                console.log(err.status); // 400
+                console.log(err.name); // BadRequestError
+                console.log(err.headers); // {server: 'nginx', ...}
+            }
+
+            console.log(`OpenAICocktailBot '${this.name}' error during OpenAI request: ${err}. We'll pour you a random drink instead.`);
+            return this.createRandomDrink();
         }
-
-        //let result = completion?.choices[0].message.content;
     }
 
     /*
