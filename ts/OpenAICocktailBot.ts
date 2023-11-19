@@ -30,7 +30,8 @@ A cocktail recipe contains at least 50% non-alcoholic ingredients.
 The overall sum of all cocktail ingredient amounts for a single recipe must be at least 10 cl and is not allowed to exceed 20 cl.
 Do not repeat cocktail recipes. Be creative.
 Use ingredients such that after pouring 60 cocktails roughly 1 liter of every ingredient has been used.
-Format your response as a list of whole numbers separated by a single space character followed by a comma and a creative name.
+Format your response as a list of whole numbers separated by a single space character.
+Append to your response a comma and a creative name.
 Each number should represent the amount of the ingredient in cl.
 Include unused ingrediets as 0 in the list.
 The order of the resulting numbers must be the same order as the given list of ingredients.
@@ -61,6 +62,7 @@ export interface OpenAIConfig {
 
 export interface CocktailRecipe {
     ingredients: Number[];      // a list of amounts of all ingridients, ordered
+    name: string;
 }
 
 /*interface Message {
@@ -152,7 +154,7 @@ export class OpenAICocktailBot {
         
         console.log(`OpenAICocktailBot '${this.name}' creating random cocktail.`);
 
-        return {ingredients: [0]};
+        return {ingredients: [0], name: ""};
     }
 
     // creates a cocktail recipe via OpenAI
@@ -175,7 +177,7 @@ export class OpenAICocktailBot {
             console.log(`OpenAICocktailBot '${this.name}' completion returned successfully.`);
 
             let result = completion?.choices[0].message;
-            let totalTokens = completion?.usage?.total_tokens;
+            let totalTokens: number = completion?.usage?.total_tokens;
 
             console.log(util.inspect(completion));
             console.log("result:", result);
@@ -183,8 +185,14 @@ export class OpenAICocktailBot {
 
             // make sure to tell gtp about the whole conversion, also the response
             this.messages.push(result);
+            
+            let resultSplit = result.content.split(",");
+            let cocktailName = resultSplit[1];
 
-            return { ingredients: [0] }
+            return {
+                 ingredients: resultSplit[0].split(" ").map(Number),
+                 name: cocktailName
+            }
 
 		} catch (err) {
 
