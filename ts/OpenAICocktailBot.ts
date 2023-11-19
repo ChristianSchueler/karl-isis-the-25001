@@ -139,6 +139,8 @@ export class OpenAICocktailBot {
             content: ""
         }];*/
 
+        console.log(`OpenAICocktailBot '${this.name}' request: ${util.inspect(this.messages)}`);
+
         return {
             model: this.model,
             messages: this.messages,
@@ -153,19 +155,34 @@ export class OpenAICocktailBot {
         return {ingredients: [0]};
     }
 
+    // creates a cocktail recipe via OpenAI
     async pourMeADrink(): Promise<CocktailRecipe> {
 
         console.log(`OpenAICocktailBot '${this.name}' pour me a drink...`);
 
+        // request a drink
+        this.messages.push({
+            role: "user",
+            content: "pour me a drink"
+        });
+
+        // this uses the messages to form a request
         let request = this.createChatRequest();
 
         try {
-			const completion = await this.openAI.chat.completions.create(request);
+			const completion = await this.openAI.chat.completions.create(request);          // query OpenAI
 		
             console.log(`OpenAICocktailBot '${this.name}' completion returned successfully.`);
 
+            let result = completion?.choices[0].message;
+            let totalTokens = completion?.usage?.total_tokens;
+
             console.log(util.inspect(completion));
-            console.log(util.inspect(completion?.choices[0].message));
+            console.log("result:", result);
+            console.log("tokens:", totalTokens);
+
+            // make sure to tell gtp about the whole conversion, also the response
+            this.messages.push(result);
 
             return { ingredients: [0] }
 
