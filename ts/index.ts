@@ -6,9 +6,11 @@
 //
 //
 
+import * as dotenv from 'dotenv' // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
 import { Server } from "./server";
 import { OpenAICocktailRecipes } from "./openai";
 import { stringify } from "querystring";
+import { OpenAICocktailBot } from './OpenAICocktailBot';
 import { Gpio } from 'onoff';
 import fs from 'fs';
 import util from 'util';
@@ -367,23 +369,33 @@ async function main() {
 */
 
 	// button test
-	const button = new Gpio(4, 'in', 'rising', { debounceTimeout: 30 });
+	/*const button = new Gpio(4, 'in', 'rising', { debounceTimeout: 30 });
 	const led = new Gpio(17, 'out');
 	led.writeSync(0)
 	button.watch((err, value) => {
 		console.log("button:", value, err);
 		led.writeSync(value);
-	});
+	});*/
 
-	let ai = new OpenAICocktailRecipes();
-	await ai.test();
+	//let ai = new OpenAICocktailRecipes();
+	//await ai.test();
 
 	//let bot = new InterdimensionalCocktailPortal();
 	//bot.run();
 
+	dotenv.config();	// move ENV variables from .env into NodeJS environment
+
+	// gracefully stop if OpenAI API key not provided and help developer fix it
+	if (process.env.OPENAI_API_KEY == undefined) {
+		console.log("OpenAI API key not defined. Please set OPENAI_API_KEY environment variable. Exiting.");
+		process.exit(1);
+	}
+
+	let bot = new OpenAICocktailBot("alcohol", "system description....", { apiKey: process.env.OPENAI_API_KEY, organization: process.env.OPENAI_ORGANIZATION, model: "gpt-3.5-turbo-1106" });
+	bot.pourMeADrink();
+	
 	//let s = new Server();
 	//await s.start();
-
 	
     //mainWindow.maximize();
     //mainWindow.loadFile('./../views/index.html');

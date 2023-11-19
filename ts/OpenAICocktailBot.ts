@@ -1,8 +1,8 @@
 // Karl-Isis the 25001 Cocktail Mixing Bot (c) 2022-2023 by Christian Schüler, christianschueler.at
 
-import * as dotenv from 'dotenv' // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
 import OpenAI from "openai";
 import * as util from 'util';
+import { measureMemory } from "vm";
 //import * as dirtyJson from 'dirty-json';
 
 let cocktailPrompt = `
@@ -37,16 +37,16 @@ Return a valid JSON object.
 
 export interface OpenAIConfig {
     apiKey: string;             // from https://platform.openai.com/api-keys
-    organization: string;       // from https://platform.openai.com/account/organization
+    organization?: string;       // from https://platform.openai.com/account/organization
     model?: string;             // e.g. gpt-3.5-turbo-1106
 };
 
-interface Message {
+/*interface Message {
     role: string;
     content: string;
 }
 
-interface Messages extends Array<Message>{}
+interface Messages extends Array<Message>{}*/
 
 /** @class OpenAICocktailBot
  * 
@@ -59,9 +59,12 @@ export class OpenAICocktailBot {
     system: string = "You are a cocktail bot.";     // describes the cocktail bot, 'system' field of chatgpt
     openAI: OpenAI;                                 // manages open ai requests
     model: string;                                  // openai model to be used, eg. gpt-4
-    messages: Messages = [];                        // holds the conversion messages and roles, see chatgpt
+    messages: Array<OpenAI.Chat.ChatCompletionMessageParam> = [];                        // holds the conversion messages and roles, see chatgpt
 	
     constructor(name: string, /*ingredients: string[],*/ systemDescription: string, openAIConfig: OpenAIConfig) {
+
+        console.log(`OpenAICocktailBot '${name}' constructing...`);
+
         this.name = name;
         this.system = systemDescription;
 
@@ -75,10 +78,15 @@ export class OpenAICocktailBot {
             apiKey: openAIConfig.apiKey,
             organization: openAIConfig.organization
         });
+
+        console.log(`OpenAICocktailBot '${name}' constructed.`);
     }
 
     // resets the chat messages to initial state, thus startig over the bot conversion
     reset() {
+
+        console.log(`OpenAICocktailBot '${this.name}' resetting.`);
+
         // set up chat messages, start with system message decribing the bot
         this.messages = [{
             role: "system",
@@ -86,6 +94,55 @@ export class OpenAICocktailBot {
         }];
     }
 
+    // build a OpenAI chat request object from previous conversation
+     createChatRequest(): OpenAI.Chat.Completions.ChatCompletionCreateParams  {
+
+        //openai.chat.completions.ChatRe 
+        
+        //OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming, options?: OpenAI.RequestOptions<Record<string, unknown> | Readable>
+
+        // const completion = await this.openAI.chat.completions.create({
+        //     model: "gpt-3.5-turbo-1106",
+        //     messages: []
+        // });
+
+        //OpenAI.Chat.Completions.ChatCompletionMessageParam[] measureMemory;
+
+        //let mmm: Array<OpenAI.Chat.ChatCompletionMessageParam> = [];
+
+        /*let msg: Array<OpenAI.Chat.ChatCompletionMessageParam> = [{
+            role: "user",
+            content: ""
+        }];*/
+
+        return {
+            model: this.model,
+            messages: this.messages,
+        };
+    }
+
+    createRandomDrink(): string {
+        return "";
+    }
+
+    async pourMeADrink() {
+
+        console.log(`OpenAICocktailBot '${this.name}' pour me a drink...`);
+
+        let request = this.createChatRequest();
+
+        try {
+			const completion = await openai.chat.completions.create(request);
+
+			console.log("Exiting Karl-Isis the 25001. Have a nice day, bye-bye.");
+			
+		} catch (e) {
+        }
+
+        //let result = completion?.choices[0].message.content;
+    }
+
+    /*
     async test() {
 
         dotenv.config();	// move ENV variables from .env into NodeJS environment
@@ -95,8 +152,6 @@ export class OpenAICocktailBot {
             console.log("OpenAI API key not defined. Please set OPENAI_API_KEY environment variable. Exiting.");
             process.exit(1);
         }
-
-        
 
         
         console.log("Asking for cocktail...");
@@ -142,4 +197,6 @@ export class OpenAICocktailBot {
         //console.log("JSON result:");
         //console.dir(object, { depth: null });
     }
+
+    */
 }
