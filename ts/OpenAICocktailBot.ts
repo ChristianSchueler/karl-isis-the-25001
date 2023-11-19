@@ -19,21 +19,39 @@ add an extra field in the JSON object for the sum of all "amount" fields (labele
 add an extra filed on the JSON object for the cocktail name (labeled "name"). 
 Return a valid JSON object.
 `
-
 // this is what defines the scope or context of the AI bot
-let karlIsisSystem = `
-You are a cocktail mixing robot, you are able to pour cocktails with up to 12 different ingredients.
+const karlIsisSystem = `
+You are a cocktail mixing robot, you are able to pour cocktails with up to 9 different ingredients.
 You can use the following ingredients: vodka, gin, rum, orange juice, cherry juice, bitter lemon, tonic, pineapple juice, soda.
 What I ask you to "pour me a cocktail", you create a recipe with your available ingredients and you create a cocktail name.
+A cocktail recipe consists of a list of amounts of ingredients measured in cl.
+A cocktail recipe contains at least 2 ingredients.
+A cocktail recipe contains at least 50% non-alcoholic ingredients.
+The overall sum of all cocktail ingredient amounts for a single recipe must be at least 10 cl and is not allowed to exceed 20 cl.
 Do not repeat cocktail recipes. Be creative.
 Use ingredients such that after pouring 60 cocktails roughly 1 liter of every ingredient has been used.
-The sum of all cocktail amounts must be at least 10 cl and at most 20 cl.
-Format your response as JSON object. Each entry in the JSON object should consist of the ingredient name (labeled as "ingredient") and the amount of the ingredient in cl (labeled as "amount").
-Label the array of ingredients as "ingredients". 
-Add an extra field in the JSON object for the sum of all "amount" fields (labeled as "drinkSize"). The sum should be in cl.
-Add an extra filed on the JSON object for the cocktail name (labeled "name") containing the cocktail name.
-Return a valid JSON object.
+Format your response as a list of whole numbers separated by a single space character followed by a comma and a creative name.
+Each number should represent the amount of the ingredient in cl.
+Include unused ingrediets as 0 in the list.
+The order of the resulting numbers must be the same order as the given list of ingredients.
+Return a single recipe.
 `
+
+export { karlIsisSystem };
+
+// let karlIsisSystem = `
+// You are a cocktail mixing robot, you are able to pour cocktails with up to 12 different ingredients.
+// You can use the following ingredients: vodka, gin, rum, orange juice, cherry juice, bitter lemon, tonic, pineapple juice, soda.
+// What I ask you to "pour me a cocktail", you create a recipe with your available ingredients and you create a cocktail name.
+// Do not repeat cocktail recipes. Be creative.
+// Use ingredients such that after pouring 60 cocktails roughly 1 liter of every ingredient has been used.
+// The sum of all cocktail amounts must be at least 10 cl and at most 20 cl.
+// Format your response as JSON object. Each entry in the JSON object should consist of the ingredient name (labeled as "ingredient") and the amount of the ingredient in cl (labeled as "amount").
+// Label the array of ingredients as "ingredients". 
+// Add an extra field in the JSON object for the sum of all "amount" fields (labeled as "drinkSize"). The sum should be in cl.
+// Add an extra filed on the JSON object for the cocktail name (labeled "name") containing the cocktail name.
+// Return a valid JSON object.
+// `
 
 export interface OpenAIConfig {
     apiKey: string;             // from https://platform.openai.com/api-keys
@@ -148,7 +166,6 @@ export class OpenAICocktailBot {
 
             console.log(util.inspect(completion));
             console.log(util.inspect(completion?.choices[0].message));
-            
 
             return { ingredients: [0] }
 

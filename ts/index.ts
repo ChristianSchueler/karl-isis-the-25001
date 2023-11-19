@@ -10,7 +10,7 @@ import * as dotenv from 'dotenv' // see https://github.com/motdotla/dotenv#how-d
 import { Server } from "./server";
 import { OpenAICocktailRecipes } from "./openai";
 import { stringify } from "querystring";
-import { OpenAICocktailBot } from './OpenAICocktailBot';
+import * as OpenAICocktailBot from './OpenAICocktailBot';
 //import { Gpio } from 'onoff';
 import fs from 'fs';
 import util from 'util';
@@ -387,7 +387,7 @@ async function main() {
 		process.exit(1);
 	}
 
-	let bot = new OpenAICocktailBot("alcohol", ["a"], "system description....", { apiKey: process.env.OPENAI_API_KEY, organization: process.env.OPENAI_ORGANIZATION, model: "gpt-3.5-turbo-1106" });
+	let bot = new OpenAICocktailBot.OpenAICocktailBot("alcohol", ["a"], OpenAICocktailBot.karlIsisSystem, { apiKey: process.env.OPENAI_API_KEY, organization: process.env.OPENAI_ORGANIZATION, model: "gpt-3.5-turbo-1106" });
 	await bot.pourMeADrink();
 	
 	//let s = new Server();
