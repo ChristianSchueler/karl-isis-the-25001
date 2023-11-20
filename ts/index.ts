@@ -14,6 +14,7 @@ import * as OpenAICocktailBot from './OpenAICocktailBot';
 //import { Gpio } from 'onoff';
 import fs from 'fs';
 import util from 'util';
+import { CocktailDispenser } from './CocktailDispenser';
 
 const inProduction = false;
 
@@ -80,7 +81,7 @@ async function main() {
 
 	dotenv.config();	// move ENV variables from .env into NodeJS environment
 
-	//let bot = new InterdimensionalCocktailPortal();
+	let cocktailDispenser = new CocktailDispenser();
 	//bot.run();
 
 	// gracefully stop if OpenAI API key not provided and help developer fix it

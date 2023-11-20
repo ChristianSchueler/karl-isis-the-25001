@@ -3,31 +3,31 @@
 import {sleep } from './sleep';
 import { Gpio } from './Gpio';
 import { IngredientPump } from './IngredientPump';
+import { CocktailRecipe } from './CocktailRecipe';
 
-interface Recipe {
-	ingredients: { ingredient: string; amount: number; }[];
-	drinkSize: number;			// in cl, centiliters
-}
+// interface Recipe {
+// 	ingredients: { ingredient: string; amount: number; }[];
+// 	drinkSize: number;			// in cl, centiliters
+// }
 
 /** @class CocktailDispenser
 */
 export class CocktailDispenser {
-	maxDrinkSize_cl: number = 16;			// guess what?
+	maxDrinkSize_cl: number = 20;			    // maximum drink size in cl, i.e. a cup
 	pumps: IngredientPump[];					// hlding the interface to the liquid dispenser pumps
 	drinkRepository: { name: string; isAlcohol: boolean; pumpNumber: number }[] = [
 		{ name: 'vodka', isAlcohol: true, pumpNumber: 1 },
-		//{ name: 'lemon-juice', isAlcohol: false, pumpNumber: 2 },		// pump defect
+		{ name: 'lemon-juice', isAlcohol: false, pumpNumber: 2 },
 		{ name: 'strawberry-juice', isAlcohol: false, pumpNumber: 3 },
 		{ name: 'lemon', isAlcohol: false, pumpNumber: 4 },
 		{ name: 'gin', isAlcohol: false, pumpNumber: 5 },
 		{ name: 'coke', isAlcohol: false, pumpNumber: 6 },
 		{ name: 'orange-juice', isAlcohol: false, pumpNumber: 7 },
-		{ name: 'whisky', isAlcohol: false, pumpNumber: 8 }
-		//{ name: 'soda', isAlcohol: false, pumpNumber: 9 },			// out of tube				
-		//{ name: 'soda', isAlcohol: false, pumpNumber: 10 },			// out of tube
-		//{ name: 'soda', isAlcohol: false, pumpNumber: 11 },			// missing pump
-		//{ name: 'soda', isAlcohol: false, pumpNumber: 12 }			// missing pump
-		];
+		{ name: 'whisky', isAlcohol: false, pumpNumber: 8 },
+		{ name: 'soda', isAlcohol: false, pumpNumber: 9 },				
+		{ name: 'soda', isAlcohol: false, pumpNumber: 10 },
+		{ name: 'soda', isAlcohol: false, pumpNumber: 11 },
+		{ name: 'soda', isAlcohol: false, pumpNumber: 12 }];
 	// this is the wiring between raspi and relais and pumps
 	pumpGpioMap: { pumpNo: number, relaisNumber: number, gpioNumber: number, pinNumber: number }[] = [
 		{ pumpNo: 1, relaisNumber: 1, gpioNumber: 2, pinNumber: 3 },
@@ -39,7 +39,9 @@ export class CocktailDispenser {
 		{ pumpNo: 7, relaisNumber: 16, gpioNumber: 21, pinNumber: 40 },
 		{ pumpNo: 8, relaisNumber: 15, gpioNumber: 20, pinNumber: 38 },
 		{ pumpNo: 9, relaisNumber: 13, gpioNumber: 16, pinNumber: 36 },
-		{ pumpNo: 10, relaisNumber: 14, gpioNumber: 26, pinNumber: 37 }];
+		{ pumpNo: 10, relaisNumber: 14, gpioNumber: 26, pinNumber: 37 },
+        { pumpNo: 11, relaisNumber: 0, gpioNumber: 0, pinNumber: 0 },           // TODO
+        { pumpNo: 12, relaisNumber: 0, gpioNumber: 0, pinNumber: 0 }];          // TODO
 	// wiring between raspi and motor controller
 	motorGpioMap: { motorNo: number, gpioNumber1: number, pinNumber1: number, gpioNumber2: number, pinNumber2: number }[] = [
 		{ motorNo: 1, gpioNumber1: 10, pinNumber1: 19, gpioNumber2: 9, pinNumber2: 21 }];
@@ -49,7 +51,7 @@ export class CocktailDispenser {
 		this.pumps = [];
 		
 		for (let index in this.drinkRepository) {
-			// pump responsible for this drink
+			// pump responsible for this ingredient
 			let pumpNumber = this.drinkRepository[index].pumpNumber;
 			
 			// find punp GPIO definition
@@ -62,21 +64,22 @@ export class CocktailDispenser {
 		}
 	}
 	
-	async dispenseRecipe(recipe: Recipe) {
+	async dispenseRecipe(recipe: CocktailRecipe) {
 
-		let pumps = [];
-		let amounts = [];
+		let pumps: IngredientPump[] = [];
+        let amounts: number[] = [];
+	
+        // collect all necessary pumps
+        for (let index=0; index<12; index++) {
+            let amount = recipe.ingredients[index];
+            if (amount > 0) { 
+                pumps.push(this.pumps[index]);
+                amounts.push(amount);
+            }
+        }
 
-		for (let ingredient of recipe.ingredients) {
-
-			// find pump with given ingredient
-			let p = this.pumps.find((p) => { p.name === ingredient.ingredient});
-			pumps.push(p?.dispense);	// collect dispense function
-			amounts.push(ingredient.amount);
-		}
-
-		// TODO
-		//Promise.all(pumps.map(() => {}));
+		// works?
+		Promise.all(pumps.map((pump, index) => { pump.dispense(amounts[index]); }));
 	}
 
 	// testing proper function
@@ -96,85 +99,9 @@ export class CocktailDispenser {
 	
 	async fillOnStart() {
 	}
-	
-	// compute a random integer number between min and max, including min and max
-	getRandomIntInclusive(min: number, max: number) {
-		min = Math.ceil(min);
-		max = Math.floor(max);
-		return Math.floor(Math.random() * (max - min + 1) + min); 	// The maximum is inclusive and the minimum is inclusive
-	}
-
-	// create a random recipe from the drink repository
-	// TODO: alcohol: none, forced, random
-	createRandomRecipe(alcohol: string): Recipe {
-
-		console.log("Creating random recipe...");
-
-		// drink size: min 4 cl up to 16, maybe 20 cl.
-
-		// empty recipe
-		let recipe: Recipe = { 
-			ingredients: [],
-			drinkSize: 0
-		}
-
-		// random number of ingredients from 2 to all
-		const countIngredients = this.getRandomIntInclusive(2, this.drinkRepository.length);
-		console.log("Number of ingredients:", countIngredients);
-
-		// select unique ingredients, no duplicates
-		for (let i:number=0; i<countIngredients; i++) {
-			
-			// create a random ingredient and check whether its sttill unused
-			// WARNING: do not use thte same name twice. this might produce a deadlock
-			let alreadyUsed = false;
-			let ingredientIndex = -1;
-			let ingredientName = "NOPE";
-			do {
-				ingredientIndex = this.getRandomIntInclusive(0, this.drinkRepository.length-1);
-				ingredientName = this.drinkRepository[ingredientIndex].name;
-				
-				alreadyUsed = false;
-				for (let ingredient of recipe.ingredients) {
-					if (ingredient.ingredient === ingredientName) alreadyUsed = true;
-				}
-				console.log(ingredientName);
-			} while (alreadyUsed);
-
-			// compute amount
-			let amount = -1;
-			if (this.getRandomIntInclusive(1, 2) == 1) {
-				amount = 2;
-			}
-			else {
-				amount = 4;
-			}
-
-			// count drink size
-			recipe.drinkSize += amount;
-
-			// here we add the still unused ingredient
-			recipe.ingredients.push({ 
-				ingredient: ingredientName,
-				amount: amount
-			});
-		}
-
-		// cap larger cocktails to stay below limit
-		if (recipe.drinkSize > this.maxDrinkSize_cl) {
-			let factor = this.maxDrinkSize_cl/recipe.drinkSize;
-			for (let i in recipe.ingredients) {
-				recipe.ingredients[i].amount *= factor;
-			}
-
-			recipe.drinkSize *= factor;
-		}
-
-		return recipe;
-	}
 
 	async run() {
-		console.log("Karl-Isis the 25001 run...");
+		//console.log("Karl-Isis the 25001 run...");
 
 		//await this.pumps[0].stop();
 		//await sleep(3000);
@@ -185,7 +112,7 @@ export class CocktailDispenser {
 		
 		// process.exit(1);
 
-		let r: Recipe = this.createRandomRecipe("random");
-		console.log(r);
+		//let r: CocktailRecipe = createRandomRecipe("random");
+		//console.log(r);
 	}
 }

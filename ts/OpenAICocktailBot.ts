@@ -5,6 +5,7 @@ import { ChatCompletion } from "openai/resources";
 import * as util from 'util';
 import { measureMemory } from "vm";
 //import * as dirtyJson from 'dirty-json';
+import { CocktailRecipe } from "./CocktailRecipe";
 
 let cocktailPrompt = `
 restrict yourself to the use only ingredients from this list: ["vodka", "rum", "gin",  "whisky", "campari", "lime juice", "orange juice", "strawberry juice", "raspberry juice", "pineapple juice", "bitter lemon", "tonic water", "water", "soda", "slice of orange", "slice of lemon"].
@@ -60,18 +61,6 @@ export interface OpenAIConfig {
     organization?: string;       // from https://platform.openai.com/account/organization
     model?: string;             // e.g. gpt-3.5-turbo-1106
 };
-
-export interface CocktailRecipe {
-    ingredients: Number[];      // a list of amounts of all ingridients, ordered
-    name: string;
-}
-
-/*interface Message {
-    role: string;
-    content: string;
-}
-
-interface Messages extends Array<Message>{}*/
 
 /** @class OpenAICocktailBot
  * 
