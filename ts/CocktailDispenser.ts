@@ -5,11 +5,6 @@ import { Gpio } from './Gpio';
 import { IngredientPump } from './IngredientPump';
 import { CocktailRecipe } from './CocktailRecipe';
 
-// interface Recipe {
-// 	ingredients: { ingredient: string; amount: number; }[];
-// 	drinkSize: number;			// in cl, centiliters
-// }
-
 /** @class CocktailDispenser
 */
 export class CocktailDispenser {

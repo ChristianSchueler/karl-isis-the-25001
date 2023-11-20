@@ -93,6 +93,10 @@ async function main() {
 	let bot = new OpenAICocktailBot.OpenAICocktailBot("alcohol", ["a"], OpenAICocktailBot.karlIsisSystem, { apiKey: process.env.OPENAI_API_KEY, organization: process.env.OPENAI_ORGANIZATION, model: "gpt-3.5-turbo-1106" });
 	let recipe = await bot.pourMeADrink();
 	console.log(recipe);
+
+	// et voilà
+	await cocktailDispenser.dispenseRecipe(recipe);
+
 	// await bot.pourMeADrink();
 	// await bot.pourMeADrink();
 	// await bot.pourMeADrink();
