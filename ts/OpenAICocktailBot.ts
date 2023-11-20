@@ -1,6 +1,7 @@
 // Karl-Isis the 25001 Cocktail Mixing Bot (c) 2022-2023 by Christian Schüler, christianschueler.at
 
 import OpenAI from "openai";
+import { ChatCompletion } from "openai/resources";
 import * as util from 'util';
 import { measureMemory } from "vm";
 //import * as dirtyJson from 'dirty-json';
@@ -172,12 +173,12 @@ export class OpenAICocktailBot {
         let request = this.createChatRequest();
 
         try {
-			const completion = await this.openAI.chat.completions.create(request);          // query OpenAI
+			const completion = await this.openAI.chat.completions.create(request) as ChatCompletion;          // query OpenAI
 		
             console.log(`OpenAICocktailBot '${this.name}' completion returned successfully.`);
 
-            let result = completion?.choices[0].message;
-            let totalTokens: number = completion?.usage?.total_tokens;
+            let result = completion.choices[0].message;
+            let totalTokens: number = completion?.usage?.total_tokens ?? 0;     // 0 if undefined
 
             console.log(util.inspect(completion));
             console.log("result:", result);
@@ -186,7 +187,7 @@ export class OpenAICocktailBot {
             // make sure to tell gtp about the whole conversion, also the response
             this.messages.push(result);
             
-            let resultSplit = result.content.split(",");
+            let resultSplit = result?.content?.split(",") ?? ["",""];
             let cocktailName = resultSplit[1];
 
             return {
