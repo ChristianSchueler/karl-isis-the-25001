@@ -61,7 +61,8 @@ export class CocktailDispenser {
 	
 	async dispenseRecipe(recipe: CocktailRecipe) {
 
-		console.log("Starting dispensing recipe...", recipe);
+		console.log(`Starting dispensing recipe '${recipe.name}'...`);
+		console.log("Ingredients:", recipe.ingredients);
 
 		let pumps: IngredientPump[] = [];
         let amounts: number[] = [];
@@ -83,7 +84,7 @@ export class CocktailDispenser {
 			await pump.dispense(amounts[index]);
 		}));
 
-		console.log("Recipe '${recipe.name}' dispensed.");
+		console.log(`Recipe '${recipe.name}' dispensed.`);
 	}
 
 	// testing proper function

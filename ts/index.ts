@@ -81,23 +81,27 @@ async function main() {
 
 	dotenv.config();	// move ENV variables from .env into NodeJS environment
 
-	var stdin = process.openStdin();
-
-stdin.resume();
-stdin.on("data", function (keydata) {
-  process.stdout.write("output: " + keydata);
-});
-
-	let cocktailDispenser = new CocktailDispenser();
-	//bot.run();
-
 	// gracefully stop if OpenAI API key not provided and help developer fix it
 	if (process.env.OPENAI_API_KEY == undefined) {
 		console.log("OpenAI API key not defined. Please set OPENAI_API_KEY environment variable. Exiting.");
 		process.exit(1);
 	}
 
+	// set up keyboard debug and maintenace controls
+	/*const stdin = process.openStdin();
+
+	stdin.resume();
+	stdin.on("data", function (keydata) {
+		process.stdout.write("output: " + keydata);
+	});*/
+
+	// set up dispenser hardware
+	let cocktailDispenser = new CocktailDispenser();
+
+	// set up OpenAI cocktail recioe generator
 	let bot = new OpenAICocktailBot.OpenAICocktailBot("alcohol", ["a"], OpenAICocktailBot.karlIsisSystem, { apiKey: process.env.OPENAI_API_KEY, organization: process.env.OPENAI_ORGANIZATION, model: "gpt-3.5-turbo-1106" });
+	
+	// ***** main loop starts here
 	let recipe = await bot.pourMeADrink();
 	console.log(recipe);
 
@@ -105,12 +109,7 @@ stdin.on("data", function (keydata) {
 	await cocktailDispenser.dispenseRecipe(recipe);
 
 	console.log('Dispensing finished.');
-	
-	// await bot.pourMeADrink();
-	// await bot.pourMeADrink();
-	// await bot.pourMeADrink();
-	// await bot.pourMeADrink();
-	
+
 	//let s = new Server();
 	//await s.start();
 	
