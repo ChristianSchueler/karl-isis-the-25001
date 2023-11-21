@@ -81,6 +81,13 @@ async function main() {
 
 	dotenv.config();	// move ENV variables from .env into NodeJS environment
 
+	var stdin = process.openStdin();
+
+stdin.resume();
+stdin.on("data", function (keydata) {
+  process.stdout.write("output: " + keydata);
+});
+
 	let cocktailDispenser = new CocktailDispenser();
 	//bot.run();
 
@@ -97,6 +104,8 @@ async function main() {
 	// et voilà
 	await cocktailDispenser.dispenseRecipe(recipe);
 
+	console.log('Dispensing finished.');
+	
 	// await bot.pourMeADrink();
 	// await bot.pourMeADrink();
 	// await bot.pourMeADrink();

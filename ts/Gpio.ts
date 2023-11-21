@@ -12,10 +12,10 @@ export class Gpio {
 	readSync() {};
 	async write(x: number) {
 		await sleep(1);
-		return new Promise(resolve => 1);
+		return;
 	}
 	async read(x: number) {
 		await sleep(1);
-		return new Promise(resolve => 0);
+		return;
 	}
 }

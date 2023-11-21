@@ -61,6 +61,8 @@ export class CocktailDispenser {
 	
 	async dispenseRecipe(recipe: CocktailRecipe) {
 
+		console.log("Starting dispensing recipe...", recipe);
+
 		let pumps: IngredientPump[] = [];
         let amounts: number[] = [];
 	
@@ -68,13 +70,20 @@ export class CocktailDispenser {
         for (let index=0; index<12; index++) {
             let amount = recipe.ingredients[index];
             if (amount > 0) { 
-                pumps.push(this.pumps[index]);
+				let pump = this.pumps[index];
+                pumps.push(pump);
                 amounts.push(amount);
+
+				//await pump.dispense(amount);
             }
         }
 
-		// works?
-		Promise.all(pumps.map((pump, index) => { pump.dispense(amounts[index]); }));
+		// complicated! help: https://stackoverflow.com/questions/40140149/use-async-await-with-array-map
+		await Promise.all(pumps.map(async (pump, index) => { 
+			await pump.dispense(amounts[index]);
+		}));
+
+		console.log("Recipe '${recipe.name}' dispensed.");
 	}
 
 	// testing proper function
