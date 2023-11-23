@@ -2,7 +2,7 @@
 
 import * as dotenv from 'dotenv' // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
 import OpenAI from "openai";
-import * as util from 'util';
+//import * as util from 'util';
 //import * as dirtyJson from 'dirty-json';
 
 let cocktailPrompt = `

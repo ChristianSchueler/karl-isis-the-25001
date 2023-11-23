@@ -11,7 +11,6 @@ import { Server } from "./server";
 import { OpenAICocktailRecipes } from "./openai";
 import { stringify } from "querystring";
 import * as OpenAICocktailBot from './OpenAICocktailBot';
-//import { Gpio } from 'onoff';
 import fs from 'fs';
 import util from 'util';
 import { CocktailDispenser } from './CocktailDispenser';

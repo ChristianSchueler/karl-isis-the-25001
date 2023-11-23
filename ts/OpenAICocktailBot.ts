@@ -3,7 +3,6 @@
 import OpenAI from "openai";
 import { ChatCompletion } from "openai/resources";
 import * as util from 'util';
-import { measureMemory } from "vm";
 //import * as dirtyJson from 'dirty-json';
 import { CocktailRecipe } from "./CocktailRecipe";
 

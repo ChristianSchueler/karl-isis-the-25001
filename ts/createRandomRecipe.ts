@@ -1,3 +1,5 @@
+// Karl-Isis the 25001 Cocktail Mixing Bot (c) 2022-2023 by Christian Schüler, christianschueler.at
+
 import { CocktailRecipe } from "./CocktailRecipe";    
 
 // compute a random integer number between min and max, including min and max
