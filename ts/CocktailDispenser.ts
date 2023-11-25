@@ -1,7 +1,7 @@
 // Karl-Isis the 25001 Cocktail Mixing Bot (c) 2022-2023 by Christian Schüler, christianschueler.at
 
 import { IngredientPump } from './IngredientPump';
-import { ICocktailRecipe } from './CocktailRecipe';
+import { CocktailRecipe, ICocktailRecipe } from './CocktailRecipe';
 
 /** @class CocktailDispenser
 */
@@ -57,10 +57,11 @@ export class CocktailDispenser {
 		}
 	}
 	
-	async dispenseRecipe(recipe: ICocktailRecipe) {
+	async dispenseRecipe(recipe: CocktailRecipe) {
 
 		console.log(`Starting dispensing recipe '${recipe.name}'...`);
 		console.log("Ingredients:", recipe.ingredients);
+		console.log("Drink size:", recipe.size());
 
 		let pumps: IngredientPump[] = [];
         let amounts: number[] = [];

@@ -24,10 +24,11 @@ Return a valid JSON object.
 const karlIsisSystem = `
 You are a cocktail mixing robot, you are able to pour cocktails with up to 9 different ingredients.
 You can use the following ingredients: %INGREDIENTS%.
-What I ask you to "pour me a cocktail", you create a recipe with your available ingredients and you create a cocktail name.
-A cocktail recipe consists of a list of amounts of ingredients measured in cl.
-A cocktail recipe contains at least 2 ingredients.
-A cocktail recipe must contain a maximum of 4 cl of alcohol.
+What I ask you to "pour me a cocktail", you create a cocktail recipe with your available ingredients and you create a cocktail name.
+The following rules apply to cocktail recipes:
+- consists of a list of amounts of ingredients measured in cl
+- contains at least 2 ingredients
+- contains a single alcoholic ingredient
 The overall sum of all cocktail ingredient amounts for a single recipe must be at least 10 cl and is not allowed to exceed 20 cl.
 Do not repeat cocktail recipes. Be creative.
 Use ingredients such that after pouring 60 cocktails roughly 1 liter of every ingredient has been used.
@@ -138,18 +139,8 @@ export class OpenAICocktailBot {
         };
     }
 
-    // generates a random cocktail recipe
-    createRandomDrink(): ICocktailRecipe {
-        
-        console.log(`OpenAICocktailBot '${this.name}' creating random cocktail.`);
-
-        // TODO!
-
-        return {ingredients: [0], name: ""};
-    }
-
     // creates a cocktail recipe via OpenAI
-    async pourMeADrink(): Promise<ICocktailRecipe> {
+    async pourMeADrink(): Promise<CocktailRecipe> {
 
         console.log(`OpenAICocktailBot '${this.name}' pour me a drink...`);
 
@@ -196,7 +187,7 @@ export class OpenAICocktailBot {
             }
 
             console.log(`OpenAICocktailBot '${this.name}' error during OpenAI request: ${err}. We'll pour you a random drink instead.`);
-            return this.createRandomDrink();
+            return CocktailRecipe.randomRecipe();
         }
     }
 

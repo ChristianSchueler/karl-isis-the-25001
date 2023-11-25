@@ -14,12 +14,17 @@ export class CocktailRecipe implements ICocktailRecipe {
         this.name = name;
     }
 
+    size(): number {
+        let drinkSize = 0;
+        for (const amount of this.ingredients) drinkSize += amount;
+        return drinkSize;
+    }
+
     // change the recipe, such that it contains at least min amount and at max max amount cl
     normalize(minAmount: number, maxAmount: number) {
         console.log("Normalizing drink...");
 
-        let drinkSize = 0;
-        for (const amount of this.ingredients) drinkSize += amount;
+        const drinkSize = this.size();
 
         // enlarge
         if (drinkSize < minAmount) {
@@ -38,7 +43,19 @@ export class CocktailRecipe implements ICocktailRecipe {
         console.log("Drink normalized");
     }
 
-    createRandom() {
-        // TODO
+    // generates a random cocktail recipe
+    createRandom(): ICocktailRecipe {
+        
+        console.log(`OpenAICocktailBot '${this.name}' creating random cocktail.`);
+
+        // TODO!
+
+        return {ingredients: [0], name: ""};
+    }
+
+    static randomRecipe(): CocktailRecipe {
+        let recipe = new CocktailRecipe([], "");
+        recipe.createRandom();
+        return recipe;
     }
 }
