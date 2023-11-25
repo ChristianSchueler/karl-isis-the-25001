@@ -5,6 +5,13 @@ export interface ICocktailRecipe {
     name: string;
 }
 
+// compute a random integer number between min and max, including min and max
+function getRandomIntInclusive(min: number, max: number) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1) + min); 	// The maximum is inclusive and the minimum is inclusive
+}
+
 export class CocktailRecipe implements ICocktailRecipe {
     ingredients: number[] = [];      // a list of amounts of all ingridients, ordered
     name: string = "";
@@ -43,19 +50,35 @@ export class CocktailRecipe implements ICocktailRecipe {
         console.log("Drink normalized");
     }
 
-    // generates a random cocktail recipe
-    createRandom(): ICocktailRecipe {
-        
-        console.log(`OpenAICocktailBot '${this.name}' creating random cocktail.`);
+    static randomRecipe(minAlc: number, maxAlc: number): CocktailRecipe {
+        console.log(`OpenAICocktailBot creating random cocktail...`);
 
-        // TODO!
+        let amounts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
-        return {ingredients: [0], name: ""};
-    }
+        let alcoholIndex = getRandomIntInclusive(0, 3);             // single alcohol selection
+        let alcoholAmount = getRandomIntInclusive(minAlc, maxAlc);  // limit alcoholo
+        amounts[alcoholIndex] = alcoholAmount;
 
-    static randomRecipe(): CocktailRecipe {
-        let recipe = new CocktailRecipe([], "");
-        recipe.createRandom();
+        if (global.debug) console.log(alcoholIndex, alcoholAmount);
+
+        let juiceCount = getRandomIntInclusive(1, 5);               // 1 to 5 more ingredients
+        for (let i=1; i<=juiceCount; i++) {
+
+            // search for unused ingredient
+            let juiceIndex = 0;
+            do {
+                juiceIndex = getRandomIntInclusive(4, 11);
+            } while (amounts[juiceIndex] > 0);
+
+            let juiceAmount = 0;
+            if (juiceIndex == 10) juiceAmount = 0.5;                  // limit orange sirup
+            else juiceAmount = getRandomIntInclusive(1, 2) * 2;        // 2 or 4 cl
+
+            amounts[juiceIndex] = juiceAmount;
+        }
+
+        let recipe = new CocktailRecipe(amounts, "random cocktail");
+        recipe.normalize(10, 20);
         return recipe;
     }
 }

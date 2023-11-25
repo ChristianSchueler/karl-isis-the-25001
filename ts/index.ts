@@ -14,6 +14,7 @@ import * as OpenAICocktailBot from './OpenAICocktailBot';
 import fs from 'fs';
 import util from 'util';
 import { CocktailDispenser } from './CocktailDispenser';
+import { CocktailRecipe } from './CocktailRecipe';
 
 // make debug a global variable
 declare global {
@@ -119,6 +120,7 @@ async function main() {
 	
 	// ***** main loop starts here
 	let recipe = await bot.pourMeADrink();
+	//let recipe = CocktailRecipe.randomRecipe(2, 4);
 	console.log(recipe);
 
 	// et voilà

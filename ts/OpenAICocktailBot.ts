@@ -6,6 +6,7 @@ import * as util from 'util';
 //import * as dirtyJson from 'dirty-json';
 import { CocktailRecipe, ICocktailRecipe } from "./CocktailRecipe";
 
+// OLD
 let cocktailPrompt = `
 restrict yourself to the use only ingredients from this list: ["vodka", "rum", "gin",  "whisky", "campari", "lime juice", "orange juice", "strawberry juice", "raspberry juice", "pineapple juice", "bitter lemon", "tonic water", "water", "soda", "slice of orange", "slice of lemon"].
 
@@ -20,15 +21,19 @@ add an extra field in the JSON object for the sum of all "amount" fields (labele
 add an extra filed on the JSON object for the cocktail name (labeled "name"). 
 Return a valid JSON object.
 `
+
+// vodka, gin, rum, blue curacao, ananas juice, cherry juice, orange juice, bitter lemon, tonic water, herbal lemonade, bitter orange sirup, soda
+
 // this is what defines the scope or context of the AI bot
 const karlIsisSystem = `
-You are a cocktail mixing robot, you are able to pour cocktails with up to 9 different ingredients.
-You can use the following ingredients: %INGREDIENTS%.
-What I ask you to "pour me a cocktail", you create a cocktail recipe with your available ingredients and you create a cocktail name.
+You are a cocktail mixing robot, you are able to pour cocktails with up to 12 different ingredients.
+You can use the following list of alcoholic ingredients: vodka, gin, rum, blue curacao.
+You can use the following list of non-alcoholic ingredients: ananas juice, cherry juice, orange juice, bitter lemon, tonic water, herbal lemonade, bitter orange sirup, soda.
+What I ask you to "pour me a cocktail", you create a random cocktail recipe with your available ingredients and you create a cocktail name.
 The following rules apply to cocktail recipes:
-- consists of a list of amounts of ingredients measured in cl
-- contains at least 2 ingredients
-- contains a single alcoholic ingredient
+- consist of a list of amounts of ingredients measured in cl
+- select only one alcoholic ingredient from your given list of alcoholic ingredients
+- select between one and five non-alcoholic ingredients from your given list of non-alcoholic ingredients
 The overall sum of all cocktail ingredient amounts for a single recipe must be at least 10 cl and is not allowed to exceed 20 cl.
 Do not repeat cocktail recipes. Be creative.
 Use ingredients such that after pouring 60 cocktails roughly 1 liter of every ingredient has been used.
@@ -187,7 +192,7 @@ export class OpenAICocktailBot {
             }
 
             console.log(`OpenAICocktailBot '${this.name}' error during OpenAI request: ${err}. We'll pour you a random drink instead.`);
-            return CocktailRecipe.randomRecipe();
+            return CocktailRecipe.randomRecipe(2, 4);
         }
     }
 
