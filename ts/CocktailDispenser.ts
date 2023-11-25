@@ -1,7 +1,7 @@
 // Karl-Isis the 25001 Cocktail Mixing Bot (c) 2022-2023 by Christian Schüler, christianschueler.at
 
 import { IngredientPump } from './IngredientPump';
-import { CocktailRecipe } from './CocktailRecipe';
+import { ICocktailRecipe } from './CocktailRecipe';
 
 /** @class CocktailDispenser
 */
@@ -9,18 +9,18 @@ export class CocktailDispenser {
 	maxDrinkSize_cl: number = 20;			    // maximum drink size in cl, i.e. a cup
 	pumps: IngredientPump[];					// hlding the interface to the liquid dispenser pumps
 	drinkRepository: { name: string; isAlcohol: boolean; pumpNumber: number }[] = [
-		{ name: 'vodka', isAlcohol: true, pumpNumber: 1 },
-		{ name: 'lemon-juice', isAlcohol: false, pumpNumber: 2 },
-		{ name: 'strawberry-juice', isAlcohol: false, pumpNumber: 3 },
-		{ name: 'lemon', isAlcohol: false, pumpNumber: 4 },
-		{ name: 'gin', isAlcohol: false, pumpNumber: 5 },
-		{ name: 'coke', isAlcohol: false, pumpNumber: 6 },
-		{ name: 'orange-juice', isAlcohol: false, pumpNumber: 7 },
-		{ name: 'whisky', isAlcohol: false, pumpNumber: 8 },
-		{ name: 'soda', isAlcohol: false, pumpNumber: 9 },				
-		{ name: 'soda', isAlcohol: false, pumpNumber: 10 },
-		{ name: 'soda', isAlcohol: false, pumpNumber: 11 },
-		{ name: 'soda', isAlcohol: false, pumpNumber: 12 }];
+		{ name: 'vodka', 				isAlcohol: true, pumpNumber: 1 },
+		{ name: 'gin', 					isAlcohol: true, pumpNumber: 2 },
+		{ name: 'rum', 					isAlcohol: true, pumpNumber: 3 },
+		{ name: 'blue curacao', 		isAlcohol: true, pumpNumber: 4 },
+		{ name: 'ananas juice', 		isAlcohol: false, pumpNumber: 5 },
+		{ name: 'cherry juice', 		isAlcohol: false, pumpNumber: 6 },
+		{ name: 'orange juice', 		isAlcohol: false, pumpNumber: 7 },
+		{ name: 'bitter lemon', 		isAlcohol: false, pumpNumber: 8 },
+		{ name: 'tonic water', 			isAlcohol: false, pumpNumber: 9 },				
+		{ name: 'herbal lemonade', 		isAlcohol: false, pumpNumber: 10 },
+		{ name: 'bitter orange sirup', 	isAlcohol: false, pumpNumber: 11 },
+		{ name: 'soda', 				isAlcohol: false, pumpNumber: 12 }];
 	// this is the wiring between raspi and relais and pumps
 	pumpGpioMap: { pumpNo: number, relaisNumber: number, gpioNumber: number, pinNumber: number }[] = [
 		{ pumpNo: 1, relaisNumber: 1, gpioNumber: 2, pinNumber: 3 },
@@ -57,7 +57,7 @@ export class CocktailDispenser {
 		}
 	}
 	
-	async dispenseRecipe(recipe: CocktailRecipe) {
+	async dispenseRecipe(recipe: ICocktailRecipe) {
 
 		console.log(`Starting dispensing recipe '${recipe.name}'...`);
 		console.log("Ingredients:", recipe.ingredients);
@@ -83,6 +83,18 @@ export class CocktailDispenser {
 		}));
 
 		console.log(`Recipe '${recipe.name}' dispensed.`);
+	}
+
+	// return a list of all ingredients available
+	getIngredientList(): string[] {
+
+		const result: string[] = [];
+
+		for (let drink of this.drinkRepository) {
+			result.push(drink.name);
+		}
+
+		return result;
 	}
 
 	// testing proper function

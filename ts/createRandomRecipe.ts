@@ -1,6 +1,6 @@
 // Karl-Isis the 25001 Cocktail Mixing Bot (c) 2022-2023 by Christian Schüler, christianschueler.at
 
-import { CocktailRecipe } from "./CocktailRecipe";    
+import { ICocktailRecipe } from "./CocktailRecipe";    
 
 // compute a random integer number between min and max, including min and max
 function getRandomIntInclusive(min: number, max: number) {
@@ -13,14 +13,14 @@ function getRandomIntInclusive(min: number, max: number) {
 // TODO: alcohol: none, forced, random
 // @param maxDrinkSize_cl
 // @param maxIngredients - length of list of ingredients, e.g. 12
-export function createRandomRecipe(maxDrinkSize_cl: number, maxIngredients: number, alcohol: string): CocktailRecipe {
+export function createRandomRecipe(maxDrinkSize_cl: number, maxIngredients: number, alcohol: string): ICocktailRecipe {
 
     console.log("Creating random recipe...");
 
     // drink size: min 4 cl up to 16, maybe 20 cl.
 
     // empty recipe
-    let recipe: CocktailRecipe = { 
+    let recipe: ICocktailRecipe = { 
         ingredients: [5, 0, 0, 0, 0, 0, 5, 5, 5, 0, 0, 0],
         name: "random cocktail"
     }

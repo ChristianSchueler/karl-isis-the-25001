@@ -26,10 +26,7 @@
     "dotenv": "*",
     "express": "*",
     "openai": "*",
-    "onoff": "*",
-    "face-api.js": "*",
-    "canvas": "*",
-    "@tensorflow/tfjs-node": "*"
+    "onoff": "*"
   },
   "devDependencies": {
     "@types/node": "*",

@@ -96,9 +96,14 @@ async function main() {
 
 	// set up dispenser hardware
 	let cocktailDispenser = new CocktailDispenser();
+	const ingredients = cocktailDispenser.getIngredientList();
+	const ingredientsString = ingredients.join(", ");
+
+	// set up AI system description by added the current list of ingredients
+	let AISystemDescription = { alcohol: OpenAICocktailBot.karlIsisSystem.replace("%INGREDIENTS%", ingredientsString) }
 
 	// set up OpenAI cocktail recioe generator
-	let bot = new OpenAICocktailBot.OpenAICocktailBot("alcohol", ["a"], OpenAICocktailBot.karlIsisSystem, { apiKey: process.env.OPENAI_API_KEY, organization: process.env.OPENAI_ORGANIZATION, model: "gpt-3.5-turbo-1106" });
+	let bot = new OpenAICocktailBot.OpenAICocktailBot("alcohol", ingredients, AISystemDescription.alcohol, { apiKey: process.env.OPENAI_API_KEY, organization: process.env.OPENAI_ORGANIZATION, model: "gpt-3.5-turbo-1106" });
 	
 	// ***** main loop starts here
 	let recipe = await bot.pourMeADrink();

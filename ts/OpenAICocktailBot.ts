@@ -4,7 +4,7 @@ import OpenAI from "openai";
 import { ChatCompletion } from "openai/resources";
 import * as util from 'util';
 //import * as dirtyJson from 'dirty-json';
-import { CocktailRecipe } from "./CocktailRecipe";
+import { CocktailRecipe, ICocktailRecipe } from "./CocktailRecipe";
 
 let cocktailPrompt = `
 restrict yourself to the use only ingredients from this list: ["vodka", "rum", "gin",  "whisky", "campari", "lime juice", "orange juice", "strawberry juice", "raspberry juice", "pineapple juice", "bitter lemon", "tonic water", "water", "soda", "slice of orange", "slice of lemon"].
@@ -23,11 +23,11 @@ Return a valid JSON object.
 // this is what defines the scope or context of the AI bot
 const karlIsisSystem = `
 You are a cocktail mixing robot, you are able to pour cocktails with up to 9 different ingredients.
-You can use the following ingredients: vodka, gin, rum, orange juice, cherry juice, bitter lemon, tonic, pineapple juice, soda.
+You can use the following ingredients: %INGREDIENTS%.
 What I ask you to "pour me a cocktail", you create a recipe with your available ingredients and you create a cocktail name.
 A cocktail recipe consists of a list of amounts of ingredients measured in cl.
 A cocktail recipe contains at least 2 ingredients.
-A cocktail recipe contains at least 50% non-alcoholic ingredients.
+A cocktail recipe must contain a maximum of 4 cl of alcohol.
 The overall sum of all cocktail ingredient amounts for a single recipe must be at least 10 cl and is not allowed to exceed 20 cl.
 Do not repeat cocktail recipes. Be creative.
 Use ingredients such that after pouring 60 cocktails roughly 1 liter of every ingredient has been used.
@@ -139,15 +139,17 @@ export class OpenAICocktailBot {
     }
 
     // generates a random cocktail recipe
-    createRandomDrink(): CocktailRecipe {
+    createRandomDrink(): ICocktailRecipe {
         
         console.log(`OpenAICocktailBot '${this.name}' creating random cocktail.`);
+
+        // TODO!
 
         return {ingredients: [0], name: ""};
     }
 
     // creates a cocktail recipe via OpenAI
-    async pourMeADrink(): Promise<CocktailRecipe> {
+    async pourMeADrink(): Promise<ICocktailRecipe> {
 
         console.log(`OpenAICocktailBot '${this.name}' pour me a drink...`);
 
@@ -161,10 +163,11 @@ export class OpenAICocktailBot {
         let request = this.createChatRequest();
 
         try {
-			const completion = await this.openAI.chat.completions.create(request) as ChatCompletion;          // query OpenAI
+			const completion = await this.openAI.chat.completions.create(request) as ChatCompletion;          // query OpenAI, that might take a few secs
 		
             console.log(`OpenAICocktailBot '${this.name}' completion returned successfully.`);
 
+            // parse and interpret the result
             let result = completion.choices[0].message;
             let totalTokens: number = completion?.usage?.total_tokens ?? 0;     // 0 if undefined
 
@@ -172,16 +175,16 @@ export class OpenAICocktailBot {
             console.log("result:", result);
             console.log("tokens:", totalTokens);
 
-            // make sure to tell gtp about the whole conversion, also the response
+            // make sure to tell gtp (in the next run) about the whole conversion, also the response
             this.messages.push(result);
             
             let resultSplit = result?.content?.split(",") ?? ["",""];
             let cocktailName = resultSplit[1];
 
-            return {
-                 ingredients: resultSplit[0].split(" ").map(Number),
-                 name: cocktailName
-            }
+            let recipe = new CocktailRecipe(resultSplit[0].split(" ").map(Number), cocktailName);
+            recipe.normalize(10, 20);       // make sure drink size is fine
+
+            return recipe;
 
 		} catch (err) {
 
