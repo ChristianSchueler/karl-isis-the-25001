@@ -33,6 +33,7 @@ What I ask you to "pour me a cocktail", you create a random cocktail recipe with
 The following rules apply to cocktail recipes:
 - consist of a list of amounts of ingredients measured in cl
 - select only one alcoholic ingredient from your given list of alcoholic ingredients
+- the list must contain only one alcoholic ingredient
 - select between one and five non-alcoholic ingredients from your given list of non-alcoholic ingredients
 The overall sum of all cocktail ingredient amounts for a single recipe must be at least 10 cl and is not allowed to exceed 20 cl.
 Do not repeat cocktail recipes. Be creative.
@@ -44,6 +45,22 @@ Include unused ingrediets as 0 in the list.
 The order of the resulting numbers must be the same order as the given list of ingredients.
 Return a single recipe.
 `
+
+const karlIsisSystem2 = `
+You are a cocktail mixing robot, you are able to pour cocktails.
+Ingredients are measured in cl.
+What I ask you to "pour me a cocktail", you preform the following steps:
+First, select an alcoholic ingredient exclusively from the following list: vodka, gin, rum, blue curacao and select an amount between 2 cl and 4 cl.
+Second, select one to five non-alcoholic ingredients exclusively from the following list: ananas juice, cherry juice, orange juice, bitter lemon, tonic water, herbal lemonade, bitter orange sirup, soda and for each ingredient select an amount between 2 cl and 6 cl.
+Third, select a fancy cocktail name.
+Format your response as comma separated text: cocktail name, amount of alcoholic ingredient, the alcoholic ingredient, all non-alcoholic ingredients including amounts
+`
+
+// - a list of whole numbers separated by a single space character
+// - each number should represent the amount of the ingredient in cl
+// - use the ingredient order given by this list: vodka, gin, rum, blue curacao, ananas juice, cherry juice, orange juice, bitter lemon, tonic water, herbal lemonade, bitter orange sirup, soda
+// - Include unused ingrediets as 0 in the list.
+// - append to your response a comma and the cocktail name you chose
 
 export { karlIsisSystem };
 
@@ -192,7 +209,7 @@ export class OpenAICocktailBot {
             }
 
             console.log(`OpenAICocktailBot '${this.name}' error during OpenAI request: ${err}. We'll pour you a random drink instead.`);
-            return CocktailRecipe.randomRecipe(2, 4);
+            return CocktailRecipe.randomRecipe(true, 2, 4);
         }
     }
 

@@ -50,16 +50,19 @@ export class CocktailRecipe implements ICocktailRecipe {
         console.log("Drink normalized");
     }
 
-    static randomRecipe(minAlc: number, maxAlc: number): CocktailRecipe {
+    static randomRecipe(alcohol: boolean = true, minAlc?: number, maxAlc?: number): CocktailRecipe {
         console.log(`OpenAICocktailBot creating random cocktail...`);
+
+        minAlc ??= 2;
+        maxAlc ??= 4;
 
         let amounts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
-        let alcoholIndex = getRandomIntInclusive(0, 3);             // single alcohol selection
-        let alcoholAmount = getRandomIntInclusive(minAlc, maxAlc);  // limit alcoholo
-        amounts[alcoholIndex] = alcoholAmount;
-
-        if (global.debug) console.log(alcoholIndex, alcoholAmount);
+        if (alcohol) {
+            let alcoholIndex = getRandomIntInclusive(0, 3);             // single alcohol selection
+            let alcoholAmount = getRandomIntInclusive(minAlc, maxAlc);  // limit alcoholo
+            amounts[alcoholIndex] = alcoholAmount;
+        }
 
         let juiceCount = getRandomIntInclusive(1, 5);               // 1 to 5 more ingredients
         for (let i=1; i<=juiceCount; i++) {
