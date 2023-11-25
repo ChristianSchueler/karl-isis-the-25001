@@ -130,7 +130,7 @@ export class OpenAICocktailBot {
             content: ""
         }];*/
 
-        console.log(`OpenAICocktailBot '${this.name}' request: ${util.inspect(this.messages)}`);
+        if (global.debug) console.log(`OpenAICocktailBot '${this.name}' request: ${util.inspect(this.messages)}`);
 
         return {
             model: this.model,
@@ -171,7 +171,7 @@ export class OpenAICocktailBot {
             let result = completion.choices[0].message;
             let totalTokens: number = completion?.usage?.total_tokens ?? 0;     // 0 if undefined
 
-            console.log(util.inspect(completion));
+            if (global.debug) console.log(util.inspect(completion));
             console.log("result:", result);
             console.log("tokens:", totalTokens);
 

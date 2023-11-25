@@ -15,7 +15,10 @@ import fs from 'fs';
 import util from 'util';
 import { CocktailDispenser } from './CocktailDispenser';
 
-const inProduction = false;
+// make debug a global variable
+declare global {
+	var debug: boolean;
+}
 
 // remember console for later use
 const log_stdout = process.stdout;
@@ -82,6 +85,13 @@ async function main() {
 
 	dotenv.config();	// move ENV variables from .env into NodeJS environment
 
+	// set to true or any other value to activate it. leave it out or set to false to deactivate it
+	if (process.env.DEBUG) {
+		if (process.env.DEBUG == "false") global.debug = false;
+		else global.debug = true;
+	}
+	else global.debug = false;
+
 	// gracefully stop if OpenAI API key not provided and help developer fix it
 	if (process.env.OPENAI_API_KEY == undefined) {
 		console.log("OpenAI API key not defined. Please set OPENAI_API_KEY environment variable. Exiting.");
@@ -137,8 +147,9 @@ async function main() {
 			running = false;
 		} catch (e) {
 			console.error("error in main:", e);
-			if (!inProduction) running = false;	// if not in production mode, terminate immediately after first error. otherwise, continue into endless loop
-			// -> restart using a loop
+			if (debug) running = false;		// if not in production mode, terminate immediately after first error. otherwise, continue into endless loop
+			
+			// by default -> restart using a loop in case of error to keep it running
 		}
 	}
 })();
