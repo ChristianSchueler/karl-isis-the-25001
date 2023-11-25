@@ -17,6 +17,7 @@ import { CocktailDispenser } from './CocktailDispenser';
 
 const inProduction = false;
 
+// remember console for later use
 const log_stdout = process.stdout;
 
 // overload console.log
@@ -25,7 +26,8 @@ console.log = function(...d) {
 	let output = util.format(...d) + '\n';
 	
 	let today: Date = new Date();
-	let dateString = today.getFullYear().toString() + '-' + (today.getMonth()+1).toString().padStart(2, '0') + '-' + (today.getDay()+1).toString().padStart(2, '0');
+
+	let dateString = today.getFullYear().toString() + '-' + (today.getMonth()+1).toString().padStart(2, '0') + '-' + today.getDate().toString().padStart(2, '0');
 
 	// TODO: uh-oh crashes when logs folder does not exist
   	fs.appendFileSync(process.cwd() + '/logs/console-' + dateString + '.log', output);
