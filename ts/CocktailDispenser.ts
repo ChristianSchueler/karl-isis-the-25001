@@ -114,6 +114,15 @@ export class CocktailDispenser {
 	}
 	
 	async fillOnStart() {
+		for (let index in this.pumps) {
+			await this.pumps[index].dispense(20);
+		}
+	}
+
+	async clean() {
+		for (let index in this.pumps) {
+			await this.pumps[index].dispense(100);
+		}
 	}
 
 	async run() {

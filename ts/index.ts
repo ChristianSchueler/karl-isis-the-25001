@@ -26,15 +26,16 @@ const log_stdout = process.stdout;
 
 // overload console.log
 console.log = function(...d) {
-  
-	let output = util.format(...d) + '\n';
-	
+
 	let today: Date = new Date();
 
+	let output = util.format(...d) + '\n';
+
+	let timeString = (today.getHours()+1).toString().padStart(2, '0') + ':' + today.getMinutes().toString().padStart(2, '0') + ':' + today.getSeconds().toString().padStart(2, '0') + "." + today.getMilliseconds().toString().padStart(3, '0');
 	let dateString = today.getFullYear().toString() + '-' + (today.getMonth()+1).toString().padStart(2, '0') + '-' + today.getDate().toString().padStart(2, '0');
 
 	// TODO: uh-oh crashes when logs folder does not exist
-  	fs.appendFileSync(process.cwd() + '/logs/console-' + dateString + '.log', output);
+  	fs.appendFileSync(process.cwd() + '/logs/console-' + dateString + '.log', timeString + " - " + output);
 	log_stdout.write(output);
 };
 
@@ -99,14 +100,6 @@ async function main() {
 		process.exit(1);
 	}
 
-	// set up keyboard debug and maintenace controls
-	/*const stdin = process.openStdin();
-
-	stdin.resume();
-	stdin.on("data", function (keydata) {
-		process.stdout.write("output: " + keydata);
-	});*/
-
 	// set up dispenser hardware
 	let cocktailDispenser = new CocktailDispenser();
 	const ingredients = cocktailDispenser.getIngredientList();
@@ -119,14 +112,48 @@ async function main() {
 	let bot = new OpenAICocktailBot.OpenAICocktailBot("alcohol", ingredients, AISystemDescription.alcohol, { apiKey: process.env.OPENAI_API_KEY, organization: process.env.OPENAI_ORGANIZATION, model: "gpt-3.5-turbo-1106" });
 	
 	// ***** main loop starts here
-	let recipe = await bot.pourMeADrink();
-	//let recipe = CocktailRecipe.randomRecipe(2, 4);
-	console.log(recipe);
+	// set up keyboard debug and maintenace controls
+	process.stdin.setRawMode(true);
+	process.stdin.setEncoding( 'utf8' );
+	const stdin = process.openStdin();
 
-	// et voilà
-	await cocktailDispenser.dispenseRecipe(recipe);
+	stdin.resume();
+	
+	stdin.on("data", async function (keydata) {
+		process.stdout.write("output: " + keydata);
 
-	console.log('Dispensing finished.');
+		if (keydata === '\u0003' ) {
+			process.exit();
+		}
+
+		if (keydata == "a") {
+			let recipe = await bot.pourMeADrink();
+			console.log(recipe);
+
+			// et voilà
+			await cocktailDispenser.dispenseRecipe(recipe);
+
+			console.log('Dispensing finished.');
+		}
+
+		if (keydata == "b") {
+			let recipe = CocktailRecipe.randomRecipe(true, 2, 4);
+			console.log(recipe);
+
+			// et voilà
+			await cocktailDispenser.dispenseRecipe(recipe);
+
+			console.log('Dispensing finished.');
+		}
+
+		if (keydata == "c") {
+			console.log('Cleaning...');
+
+			await cocktailDispenser.clean();
+
+			console.log('Cleaned.');
+		}
+	});
 
 	//let s = new Server();
 	//await s.start();
