@@ -119,7 +119,7 @@ async function main() {
 	readline.emitKeypressEvents(process.stdin);
 	process.stdin.setRawMode(true);
 
-	process.stdin.on('keypress', (key, data) => {
+	process.stdin.on('keypress', async (key, data) => {
 		// check for abort Ctrl-C
 		if (data.ctrl && data.name === 'c') {
 			console.log("Exiting Karl-Isis the 25001. Have a nice day, bye-bye.");
@@ -127,6 +127,8 @@ async function main() {
 		}
 		
 		if (global.debug) console.log('key pressed:', data.name);
+
+		let recipe;
 
 		switch (data.name) {
 			case "f1": cocktailDispenser.togglePump(0); break;
@@ -141,6 +143,36 @@ async function main() {
 			case "f10": cocktailDispenser.togglePump(9); break;
 			case "f11": cocktailDispenser.togglePump(10); break;
 			case "f12": cocktailDispenser.togglePump(11); break;
+
+			case "a":		// AI cocktail
+				recipe = await bot.pourMeADrink();
+				console.log(recipe);
+	
+				// et voilà
+				await cocktailDispenser.dispenseRecipe(recipe); 
+	
+				console.log('Dispensing finished.');
+			break;
+	
+			case "r":		// random
+				recipe = CocktailRecipe.randomRecipe(true, 2, 4);
+				console.log(recipe);
+	
+				// et voilà
+				await cocktailDispenser.dispenseRecipe(recipe);
+	
+				console.log('Dispensing finished.');
+			break;
+
+			case "n":		// Nicolas alcohol-free random cocktails
+				recipe = CocktailRecipe.randomRecipe(false);
+				console.log(recipe);
+	
+				// et voilà
+				await cocktailDispenser.dispenseRecipe(recipe);
+	
+				console.log('Dispensing finished.');
+			break;
 		}
 	});
 

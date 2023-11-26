@@ -63,6 +63,10 @@ export class CocktailRecipe implements ICocktailRecipe {
             let alcoholAmount = getRandomIntInclusive(minAlc, maxAlc);  // limit alcoholo
             amounts[alcoholIndex] = alcoholAmount;
         }
+        else {  // alcohol-free cocktail replace alcohol with water
+            let waterAmount = getRandomIntInclusive(minAlc, maxAlc);    // limit water
+            amounts[11] = waterAmount;      // currently, water is always P12 (index 11)
+        }
 
         let juiceCount = getRandomIntInclusive(1, 5);               // 1 to 5 more ingredients
         for (let i=1; i<=juiceCount; i++) {
@@ -71,13 +75,13 @@ export class CocktailRecipe implements ICocktailRecipe {
             let juiceIndex = 0;
             do {
                 juiceIndex = getRandomIntInclusive(4, 11);
-            } while (amounts[juiceIndex] > 0);
+            } while (amounts[juiceIndex] > 0); 
 
             let juiceAmount = 0;
             if (juiceIndex == 10) juiceAmount = 0.5;                  // limit orange sirup
             else juiceAmount = getRandomIntInclusive(1, 2) * 2;        // 2 or 4 cl
 
-            amounts[juiceIndex] = juiceAmount;
+            amounts[juiceIndex] += juiceAmount;         // increase, since we may add more water
         }
 
         let recipe = new CocktailRecipe(amounts, "random cocktail");
