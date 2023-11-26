@@ -31,8 +31,8 @@ export class CocktailDispenser {
 		{ pumpNo: 6, relaisNumber: 6, gpioNumber: 27, pinNumber: 13 },
 		{ pumpNo: 7, relaisNumber: 16, gpioNumber: 21, pinNumber: 40 },
 		{ pumpNo: 8, relaisNumber: 15, gpioNumber: 20, pinNumber: 38 },
-		{ pumpNo: 9, relaisNumber: 14, gpioNumber: 16, pinNumber: 36 },
-		{ pumpNo: 10, relaisNumber: 13, gpioNumber: 26, pinNumber: 37 },
+		{ pumpNo: 9, relaisNumber: 13, gpioNumber: 26, pinNumber: 37 },
+		{ pumpNo: 10, relaisNumber: 14, gpioNumber: 16, pinNumber: 36 },
         { pumpNo: 11, relaisNumber: 12, gpioNumber: 13, pinNumber: 33 },
         { pumpNo: 12, relaisNumber: 11, gpioNumber: 19, pinNumber: 33 }];
 	// wiring between raspi and motor controller
