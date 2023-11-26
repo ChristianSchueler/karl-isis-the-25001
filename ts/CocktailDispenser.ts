@@ -132,8 +132,23 @@ export class CocktailDispenser {
 		}));
 	}
 	
-	async pump(id: number, amount: number) {
+	// dispense from pump <id> this given amount
+	async dispensePump(id: number, amount: number) {
 		await this.pumps[id].dispense(amount);
+	}
+
+	// return internal pump objects
+	getPump(id: number): IngredientPump {
+		return this.pumps[id];
+	}
+
+	// return internal pump objects
+	togglePump(id: number) {
+		if (id < 0 || id >= this.pumps.length) return;
+
+		const p = this.pumps[id];
+		if (p.isDispensing) p.stop();
+		else p.start();
 	}
 
 	async run() {

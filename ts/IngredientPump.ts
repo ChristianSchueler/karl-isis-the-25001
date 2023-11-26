@@ -62,6 +62,19 @@ export class IngredientPump {
 		await this.dispense(IngredientPump.amountInTubes_ml);
 	}
 	
+	// start the pump
+	async start() {
+		
+		console.log(`Starting pump ${this.name}...`);
+		
+		// signal to start the pump
+		await this.pin.write(Gpio.LOW);
+
+		this.isDispensing = true;
+
+		console.log(`Pump ${this.name } started.`);
+    }
+
 	// immediately stop any dispensing
 	async stop() {
 		
@@ -70,13 +83,8 @@ export class IngredientPump {
 		// stop dispensing
 		await this.pin.write(Gpio.HIGH);
 		
-		console.log(`Pump ${this.name } stopped.`);
 		this.isDispensing = false;
 
-        return;
-	}
-	
-	//async dispense(dose_ml: number): Promise<string> {
-    //    return await Promise.resolve("OK"); 
-    //}
+		console.log(`Pump ${this.name } stopped.`);
+	}	
 }

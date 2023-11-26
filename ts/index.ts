@@ -15,6 +15,7 @@ import fs from 'fs';
 import util from 'util';
 import { CocktailDispenser } from './CocktailDispenser';
 import { CocktailRecipe } from './CocktailRecipe';
+import * as readline from 'readline';
 
 // make debug a global variable
 declare global {
@@ -84,6 +85,7 @@ async function main() {
 	//await ai.test();
 
 	console.log("Karl-Isis the 25001 (c) 2022 - 2023 by Christian Schüler. Welcome.");
+	console.log("Press Ctrl-C to exit.");
 
 	dotenv.config();	// move ENV variables from .env into NodeJS environment
 
@@ -113,12 +115,38 @@ async function main() {
 	
 	// ***** main loop starts here
 	// set up keyboard debug and maintenace controls
-	process.stdin.setRawMode(true);
-	process.stdin.setEncoding( 'utf8' );
-	const stdin = process.openStdin();
 
-	stdin.resume();
+	readline.emitKeypressEvents(process.stdin);
+	process.stdin.setRawMode(true);
+
+	process.stdin.on('keypress', (key, data) => {
+		// check for abort Ctrl-C
+		if (data.ctrl && data.name === 'c') {
+			console.log("Exiting Karl-Isis the 25001. Have a nice day, bye-bye.");
+			process.exit();
+		}
+		
+		if (global.debug) console.log('key pressed:', data.name);
+
+		switch (data.name) {
+			case "f1": cocktailDispenser.togglePump(0); break;
+			case "f2": cocktailDispenser.togglePump(1); break;
+			case "f3": cocktailDispenser.togglePump(2); break;
+			case "f4": cocktailDispenser.togglePump(3); break;
+			case "f5": cocktailDispenser.togglePump(4); break;
+			case "f6": cocktailDispenser.togglePump(5); break;
+			case "f7": cocktailDispenser.togglePump(6); break;
+			case "f8": cocktailDispenser.togglePump(7); break;
+			case "f9": cocktailDispenser.togglePump(8); break;
+			case "f10": cocktailDispenser.togglePump(9); break;
+			case "f11": cocktailDispenser.togglePump(10); break;
+			case "f12": cocktailDispenser.togglePump(11); break;
+		}
+	});
+
+	//stdin.resume();
 	
+	/*
 	stdin.on("data", async function (keydata) {
 		process.stdout.write("output: " + keydata);
 
@@ -131,7 +159,7 @@ async function main() {
 			console.log(recipe);
 
 			// et voilà
-			await cocktailDispenser.dispenseRecipe(recipe);
+			await cocktailDispenser.dispenseRecipe(recipe); 
 
 			console.log('Dispensing finished.');
 		}
@@ -170,7 +198,7 @@ async function main() {
 
 			console.log('Cleaned.');
 		}
-	});
+	});*/
 
 	//let s = new Server();
 	//await s.start();
