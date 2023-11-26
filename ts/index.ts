@@ -149,7 +149,24 @@ async function main() {
 		if (keydata == "c") {
 			console.log('Cleaning...');
 
-			await cocktailDispenser.clean();
+			await cocktailDispenser.cleanSerial(10);
+
+			console.log('Cleaned.');
+		}
+
+		if (keydata == "d") {
+			console.log('Cleaning...');
+
+			await cocktailDispenser.cleanParallel(10);
+
+			console.log('Cleaned.');
+		}
+
+		// 51 s für 100 ml
+		if (keydata == "e") {
+			console.log('Cleaning...');
+
+			await cocktailDispenser.pump(0, 20);
 
 			console.log('Cleaned.');
 		}
