@@ -33,7 +33,7 @@ export class IngredientPump {
 	async dispense(dose_cl: number) {
 		let duration_ms = dose_cl*10 / (IngredientPump.flow_ml_m / 60) * 1000;
 
-		console.log(`Dispensing ${dose_cl} cl of ${this.name } over ${duration_ms} ms...`);
+		console.log(`Dispensing ${dose_cl} cl of ${this.name } over ${(duration_ms/1000.).toPrecision(3)} s...`);
 		
 		if (this.isDispensing) {
 			console.log(`Oh no! Already dispensing ${this.name }. Cancelling new request!`);

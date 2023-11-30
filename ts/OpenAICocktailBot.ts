@@ -6,6 +6,8 @@ import * as util from 'util';
 //import * as dirtyJson from 'dirty-json';
 import { CocktailRecipe, ICocktailRecipe } from "./CocktailRecipe";
 
+export enum AISystem { JsonResult, ListResult, PreventAlcoholicGpt }
+
 // OLD
 let cocktailPrompt = `
 restrict yourself to the use only ingredients from this list: ["vodka", "rum", "gin",  "whisky", "campari", "lime juice", "orange juice", "strawberry juice", "raspberry juice", "pineapple juice", "bitter lemon", "tonic water", "water", "soda", "slice of orange", "slice of lemon"].
@@ -54,7 +56,7 @@ What I ask you to "pour me a cocktail", you preform the following steps:
 First, select an alcoholic ingredient exclusively from the following list: vodka, gin, rum, blue curacao and select an amount between 2 cl and 4 cl.
 Second, select one to five non-alcoholic ingredients exclusively from the following list: ananas juice, cherry juice, orange juice, bitter lemon, tonic water, herbal lemonade, bitter orange sirup, soda and for each ingredient select an amount between 2 cl and 6 cl.
 Third, select a fancy cocktail name.
-Format your response as comma separated text: cocktail name, amount of alcoholic ingredient, the alcoholic ingredient, all non-alcoholic ingredients including amounts
+Format your response as comma separated text: cocktail name, amount of alcoholic ingredient and alcoholic ingredient name, all non-alcoholic ingredients including amounts
 `
 
 // - a list of whole numbers separated by a single space character
@@ -62,8 +64,6 @@ Format your response as comma separated text: cocktail name, amount of alcoholic
 // - use the ingredient order given by this list: vodka, gin, rum, blue curacao, ananas juice, cherry juice, orange juice, bitter lemon, tonic water, herbal lemonade, bitter orange sirup, soda
 // - Include unused ingrediets as 0 in the list.
 // - append to your response a comma and the cocktail name you chose
-
-export { karlIsisSystem };
 
 // let karlIsisSystem = `
 // You are a cocktail mixing robot, you are able to pour cocktails with up to 12 different ingredients.
@@ -98,14 +98,24 @@ export class OpenAICocktailBot {
     openAI: OpenAI;                                 // manages open ai requests
     model: string;                                  // openai model to be used, eg. gpt-4
     messages: Array<OpenAI.Chat.ChatCompletionMessageParam> = [];                        // holds the conversion messages and roles, see chatgpt
+    aiSystem: AISystem;                             //
 	
-    constructor(name: string, ingredients: string[], systemDescription: string, openAIConfig: OpenAIConfig) {
+    constructor(name: string, ingredients: string[], aiSystem: AISystem, openAIConfig: OpenAIConfig) {
 
         console.log(`OpenAICocktailBot '${name}' constructing...`);
 
+        this.aiSystem = aiSystem;
         this.name = name;
         this.ingredients = ingredients;
-        this.system = systemDescription;
+        switch (this.aiSystem) {
+            case AISystem.JsonResult: this.system = cocktailPrompt; break;
+            case AISystem.ListResult: 
+                this.system = karlIsisSystem;
+                const ingredientsString = ingredients.join(", ");
+                this.system.replace("%INGREDIENTS%", ingredientsString);
+                break;
+            case AISystem.PreventAlcoholicGpt: this.system = karlIsisSystem2; break;
+        }
 
         this.model = openAIConfig.model ?? "gpt-3.5-turbo-1106";    // defaults to latest gpt-3 turbo
 
@@ -191,14 +201,31 @@ export class OpenAICocktailBot {
 
             // make sure to tell gtp (in the next run) about the whole conversion, also the response
             this.messages.push(result);
-            
-            let resultSplit = result?.content?.split(",") ?? ["",""];
-            let cocktailName = resultSplit[1];
 
-            let recipe = new CocktailRecipe(resultSplit[0].split(" ").map(Number), cocktailName);
-            recipe.normalize(10, 20);       // make sure drink size is fine
+            // interpret result based on prompt
+            switch (this.aiSystem) {
+                case AISystem.JsonResult: return new CocktailRecipe([], ""); break; // NOPE
 
-            return recipe;
+                case AISystem.ListResult: 
+                    let resultSplit = result?.content?.split(",") ?? ["",""];
+                    let cocktailName = resultSplit[1];
+        
+                    let recipe = new CocktailRecipe(resultSplit[0].split(" ").map(Number), cocktailName);
+                    recipe.normalize(10, 20);       // make sure drink size is fine
+        
+                    return recipe;        
+                    break;
+
+                case AISystem.PreventAlcoholicGpt: // "Pirate's Paradise, 3 cl rum, 4 cl ananas juice, 3 cl cherry juice"
+                    //let split = result?.content?.split(",") ?? ["",""];
+                    //let name = split?.shift()?.trim() ?? "";
+                    //let ingredients = [];
+                    return CocktailRecipe.fromPreventAlcoholicGpt(result?.content ?? "", this.ingredients);
+                    
+                    break;
+
+                default: return new CocktailRecipe([], "");
+            }
 
 		} catch (err) {
 

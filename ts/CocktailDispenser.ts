@@ -60,12 +60,12 @@ export class CocktailDispenser {
 	async dispenseRecipe(recipe: CocktailRecipe) {
 
 		console.log(`Starting dispensing recipe '${recipe.name}'...`);
-		console.log("Ingredients:", recipe.ingredients);
+		console.log("Ingredients:", recipe.ingredients.join(" "));
 		console.log("Drink size:", recipe.size());
 
 		let pumps: IngredientPump[] = [];
         let amounts: number[] = [];
-	
+
         // collect all necessary pumps
         for (let index=0; index<12; index++) {
             let amount = recipe.ingredients[index];

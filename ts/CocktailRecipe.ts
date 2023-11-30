@@ -106,4 +106,39 @@ export class CocktailRecipe implements ICocktailRecipe {
 
         return r;
     }
+
+    isValid(): boolean {
+        if (this.name.length ==0 ) return false;
+        let sum = 0;
+        for (let i of this.ingredients) sum += i;
+        if (sum <= 4) return false;     // too small for cocktail, mabye even 0
+
+        return true;
+    }
+
+    // "Pirate's Paradise, 3 cl rum, 4 cl ananas juice, 3 cl cherry juice"
+    static fromPreventAlcoholicGpt(result: string, ingredientsList: string[]): CocktailRecipe {
+        let split = result.split(", ") ?? ["",""];
+        let name = split?.shift()?.trim() ?? "";
+        let amounts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];     // 12
+
+        for (let i=0; i<split.length; i++) {
+            let ingredient = split[i];      // 4 cl vodka
+            let ingredientSplit = ingredient.split(" ");    // ["4", "cl", "vodka"]
+            if (global.debug) console.log(ingredientSplit);
+
+            let amount = Number(ingredientSplit.shift());
+
+            ingredientSplit.shift();        // remove "cl"
+            let ingredientName = ingredientSplit.join(" ");        // "vodka"
+            
+            let dispenserIndex = ingredientsList.indexOf(ingredientName);       // find name of ingredient in ordered ingredient list of dispenser
+            if (dispenserIndex >= 0) {
+                
+                amounts[dispenserIndex] = amount;
+            }
+        }
+
+        return new CocktailRecipe(amounts, name);
+    }
 }
