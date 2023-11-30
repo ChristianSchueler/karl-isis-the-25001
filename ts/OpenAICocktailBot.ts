@@ -56,7 +56,7 @@ What I ask you to "pour me a cocktail", you preform the following steps:
 First, select an alcoholic ingredient exclusively from the following list: vodka, gin, rum, blue curacao and select an amount between 2 cl and 4 cl.
 Second, select one to five non-alcoholic ingredients exclusively from the following list: ananas juice, cherry juice, orange juice, bitter lemon, tonic water, herbal lemonade, bitter orange sirup, soda and for each ingredient select an amount between 2 cl and 6 cl.
 Third, select a fancy cocktail name.
-Format your response as comma separated text: cocktail name, amount of alcoholic ingredient and alcoholic ingredient name, all non-alcoholic ingredients including amounts
+Format your response as comma separated text: cocktail name, amount of alcoholic ingredient and alcoholic ingredient name separated by a single space, all non-alcoholic ingredients including amounts
 `
 
 // - a list of whole numbers separated by a single space character
