@@ -112,7 +112,13 @@ async function main() {
 
 	// set up OpenAI cocktail recioe generator
 	let bot = new OpenAICocktailBot.OpenAICocktailBot("alcohol", ingredients, AISystemDescription.alcohol, { apiKey: process.env.OPENAI_API_KEY, organization: process.env.OPENAI_ORGANIZATION, model: "gpt-3.5-turbo-1106" });
-	
+
+	console.log("f1...f12 start/stop dispensing");
+	console.log("a        AI cocktail");
+	console.log("r        (r)andom cocktail");
+	console.log("n        random (n)icolas cocktail with alcohol");
+	console.log("Ctrl-c   quit");
+
 	// ***** main loop starts here
 	// set up keyboard debug and maintenace controls
 
@@ -146,7 +152,7 @@ async function main() {
 
 			case "a":		// AI cocktail
 				recipe = await bot.pourMeADrink();
-				console.log(recipe);
+				console.log(recipe.toString(cocktailDispenser));
 	
 				// et voilà
 				await cocktailDispenser.dispenseRecipe(recipe); 
@@ -156,7 +162,7 @@ async function main() {
 	
 			case "r":		// random
 				recipe = CocktailRecipe.randomRecipe(true, 2, 4);
-				console.log(recipe);
+				console.log(recipe.toString(cocktailDispenser));
 	
 				// et voilà
 				await cocktailDispenser.dispenseRecipe(recipe);
@@ -166,7 +172,7 @@ async function main() {
 
 			case "n":		// Nicolas alcohol-free random cocktails
 				recipe = CocktailRecipe.randomRecipe(false);
-				console.log(recipe);
+				console.log(recipe.toString(cocktailDispenser));
 	
 				// et voilà
 				await cocktailDispenser.dispenseRecipe(recipe);
@@ -249,7 +255,7 @@ async function main() {
     while (running) {
 		try {
 			await main();
-			console.log("Exiting Karl-Isis the 25001. Have a nice day, bye-bye.");
+			//console.log("Exiting Karl-Isis the 25001. Have a nice day, bye-bye.");
 			running = false;
 		} catch (e) {
 			console.error("error in main:", e);

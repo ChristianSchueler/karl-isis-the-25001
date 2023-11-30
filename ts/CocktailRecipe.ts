@@ -1,5 +1,7 @@
 // Karl-Isis the 25001 Cocktail Mixing Bot (c) 2022-2023 by Christian Schüler, christianschueler.at
 
+import { CocktailDispenser } from "./CocktailDispenser";
+
 export interface ICocktailRecipe {
     ingredients: number[];      // a list of amounts of all ingridients, ordered
     name: string;
@@ -50,6 +52,7 @@ export class CocktailRecipe implements ICocktailRecipe {
         console.log("Drink normalized");
     }
 
+    // return a random recipe
     static randomRecipe(alcohol: boolean = true, minAlc?: number, maxAlc?: number): CocktailRecipe {
         console.log(`OpenAICocktailBot creating random cocktail...`);
 
@@ -87,5 +90,20 @@ export class CocktailRecipe implements ICocktailRecipe {
         let recipe = new CocktailRecipe(amounts, "random cocktail");
         recipe.normalize(10, 20);
         return recipe;
+    }
+
+    // make cocktail recipe a very short recipe string
+    toString(dispenser: CocktailDispenser): string {
+        let r = this.name + ": ";
+        let first=true;
+        for (let i=0; i<this.ingredients.length; i++) {
+            if (this.ingredients[i] > 0) {
+                if (first) first=false; 
+                else r += ", "; 
+                r += this.ingredients[i].toPrecision(2) + " cl " + dispenser.pumps[i].name;
+            }
+        }
+
+        return r;
     }
 }
