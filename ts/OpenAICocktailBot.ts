@@ -185,6 +185,8 @@ export class OpenAICocktailBot {
 
         // this uses the messages to form a request
         let request = this.createChatRequest();
+        
+        console.log("Waiting for OpenAI GTP API reply...");
 
         try {
 			const completion = await this.openAI.chat.completions.create(request) as ChatCompletion;          // query OpenAI, that might take a few secs
