@@ -16,6 +16,7 @@ import util from 'util';
 import { CocktailDispenser } from './CocktailDispenser';
 import { CocktailRecipe } from './CocktailRecipe';
 import * as readline from 'readline';
+import { app, BrowserWindow } from "electron";
 
 // make debug a global variable
 declare global {
@@ -46,31 +47,6 @@ console.log = function(...d) {
 
 // main entry point
 async function main() {
- 
-	// Quit when all windows are closed.
-	/*app.on('window-all-closed', () => {
-		// On macOS it is common for applications and their menu bar
-		// to stay active until the user quits explicitly with Cmd + Q
-		if (process.platform !== 'darwin') {
-			app.quit()
-		}
-	})
-
-	await app.whenReady();		// wait until electron window is open
-
-	var mainWindow = new BrowserWindow({
-        title: "Interdimensional Cocktail Portal",
-		show: false,
-		fullscreen: true,
-        kiosk: true,
-		autoHideMenuBar: true
-    });
-    
-    mainWindow.webContents.on("crashed", (e) => {
-		app.relaunch();
-		app.quit();
-	});
-*/
 
 	// button test
 	/*const button = new Gpio(4, 'in', 'rising', { debounceTimeout: 30 });
@@ -119,7 +95,7 @@ async function main() {
 	// set up keyboard debug and maintenace controls
 
 	readline.emitKeypressEvents(process.stdin);
-	process.stdin.setRawMode(true);
+	if (process.stdin.setRawMode != undefined) process.stdin.setRawMode(true);
 
 	process.stdin.on('keypress', async (key, data) => {
 		// check for abort Ctrl-C
@@ -238,14 +214,37 @@ async function main() {
 		}
 	});*/
 
-	//let s = new Server();
-	//await s.start();
+	let s = new Server();
+	await s.start();
 	
-    //mainWindow.maximize();
-    //mainWindow.loadFile('./../views/index.html');
-	//console.log("opeing URL: http://localhost:3000");
-	//mainWindow.loadURL("http://localhost:3000");
-    //mainWindow.show();
+	// Quit when all windows are closed.
+	app.on('window-all-closed', () => {
+		// On macOS it is common for applications and their menu bar
+		// to stay active until the user quits explicitly with Cmd + Q
+		if (process.platform !== 'darwin') {
+			app.quit()
+		}
+	})
+
+	await app.whenReady();		// wait until electron window is open
+
+	var mainWindow = new BrowserWindow({
+        title: "Interdimensional Cocktail Portal",
+		show: false,
+		fullscreen: true,
+        kiosk: true,
+		autoHideMenuBar: true
+    });
+    
+    mainWindow.webContents.on("crashed", (e) => {
+		app.relaunch();
+		app.quit();
+	});
+
+    mainWindow.maximize();
+	console.log("opening URL: http://localhost:5000");
+	mainWindow.loadURL("http://localhost:5000");
+    mainWindow.show();
 }
 
 // execute main function in async way and recover from error. main entry point.
