@@ -1,0 +1,23 @@
+{
+  "name": "media-pipe-test",
+  "version": "1.0.0",
+  "description": "",
+  "source": "src/index.ts",
+  "main": "dist/bundle.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+	  "build": "microbundle -i src/index.ts -o dist/bundle.js --no-pkg-main -f modern",
+    "watch": "microbundle -i src/index.ts -o dist/bundle.js --no-pkg-main -f modern --watch"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "@mediapipe/tasks-vision": "*",
+	  "gsap": "*",
+    "microbundle": "*",
+    "typescript": "*"
+  }
+}
