@@ -45,6 +45,25 @@ console.log = function(...d) {
 // 	//const pluginName = await import('../js/plugin_name.js');
 //}
 
+function isElectron() {
+    // Renderer process
+    if (typeof window !== 'undefined' && typeof window.process === 'object' && window.process.type === 'renderer') {
+        return true;
+    }
+
+    // Main process
+    if (typeof process !== 'undefined' && typeof process.versions === 'object' && !!process.versions.electron) {
+        return true;
+    }
+
+    // Detect the user agent when the `nodeIntegration` option is set to true
+    if (typeof navigator === 'object' && typeof navigator.userAgent === 'string' && navigator.userAgent.indexOf('Electron') >= 0) {
+        return true;
+    }
+
+    return false;
+}
+
 // main entry point
 async function main() {
 
@@ -158,93 +177,39 @@ async function main() {
 		}
 	});
 
-	//stdin.resume();
-	
-	/*
-	stdin.on("data", async function (keydata) {
-		process.stdout.write("output: " + keydata);
+	if (isElectron()) {
+		let s = new Server();
+		await s.start();
+		
+		// Quit when all windows are closed.
+		app.on('window-all-closed', () => {
+			// On macOS it is common for applications and their menu bar
+			// to stay active until the user quits explicitly with Cmd + Q
+			if (process.platform !== 'darwin') {
+				app.quit()
+			}
+		})
 
-		if (keydata === '\u0003' ) {
-			process.exit();
-		}
+		await app.whenReady();		// wait until electron window is open
 
-		if (keydata == "a") {
-			let recipe = await bot.pourMeADrink();
-			console.log(recipe);
+		var mainWindow = new BrowserWindow({
+			title: "Interdimensional Cocktail Portal",
+			show: false,
+			fullscreen: true,
+			kiosk: true,
+			autoHideMenuBar: true
+		});
+		
+		mainWindow.webContents.on("crashed", (e) => {
+			app.relaunch();
+			app.quit();
+		});
 
-			// et voilà
-			await cocktailDispenser.dispenseRecipe(recipe); 
-
-			console.log('Dispensing finished.');
-		}
-
-		if (keydata == "b") {
-			let recipe = CocktailRecipe.randomRecipe(true, 2, 4);
-			console.log(recipe);
-
-			// et voilà
-			await cocktailDispenser.dispenseRecipe(recipe);
-
-			console.log('Dispensing finished.');
-		}
-
-		if (keydata == "c") {
-			console.log('Cleaning...');
-
-			await cocktailDispenser.cleanSerial(10);
-
-			console.log('Cleaned.');
-		}
-
-		if (keydata == "d") {
-			console.log('Cleaning...');
-
-			await cocktailDispenser.cleanParallel(10);
-
-			console.log('Cleaned.');
-		}
-
-		// 51 s für 100 ml
-		if (keydata == "e") {
-			console.log('Cleaning...');
-
-			await cocktailDispenser.pump(0, 20);
-
-			console.log('Cleaned.');
-		}
-	});*/
-
-	let s = new Server();
-	await s.start();
-	
-	// Quit when all windows are closed.
-	app.on('window-all-closed', () => {
-		// On macOS it is common for applications and their menu bar
-		// to stay active until the user quits explicitly with Cmd + Q
-		if (process.platform !== 'darwin') {
-			app.quit()
-		}
-	})
-
-	await app.whenReady();		// wait until electron window is open
-
-	var mainWindow = new BrowserWindow({
-        title: "Interdimensional Cocktail Portal",
-		show: false,
-		fullscreen: true,
-        kiosk: true,
-		autoHideMenuBar: true
-    });
-    
-    mainWindow.webContents.on("crashed", (e) => {
-		app.relaunch();
-		app.quit();
-	});
-
-    mainWindow.maximize();
-	console.log("opening URL: http://localhost:5000");
-	mainWindow.loadURL("http://localhost:5000");
-    mainWindow.show();
+		mainWindow.maximize();
+		console.log("opening URL: http://localhost:5000");
+		mainWindow.loadURL("http://localhost:5000");
+		mainWindow.show();
+	}
 }
 
 // execute main function in async way and recover from error. main entry point.
