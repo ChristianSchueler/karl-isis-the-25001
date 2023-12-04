@@ -193,7 +193,7 @@ async function main() {
 		await app.whenReady();		// wait until electron window is open
 
 		var mainWindow = new BrowserWindow({
-			title: "Interdimensional Cocktail Portal",
+			title: "Karl-Isis the 25001",
 			show: false,
 			fullscreen: true,
 			kiosk: true,
