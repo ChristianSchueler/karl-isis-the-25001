@@ -2,8 +2,8 @@
   "name": "karl-isis-the-25001",
   "version": "1.0.0",
   "description": "Karl-Isis the 25001 Cocktail Mixing Bot",
-  "workspaces":[
-      "ui"
+  "workspaces": [
+    "ui"
   ],
   "main": "dist/index.js",
   "scripts": {
@@ -31,12 +31,13 @@
     "dotenv": "*",
     "express": "*",
     "openai": "*",
+    "socket.io": "^4.7.2",
     "onoff": "*"
   },
   "devDependencies": {
+    "@electron/rebuild": "*",
     "@types/node": "*",
-    "typescript": "*",
     "electron": "*",
-    "@electron/rebuild": "*"
+    "typescript": "*"
   }
 }

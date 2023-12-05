@@ -2,6 +2,7 @@
 
 const express = require('express');
 const http = require('http');
+const socket = require("socket.io");
 
 export class Server {
     server: any;
@@ -12,6 +13,9 @@ export class Server {
 
         const appExpress = express();
         this.server = http.createServer(appExpress);
+
+        // socket.io
+        const io = new socket(this.server);
 
         appExpress.use(express.static(__dirname + '/../ui'));
     }

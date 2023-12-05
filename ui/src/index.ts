@@ -4,6 +4,7 @@ import { Detection, FaceDetector, FilesetResolver } from "@mediapipe/tasks-visio
 import { ScaleToFitWindow } from "./ScaleToFitWindow.js";
 import { gsap } from "gsap";
 import { Dir } from "fs";
+import { io, Socket } from "socket.io-client";
 
 const debug = false;
 
@@ -216,6 +217,28 @@ export class Application {
     });
   }
 }
+
+// socket.io client
+interface ServerToClientEvents {
+  noArg: () => void;
+  basicEmit: (a: number, b: string, c: Buffer) => void;
+  withAck: (d: string, callback: (e: number) => void) => void;
+}
+
+interface ClientToServerEvents {
+  hello: () => void;
+}
+
+interface InterServerEvents {
+  ping: () => void;
+}
+
+interface SocketData {
+  name: string;
+  age: number;
+}
+
+const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io();
 
 // go!
 const app = new Application();

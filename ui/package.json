@@ -18,6 +18,7 @@
     "@mediapipe/tasks-vision": "*",
 	  "gsap": "*",
     "microbundle": "*",
-    "typescript": "*"
+    "typescript": "*",
+    "socket.io-client": "*"
   }
 }
