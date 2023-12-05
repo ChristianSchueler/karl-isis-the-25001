@@ -5,30 +5,35 @@ import { ScaleToFitWindow } from "./ScaleToFitWindow.js";
 import { gsap } from "gsap";
 import { Dir } from "fs";
 
+const debug = false;
+
 enum Direction { up, down };
 interface Face { x: number, y: number, valid: boolean };
+enum Position { top, middle, bottom };    // squat position
 
 /** @class SquatBot */
 export class SquatBot {
   // CONFIG. possibly TODO: move to .env
-  readonly targetSquats: number = 21;
-  readonly gameWinTimeout_s = 0;          // how long until the next game might start
+  readonly targetSquats: number = 3;
+  readonly gameWinTimeout_s = 10;          // how long until the next game might start
   readonly faceMinX: number = 100;        // only use faces in the center region
   readonly faceMaxX: number = 640-100;    // only use faces in the center region
   readonly gameStartTimeout_s = 3;        // how long to see a face for starting a game
-  readonly topOffset_px = 50;
-  readonly bottomOffset_px = 50;
+  readonly topOffset_px = 20;
+  readonly bottomOffset_px = 0;
   readonly squatFactor = 1.2;
+  readonly gameLeftTimeout_s = 3;         // cancel the game after 3 consecutive seconds without a face detected
 
   // game state
-  squats: number = 0;
-  lastFaceTime: number = Date.now();
-  lastWinTime: number = 0;
-  topY: number = 0;
-  bottomY: number = 0;
+  squats: number = 0;                     // counting the number of squats
+  lastFaceTime: number = Date.now();      // last time when a face has been detected
+  lastWinTime: number = 0;                // last time the user won
+  topY: number = 0;                       // upper limit the face has to reach to count as finished squat
+  bottomY: number = 0;                    // lower limit the face has to reach to count as finished squat
   gameRunning: boolean = false;
-  direction: Direction = Direction.down;
-  startTime: number = 0;
+  direction: Direction = Direction.down;  // current squat direction, used to counting valid squats
+  startTime: number = Date.now();         // time the game started
+  cocktailUnlocked: boolean = false;      // true, after won gamef, ready to pour a cocktail
 
   constructor() {
     console.log("SquatBot: contructor");
@@ -39,6 +44,7 @@ export class SquatBot {
 
     let face = { x: -1, y: -1, valid: false };
 
+    // no detections, no valid face
     if (d == undefined || d.length == 0) return face;
 
     let found = false;
@@ -49,6 +55,8 @@ export class SquatBot {
       if (bb) {
         face.x = bb.originX + bb.width/2;     // find center of face
         face.y = bb.originY + bb.height/2;
+
+        // TODO: check for left and right margin
         found = true;
       }
       else index++;
@@ -60,16 +68,39 @@ export class SquatBot {
     return face;
   }
 
+  // return position of the player during squatting
+  computePosition(face: Face): Position | undefined {
+
+    if (!face.valid) return undefined;
+
+    if (face.y < this.topY) return Position.top;
+    else if (face.y > this.bottomY) return Position.bottom;
+    else return Position.middle;
+  }
+
   analyzeFaces(d: Detection[]) {
 
     // find single valid face
     let face = this.extractFace(d);
+
+    // update time we last saw a valid face
+    if (face.valid) this.lastFaceTime = Date.now();
 
     // if recently won a game -> exit (game paused)
     if (Date.now() - this.lastWinTime <= this.gameWinTimeout_s*1000) return;
 
     if (this.gameRunning) {
 
+      // if the player left, abort the game
+      if (Date.now() - this.lastFaceTime > this.gameLeftTimeout_s*1000) { this.gameRunning = false; console.log("SquatBot: game cancelled"); return; }
+
+      // get current squat position and possibly count up
+      let position = this.computePosition(face);
+      if (position == Position.bottom && this.direction == Direction.down) { this.direction = Direction.up; console.log("SquatBot: squat down"); }  // change direction when down
+      else if (position == Position.top && this.direction == Direction.up) { this.squats++; this.direction = Direction.down; console.log("SquatBot: squat up. #squats:", this.squats);} // successfully completed a squat at the top 
+    
+      // game won!
+      if (this.squats == this.targetSquats) { this.cocktailUnlocked = true; this.gameRunning = false; this.lastWinTime = Date.now(); console.log("SquatBot: game won. Cocktail unlocked."); }
     }
     else {
 
@@ -92,6 +123,10 @@ export class SquatBot {
     this.bottomY = face.y * this.squatFactor - this.bottomOffset_px;
     this.direction = Direction.down;
     this.gameRunning = true;
+    this.cocktailUnlocked = false;
+
+    console.log("SquatBot: topY=", this.topY);
+    console.log("SquatBot: bottomY=", this.bottomY); 
   }
 }
 
@@ -170,7 +205,7 @@ export class Application {
         if (bb) {
           let centerX = bb.originX + bb.width / 2;
           let centerY = bb.originY + bb.height / 2;
-          console.log(centerX, centerY);
+          if (debug) console.log(centerX, centerY);
         }
       }
       this.lastVideoTime = this.video!.currentTime;

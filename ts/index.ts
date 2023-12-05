@@ -177,9 +177,10 @@ async function main() {
 		}
 	});
 
+	let s = new Server();
+	await s.start();
+		
 	if (isElectron()) {
-		let s = new Server();
-		await s.start();
 		
 		// Quit when all windows are closed.
 		app.on('window-all-closed', () => {
