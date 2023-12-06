@@ -2,36 +2,64 @@
 
 const express = require('express');
 const http = require('http');
-const socket = require("socket.io");
+import { Server } from 'socket.io';
+import * as SocketIOInterfaces from './../ui/src/SocketIOInterfaces';
 
-export class Server {
+export class KarlIsisServer {
     server: any;
+    io: Server<SocketIOInterfaces.ClientToServerEvents, SocketIOInterfaces.ServerToClientEvents, SocketIOInterfaces.InterServerEvents, SocketIOInterfaces.SocketData>;
 
     constructor() {
         
-        console.log("creating internal web server");
+        console.log("Creating web server...");
 
         const appExpress = express();
         this.server = http.createServer(appExpress);
 
         // socket.io
-        const io = new socket(this.server);
+        console.log("Creating socket.io server...");
+        this.io = new Server<
+            SocketIOInterfaces.ClientToServerEvents,
+            SocketIOInterfaces.ServerToClientEvents,
+            SocketIOInterfaces.InterServerEvents,
+            SocketIOInterfaces.SocketData>(this.server);
 
-        appExpress.use(express.static(__dirname + '/../ui'));
+        this.io.engine.on("connection_error", (err) => {
+            console.log(err.req);      // the request object
+            console.log(err.code);     // the error code, for example 1
+            console.log(err.message);  // the error message, for example "Session ID unknown"
+            console.log(err.context);  // some additional error context
+        });
+
+        this.io.on("connect", (socket) => {
+            console.log("socket.io connect");
+
+            socket.on("gameWon", () => {
+                console.log("socket: gameWon");
+            });
+
+            socket.emit("hi");
+        });
+
+        let path = __dirname + '/../../ui';
+        console.log("Server path:", path);
+        appExpress.use(express.static(path));
     }
 
     async start() {
-        console.log("starting internal web server....");
+        console.log("Starting web server...."); 
 
         return new Promise((resolve, reject) => {
             
             this.server.listen(5000, (error: any) => {
                 
                 if (error) {
+                    console.log("Web server error:", error);
                     reject(false);
                 }
                 else {
-                    console.log('internal web server ready: listening on *:5000');
+                    console.log('Web server ready: listening on *:5000');
+
                     resolve(true);
                 }
             });

@@ -19,6 +19,6 @@
 	  "gsap": "*",
     "microbundle": "*",
     "typescript": "*",
-    "socket.io-client": "*"
+    "socket.io-client": "^4.7.2"
   }
 }

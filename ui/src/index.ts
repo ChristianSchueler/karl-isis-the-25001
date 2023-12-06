@@ -5,8 +5,25 @@ import { ScaleToFitWindow } from "./ScaleToFitWindow.js";
 import { gsap } from "gsap";
 import { Dir } from "fs";
 import { io, Socket } from "socket.io-client";
+import * as SocketIOInterfaces from './SocketIOInterfaces.js';
 
 const debug = false;
+
+console.log("SquatBot: creating socket.io client...");
+const socket: Socket<
+  SocketIOInterfaces.ServerToClientEvents, 
+  SocketIOInterfaces.ClientToServerEvents> = io({autoConnect: true});
+
+socket.on("connect", () => {
+  console.log("SquatBot: socket.io connect.");
+
+  // console.log("SquatBot: emit gameWon...");
+  // socket.emit("gameWon");
+});
+
+socket.on("hi", () => { 
+  console.log("SquatBot: socket.io HI");
+});
 
 enum Direction { up, down };
 interface Face { x: number, y: number, valid: boolean };
@@ -35,9 +52,14 @@ export class SquatBot {
   direction: Direction = Direction.down;  // current squat direction, used to counting valid squats
   startTime: number = Date.now();         // time the game started
   cocktailUnlocked: boolean = false;      // true, after won gamef, ready to pour a cocktail
+  socket: Socket<SocketIOInterfaces.ServerToClientEvents, SocketIOInterfaces.ClientToServerEvents>;
 
-  constructor() {
-    console.log("SquatBot: contructor");
+  constructor(socket: Socket<
+    SocketIOInterfaces.ServerToClientEvents, 
+    SocketIOInterfaces.ClientToServerEvents>) {
+    
+      console.log("SquatBot: contructor");
+      this.socket = socket;
   }
 
   // find single valid face
@@ -101,7 +123,13 @@ export class SquatBot {
       else if (position == Position.top && this.direction == Direction.up) { this.squats++; this.direction = Direction.down; console.log("SquatBot: squat up. #squats:", this.squats);} // successfully completed a squat at the top 
     
       // game won!
-      if (this.squats == this.targetSquats) { this.cocktailUnlocked = true; this.gameRunning = false; this.lastWinTime = Date.now(); console.log("SquatBot: game won. Cocktail unlocked."); }
+      if (this.squats == this.targetSquats) { 
+        this.cocktailUnlocked = true; 
+        this.gameRunning = false; 
+        this.lastWinTime = Date.now(); 
+        this.socket.emit("gameWon");    // tell the server to unlock the cocktail buttons
+        console.log("SquatBot: game won. Cocktail unlocked."); 
+      }
     }
     else {
 
@@ -136,7 +164,7 @@ export class Application {
   lastVideoTime = -1;
   video?: HTMLVideoElement;
   faceDetector?: FaceDetector;
-  squatBot: SquatBot = new SquatBot();
+  squatBot: SquatBot = new SquatBot(socket);
 
   constructor() {
     console.log("Google Media Pipe Face Detection Test using Typescript, (c) 2023 Christian Schüler, christianschueler.at");
@@ -217,28 +245,6 @@ export class Application {
     });
   }
 }
-
-// socket.io client
-interface ServerToClientEvents {
-  noArg: () => void;
-  basicEmit: (a: number, b: string, c: Buffer) => void;
-  withAck: (d: string, callback: (e: number) => void) => void;
-}
-
-interface ClientToServerEvents {
-  hello: () => void;
-}
-
-interface InterServerEvents {
-  ping: () => void;
-}
-
-interface SocketData {
-  name: string;
-  age: number;
-}
-
-const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io();
 
 // go!
 const app = new Application();

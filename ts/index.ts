@@ -7,7 +7,7 @@
 //
 
 import * as dotenv from 'dotenv' // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
-import { Server } from "./server";
+import { KarlIsisServer } from "./server";
 import { OpenAICocktailRecipes } from "./openai";
 import { stringify } from "querystring";
 import * as OpenAICocktailBot from './OpenAICocktailBot';
@@ -177,7 +177,7 @@ async function main() {
 		}
 	});
 
-	let s = new Server();
+	let s = new KarlIsisServer();
 	await s.start();
 		
 	if (isElectron()) {
