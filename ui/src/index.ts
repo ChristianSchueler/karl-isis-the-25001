@@ -237,7 +237,7 @@ export class Application {
           if (debug) console.log(centerX, centerY);
         }
       }
-      if (this.video!.currentTime) this.lastVideoTime = this.video!.currentTime;
+      if (this.video) this.lastVideoTime = this.video.currentTime;
     }
 
     requestAnimationFrame(() => {

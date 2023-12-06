@@ -4,6 +4,7 @@ const express = require('express');
 const http = require('http');
 import { Server } from 'socket.io';
 import * as SocketIOInterfaces from '../ui/src/SocketIOInterfaces';
+import * as fs from 'fs';
 
 export class KarlIsisServer {
     public onGameWon?: () => void;
@@ -16,7 +17,23 @@ export class KarlIsisServer {
         console.log("Creating web server...");
 
         const appExpress = express();
-        this.server = http.createServer(appExpress);
+
+        for(let i = 0; i < process.argv.length; ++i) {
+            console.log(`index ${i} argument -> ${process.argv[i]}`);
+        }
+
+        if (process.argv[2] && process.argv[2] == 'secure') {
+            console.log("setting up secure server");
+
+            // Creating object of key and certificate for SSL 
+            const options = { 
+                key: fs.readFileSync("server.key"), 
+                cert: fs.readFileSync("server.cert"), 
+            };
+
+            this.server = http.createServer(options, appExpress);       // SSL
+        }
+        else this.server = http.createServer(appExpress);        // http
 
         // socket.io
         console.log("Creating socket.io server...");

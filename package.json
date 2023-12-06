@@ -14,6 +14,7 @@
     "watch": "tsc -w",
     "start": "node ./dist/ts/index.js",
     "startui": "electron ./dist/ts/index.js",
+    "startsecure": "node ./dist/ts/index.js secure",
     "electron-rebuild": "electron-rebuild"
   },
   "author": "Christian Schueler",
