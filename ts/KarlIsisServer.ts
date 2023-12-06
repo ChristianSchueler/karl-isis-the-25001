@@ -3,9 +3,11 @@
 const express = require('express');
 const http = require('http');
 import { Server } from 'socket.io';
-import * as SocketIOInterfaces from './../ui/src/SocketIOInterfaces';
+import * as SocketIOInterfaces from '../ui/src/SocketIOInterfaces';
 
 export class KarlIsisServer {
+    public onGameWon?: () => void;
+
     server: any;
     io: Server<SocketIOInterfaces.ClientToServerEvents, SocketIOInterfaces.ServerToClientEvents, SocketIOInterfaces.InterServerEvents, SocketIOInterfaces.SocketData>;
 
@@ -36,6 +38,8 @@ export class KarlIsisServer {
 
             socket.on("gameWon", () => {
                 console.log("socket: gameWon");
+
+                if (this.onGameWon) this.onGameWon();       // execute event handler
             });
 
             socket.emit("hi");

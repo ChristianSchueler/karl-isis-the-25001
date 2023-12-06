@@ -7,7 +7,7 @@
 //
 
 import * as dotenv from 'dotenv' // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
-import { KarlIsisServer } from "./server";
+import { KarlIsisServer } from "./KarlIsisServer";
 import { OpenAICocktailRecipes } from "./openai";
 import { stringify } from "querystring";
 import * as OpenAICocktailBot from './OpenAICocktailBot';
@@ -17,6 +17,7 @@ import { CocktailDispenser } from './CocktailDispenser';
 import { CocktailRecipe } from './CocktailRecipe';
 import * as readline from 'readline';
 import { app, BrowserWindow } from "electron";
+import { CocktailButtons } from './CocktailButtons';
 
 // make debug a global variable
 declare global {
@@ -97,11 +98,48 @@ async function main() {
 		process.exit(1);
 	}
 
+	// used for storing the current recipe
+	let recipe: CocktailRecipe;
+
+	// set up hardware buttons
+	let buttons = new CocktailButtons(1, 2);
+	buttons.enabled = false;		// disable buttons first
+
+	// AI cocktail
+	buttons.onButton1 = async () => {
+		buttons.enabled = false;		// disable buttons again to prevent pressing again
+
+		recipe = await bot.pourMeADrink();
+		console.log(recipe.toString(cocktailDispenser));
+		if (!recipe.isValid()) {
+			console.log("error, invalid recipe, maybe wrong formatting by GPT. I'll get you a radnom cocktail");
+			recipe = CocktailRecipe.randomRecipe(true, 2, 4);
+		}
+
+		// et voilà
+		await cocktailDispenser.dispenseRecipe(recipe); 
+
+		console.log('Dispensing finished.');	
+	};
+
+	// non-alcoholic cocktail
+	buttons.onButton2 = async () => {
+		buttons.enabled = false;		// disable buttons again to prevent pressing again
+
+		recipe = CocktailRecipe.randomRecipe(false);
+		console.log(recipe.toString(cocktailDispenser));
+
+		// et voilà
+		await cocktailDispenser.dispenseRecipe(recipe);
+
+		console.log('Dispensing finished.');
+	};
+
 	// set up dispenser hardware
 	let cocktailDispenser = new CocktailDispenser();
 	const ingredients = cocktailDispenser.getIngredientList();
 
-	// set up OpenAI cocktail recioe generator
+	// set up OpenAI cocktail recipe generator
 	let bot = new OpenAICocktailBot.OpenAICocktailBot("alcohol", ingredients, OpenAICocktailBot.AISystem.PreventAlcoholicGpt, { apiKey: process.env.OPENAI_API_KEY, organization: process.env.OPENAI_ORGANIZATION, model: "gpt-3.5-turbo-1106" });
 
 	console.log("f1...f12 start/stop dispensing");
@@ -124,8 +162,6 @@ async function main() {
 		}
 		
 		if (global.debug) console.log('key pressed:', data.name);
-
-		let recipe;
 
 		switch (data.name) {
 			case "f1": cocktailDispenser.togglePump(0); break;
@@ -179,6 +215,11 @@ async function main() {
 
 	let s = new KarlIsisServer();
 	await s.start();
+	s.onGameWon = () => {
+		console.log("Yay! Game won! Buttons are now enabled.");
+
+		buttons.enabled = true;
+	}
 		
 	if (isElectron()) {
 		

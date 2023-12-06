@@ -2,8 +2,13 @@
 
 import {sleep } from './sleep';
 
+export type High = 1;
+export type Low = 0;
+export type BinaryValue = High | Low;
+export type ValueCallback = (err: Error | null | undefined, value: BinaryValue) => void;
+
 export class Gpio {
-	constructor(x: number, y: string) {
+	constructor(x: number, y: string, dir?: string, opts?: {}) {
 		console.log('Running on Windows - only for development!');
 	}
 	static HIGH: number = 1;
@@ -17,5 +22,6 @@ export class Gpio {
 	async read(x: number) {
 		await sleep(1);
 		return;
-	}
+	};
+	watch(callback: ValueCallback): void {};
 }
