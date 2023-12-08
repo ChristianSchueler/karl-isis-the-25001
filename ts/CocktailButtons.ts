@@ -22,6 +22,8 @@ export class CocktailButtons {
     led2: Gpio;
     led3: Gpio;
 
+    timer?: NodeJS.Timeout = undefined;
+
     // number are GPIO numbers
     constructor(gpioPinAlcButton: number, gpioPinNonAlcButton: number, led1: number, led2: number, led3: number) {
 
@@ -51,6 +53,7 @@ export class CocktailButtons {
 
     // all leds off
     async ledsOff() {
+        console.log("All LEDs off");
         await this.led1.write(0);
         await this.led2.write(0);
         await this.led3.write(0);
@@ -58,6 +61,7 @@ export class CocktailButtons {
 
     // number: 1, 2, 3
     async ledOn(led: number) {
+        console.log("LED #" + led + "on");
         switch (led) {
             case 1: await this.led1.write(1); break;
             case 2: await this.led2.write(1); break;
@@ -67,6 +71,7 @@ export class CocktailButtons {
 
     // number: 1, 2, 3
     async ledOff(led: number) {
+        console.log("LED #" + led + "off");
         switch (led) {
             case 1: await this.led1.write(0); break;
             case 2: await this.led2.write(0); break;
@@ -79,5 +84,25 @@ export class CocktailButtons {
         await this.ledOn(led);      // on
         await sleep(duration_ms);   // wait
         await this.ledOff(led);     // off
+    }
+
+    // short on, then off
+    async ledBlinkContinuous(led: number, duration_ms: number = 300) {
+        
+        this.timer = setInterval(async () => {
+
+            await this.ledOn(led);      // on
+            await sleep(duration_ms);   // wait
+            await this.ledOff(led);     // off
+
+        }, duration_ms*2);
+    }
+
+    async ledBlinkStopContinuous(led: number) {
+
+        if (this.timer) {
+            clearInterval(this.timer);
+            this.timer = undefined;
+        }
     }
 }

@@ -127,8 +127,8 @@ export class SquatBot {
 
       // get current squat position and possibly count up
       let position = this.computePosition(face);
-      if (position == Position.bottom && this.direction == Direction.down) { this.direction = Direction.up; console.log("SquatBot: squat down"); }  // change direction when down
-      else if (position == Position.top && this.direction == Direction.up) { this.squats++; this.direction = Direction.down; console.log("SquatBot: squat up. #squats:", this.squats);} // successfully completed a squat at the top 
+      if (position == Position.bottom && this.direction == Direction.down) { this.direction = Direction.up; socket.emit("squatDown"); console.log("SquatBot: squat down"); }  // change direction when down
+      else if (position == Position.top && this.direction == Direction.up) { this.squats++; this.direction = Direction.down; socket.emit("squatUp"); console.log("SquatBot: squat up. #squats:", this.squats);} // successfully completed a squat at the top 
     
       // game won!
       if (this.squats == this.config.targetSquats) { 

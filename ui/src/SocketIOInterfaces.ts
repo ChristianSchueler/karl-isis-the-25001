@@ -18,11 +18,13 @@ export interface ServerToClientEvents {
     basicEmit: (a: number, b: string, c: Buffer) => void;
     withAck: (d: string, callback: (e: number) => void) => void;*/
     //hi: () => void;
-    setConfig: (config: SquatBotConfig) => void;
+    setConfig: (config: SquatBotConfig) => void;    // transmit config settings to frontend ui app
   }
   
   export interface ClientToServerEvents {
-    gameWon: () => void;
+    gameWon: () => void;                            // signal game won
+    squatDown: () => void;
+    squatUp: () => void;
   }
   
   export interface InterServerEvents {

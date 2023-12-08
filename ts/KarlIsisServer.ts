@@ -8,8 +8,10 @@ import { Server } from 'socket.io';
 import * as SocketIOInterfaces from '../ui/src/SocketIOInterfaces.js';
 
 export class KarlIsisServer {
-    public onGameWon?: () => void;
-    squatBotConfig: SocketIOInterfaces.SquatBotConfig;
+    public onGameWon?: () => void;                              // overwrite this to catch game won events
+    public onSquatDown?: () => void;
+    public onSquatUp?: () => void;
+    squatBotConfig: SocketIOInterfaces.SquatBotConfig;          // config values ready from .env
 
     server: any;
     io: Server<SocketIOInterfaces.ClientToServerEvents, SocketIOInterfaces.ServerToClientEvents, SocketIOInterfaces.InterServerEvents, SocketIOInterfaces.SocketData>;
@@ -70,6 +72,7 @@ export class KarlIsisServer {
             console.log(err.context);  // some additional error context
         });
 
+        // set up socket events
         this.io.on("connect", (socket) => {
             console.log("socket.io connect");
 
@@ -79,6 +82,19 @@ export class KarlIsisServer {
                 if (this.onGameWon) this.onGameWon();       // execute event handler
             });
 
+            socket.on("squatDown", () => {
+                console.log("socket: squatDown");
+
+                if (this.onSquatDown) this.onSquatDown();       // execute event handler
+            });
+
+            socket.on("squatUp", () => {
+                console.log("socket: squatUp");
+
+                if (this.onSquatUp) this.onSquatUp();       // execute event handler
+            });
+
+            // post config values to app
             socket.emit("setConfig", this.squatBotConfig);
         });
 

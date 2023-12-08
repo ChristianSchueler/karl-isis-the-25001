@@ -110,6 +110,10 @@ async function main() {
 	buttons.onButton1 = async () => {
 		buttons.enabled = false;		// disable buttons again to prevent pressing again
 
+		await buttons.ledsOff();		// turn off the lights
+		buttons.ledBlinkContinuous(1, 100);		// dont await...
+		buttons.ledBlinkContinuous(2, 100);
+
 		recipe = await bot.pourMeADrink();
 		console.log(recipe.toString(cocktailDispenser));
 		if (!recipe.isValid()) {
@@ -120,7 +124,11 @@ async function main() {
 		// et voilà
 		await cocktailDispenser.dispenseRecipe(recipe); 
 
-		console.log('Dispensing finished.');	
+		buttons.ledBlinkStopContinuous(1);
+		buttons.ledBlinkStopContinuous(2);
+		buttons.ledsOff();
+
+		console.log('Dispensing finished.');
 	};
 
 	// non-alcoholic cocktail
@@ -214,14 +222,29 @@ async function main() {
 		}
 	});
 
+	// create the server, hosting the html app for the camera
 	let s = new KarlIsisServer();
 	await s.start();
-	s.onGameWon = () => {
-		console.log("Yay! Game won! Buttons are now enabled.");
+	s.onGameWon = async () => {
+		console.log("SquatBot: Yay! Game won! Buttons are now enabled.");
+
+		await buttons.ledOn(1);
+		await buttons.ledOn(2);
 
 		buttons.enabled = true;
 	}
-		
+
+	s.onSquatDown = async () => {
+		console.log("SquatBot: squat down");
+		await buttons.ledBlink(2);
+	}
+
+	s.onSquatUp = async () => {
+		console.log("SquatBot: squat up");
+		await buttons.ledBlink(1);
+	}
+
+	// start electron app (i.e. window) only when using electron
 	if (isElectron()) {
 		
 		// Quit when all windows are closed.
