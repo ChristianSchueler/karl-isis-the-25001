@@ -27,6 +27,8 @@ export class CocktailButtons {
     // number are GPIO numbers
     constructor(gpioPinAlcButton: number, gpioPinNonAlcButton: number, led1: number, led2: number, led3: number) {
 
+        console.log("Setting up buttons...");
+        
         this.button1 = new Gpio(gpioPinAlcButton, 'in', 'rising', { debounceTimeout: 30 });
         this.button2 = new Gpio(gpioPinNonAlcButton, 'in', 'rising', { debounceTimeout: 30 });
 
@@ -61,7 +63,7 @@ export class CocktailButtons {
 
     // number: 1, 2, 3
     async ledOn(led: number) {
-        console.log("LED #" + led + "on");
+        console.log("LED #" + led + " on");
         switch (led) {
             case 1: await this.led1.write(1); break;
             case 2: await this.led2.write(1); break;
@@ -71,7 +73,7 @@ export class CocktailButtons {
 
     // number: 1, 2, 3
     async ledOff(led: number) {
-        console.log("LED #" + led + "off");
+        console.log("LED #" + led + " off");
         switch (led) {
             case 1: await this.led1.write(0); break;
             case 2: await this.led2.write(0); break;
