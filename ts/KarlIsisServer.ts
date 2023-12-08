@@ -8,12 +8,30 @@ import * as fs from 'fs';
 
 export class KarlIsisServer {
     public onGameWon?: () => void;
+    squatBotConfig: SocketIOInterfaces.SquatBotConfig;
 
     server: any;
     io: Server<SocketIOInterfaces.ClientToServerEvents, SocketIOInterfaces.ServerToClientEvents, SocketIOInterfaces.InterServerEvents, SocketIOInterfaces.SocketData>;
 
     constructor() {
-        
+
+        console.log("Reading squat bot config...");
+
+        // set config
+        // get config from .env file or ENV
+        this.squatBotConfig = new SocketIOInterfaces.SquatBotConfig();
+        if (process.env.targetSquats) this.squatBotConfig.targetSquats = parseInt(process.env.targetSquats);
+        if (process.env.gameWinTimeout_s) this.squatBotConfig.gameWinTimeout_s = parseInt(process.env.gameWinTimeout_s);
+        if (process.env.faceMinX) this.squatBotConfig.faceMinX = parseInt(process.env.faceMinX);
+        if (process.env.faceMaxX) this.squatBotConfig.faceMaxX = parseInt(process.env.faceMaxX);
+        if (process.env.gameStartTimeout_s) this.squatBotConfig.gameStartTimeout_s = parseInt(process.env.gameStartTimeout_s);
+        if (process.env.topOffset_px) this.squatBotConfig.topOffset_px = parseInt(process.env.topOffset_px);
+        if (process.env.bottomOffset_px) this.squatBotConfig.bottomOffset_px = parseInt(process.env.bottomOffset_px);
+        if (process.env.gameLeftTimeout_s) this.squatBotConfig.gameLeftTimeout_s = parseInt(process.env.gameLeftTimeout_s);
+        if (process.env.squatFactor) this.squatBotConfig.squatFactor = parseFloat(process.env.squatFactor);
+
+        console.log("Ssquat bot config:", this.squatBotConfig);
+
         console.log("Creating web server...");
 
         const appExpress = express();
@@ -59,7 +77,7 @@ export class KarlIsisServer {
                 if (this.onGameWon) this.onGameWon();       // execute event handler
             });
 
-            socket.emit("hi");
+            socket.emit("setConfig", this.squatBotConfig);
         });
 
         let path = __dirname + '/../../ui';

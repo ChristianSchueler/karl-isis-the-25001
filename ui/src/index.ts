@@ -21,8 +21,10 @@ socket.on("connect", () => {
   // socket.emit("gameWon");
 });
 
-socket.on("hi", () => { 
-  console.log("SquatBot: socket.io HI");
+socket.on("setConfig", (config: SocketIOInterfaces.SquatBotConfig) => { 
+  console.log("SquatBot: socket.io setConfig", config);
+
+  app.squatBot.setConfig(config);
 });
 
 enum Direction { up, down };
@@ -32,15 +34,16 @@ enum Position { top, middle, bottom };    // squat position
 /** @class SquatBot */
 export class SquatBot {
   // CONFIG. possibly TODO: move to .env
-  readonly targetSquats: number = 3;
-  readonly gameWinTimeout_s = 10;          // how long until the next game might start
-  readonly faceMinX: number = 100;        // only use faces in the center region
-  readonly faceMaxX: number = 640-100;    // only use faces in the center region
-  readonly gameStartTimeout_s = 3;        // how long to see a face for starting a game
-  readonly topOffset_px = 20;
-  readonly bottomOffset_px = 0;
-  readonly squatFactor = 1.2;
-  readonly gameLeftTimeout_s = 3;         // cancel the game after 3 consecutive seconds without a face detected
+  // readonly targetSquats: number = 3;
+  // readonly gameWinTimeout_s: number = 10;          // how long until the next game might start
+  // readonly faceMinX: number = 100;                 // only use faces in the center region
+  // readonly faceMaxX: number = 640-100;             // only use faces in the center region
+  // readonly gameStartTimeout_s: number = 3;         // how long to see a face for starting a game
+  // readonly topOffset_px: number = 20;
+  // readonly bottomOffset_px: number = 0;
+  // readonly gameLeftTimeout_s: number = 3;          // cancel the game after 3 consecutive seconds without a face detected
+  // readonly squatFactor: number = 1.2;
+  config: SocketIOInterfaces.SquatBotConfig = new SocketIOInterfaces.SquatBotConfig;
 
   // game state
   squats: number = 0;                     // counting the number of squats
@@ -60,6 +63,11 @@ export class SquatBot {
     
       console.log("SquatBot: contructor");
       this.socket = socket;
+  }
+
+  // explicitely set config values
+  setConfig(config: SocketIOInterfaces.SquatBotConfig) {
+    this.config = {...config};    // do a copy
   }
 
   // find single valid face
@@ -110,12 +118,12 @@ export class SquatBot {
     if (face.valid) this.lastFaceTime = Date.now();
 
     // if recently won a game -> exit (game paused)
-    if (Date.now() - this.lastWinTime <= this.gameWinTimeout_s*1000) return;
+    if (Date.now() - this.lastWinTime <= this.config.gameWinTimeout_s*1000) return;
 
     if (this.gameRunning) {
 
       // if the player left, abort the game
-      if (Date.now() - this.lastFaceTime > this.gameLeftTimeout_s*1000) { this.gameRunning = false; console.log("SquatBot: game cancelled"); return; }
+      if (Date.now() - this.lastFaceTime > this.config.gameLeftTimeout_s*1000) { this.gameRunning = false; console.log("SquatBot: game cancelled"); return; }
 
       // get current squat position and possibly count up
       let position = this.computePosition(face);
@@ -123,7 +131,7 @@ export class SquatBot {
       else if (position == Position.top && this.direction == Direction.up) { this.squats++; this.direction = Direction.down; console.log("SquatBot: squat up. #squats:", this.squats);} // successfully completed a squat at the top 
     
       // game won!
-      if (this.squats == this.targetSquats) { 
+      if (this.squats == this.config.targetSquats) { 
         this.cocktailUnlocked = true; 
         this.gameRunning = false; 
         this.lastWinTime = Date.now(); 
@@ -137,7 +145,7 @@ export class SquatBot {
       if (!face.valid) { this.startTime = Date.now(); return; }
 
       // immediately exit when start duration not yet reached
-      if (Date.now() - this.startTime <= this.gameStartTimeout_s*1000) return;
+      if (Date.now() - this.startTime <= this.config.gameStartTimeout_s*1000) return;
 
       this.startGame(face);
     }
@@ -148,8 +156,8 @@ export class SquatBot {
 
     this.squats = 0;
     this.lastFaceTime = Date.now();
-    this.topY = face.y + this.topOffset_px;
-    this.bottomY = face.y * this.squatFactor - this.bottomOffset_px;
+    this.topY = face.y + this.config.topOffset_px;
+    this.bottomY = face.y * this.config.squatFactor - this.config.bottomOffset_px;
     this.direction = Direction.down;
     this.gameRunning = true;
     this.cocktailUnlocked = false;
