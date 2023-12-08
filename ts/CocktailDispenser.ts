@@ -1,7 +1,7 @@
 // Karl-Isis the 25001 Cocktail Mixing Bot (c) 2022-2023 by Christian Schüler, christianschueler.at
 
-import { IngredientPump } from './IngredientPump';
-import { CocktailRecipe, ICocktailRecipe } from './CocktailRecipe';
+import { IngredientPump } from './IngredientPump.js';
+import { CocktailRecipe, ICocktailRecipe } from './CocktailRecipe.js';
 
 /** @class CocktailDispenser
 */

@@ -1,6 +1,6 @@
 // Karl-Isis the 25001 Cocktail Mixing Bot (c) 2022-2023 by Christian Schüler, christianschueler.at
 
-import {sleep } from './sleep';
+import {sleep } from './sleep.js';
 
 export type High = 1;
 export type Low = 0;

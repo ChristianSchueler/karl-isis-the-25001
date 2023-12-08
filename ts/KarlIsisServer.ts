@@ -1,10 +1,11 @@
 // Karl-Isis the 25001 Cocktail Mixing Bot (c) 2022-2023 by Christian Schüler, christianschueler.at
 
-const express = require('express');
-const http = require('http');
-import { Server } from 'socket.io';
-import * as SocketIOInterfaces from '../ui/src/SocketIOInterfaces';
+import express from 'express';
+import * as http  from 'http';
 import * as fs from 'fs';
+import { Server } from 'socket.io';
+
+import * as SocketIOInterfaces from '../ui/src/SocketIOInterfaces.js';
 
 export class KarlIsisServer {
     public onGameWon?: () => void;
@@ -34,13 +35,13 @@ export class KarlIsisServer {
 
         console.log("Creating web server...");
 
-        const appExpress = express();
+        const appExpress: express.Application = express();
 
         for(let i = 0; i < process.argv.length; ++i) {
             console.log(`index ${i} argument -> ${process.argv[i]}`);
         }
 
-        if (process.argv[2] && process.argv[2] == 'secure') {
+        /*if (process.argv[2] && process.argv[2] == 'secure') {
             console.log("setting up secure server");
 
             // Creating object of key and certificate for SSL 
@@ -51,7 +52,8 @@ export class KarlIsisServer {
 
             this.server = http.createServer(options, appExpress);       // SSL
         }
-        else this.server = http.createServer(appExpress);        // http
+        else*/ 
+        this.server = http.createServer(appExpress);        // http
 
         // socket.io
         console.log("Creating socket.io server...");
@@ -80,7 +82,7 @@ export class KarlIsisServer {
             socket.emit("setConfig", this.squatBotConfig);
         });
 
-        let path = __dirname + '/../../ui';
+        let path = './ui';
         console.log("Server path:", path);
         appExpress.use(express.static(path));
     }

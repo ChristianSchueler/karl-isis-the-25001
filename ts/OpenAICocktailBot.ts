@@ -1,10 +1,10 @@
 // Karl-Isis the 25001 Cocktail Mixing Bot (c) 2022-2023 by Christian Schüler, christianschueler.at
 
 import OpenAI from "openai";
-import { ChatCompletion } from "openai/resources";
 import * as util from 'util';
-//import * as dirtyJson from 'dirty-json';
-import { CocktailRecipe, ICocktailRecipe } from "./CocktailRecipe";
+import { ChatCompletion } from "openai/resources";
+
+import { CocktailRecipe, ICocktailRecipe } from "./CocktailRecipe.js";
 
 export enum AISystem { JsonResult, ListResult, PreventAlcoholicGpt }
 

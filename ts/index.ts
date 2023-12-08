@@ -7,17 +7,18 @@
 //
 
 import * as dotenv from 'dotenv' // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
-import { KarlIsisServer } from "./KarlIsisServer";
-import { OpenAICocktailRecipes } from "./openai";
-import { stringify } from "querystring";
-import * as OpenAICocktailBot from './OpenAICocktailBot';
 import fs from 'fs';
 import util from 'util';
-import { CocktailDispenser } from './CocktailDispenser';
-import { CocktailRecipe } from './CocktailRecipe';
 import * as readline from 'readline';
-import { app, BrowserWindow } from "electron";
-import { CocktailButtons } from './CocktailButtons';
+import pkg from 'electron';
+const { app, BrowserWindow } = pkg;
+//import { app, BrowserWindow } from "electron";
+
+import { KarlIsisServer } from "./KarlIsisServer.js";
+import * as OpenAICocktailBot from './OpenAICocktailBot.js';
+import { CocktailDispenser } from './CocktailDispenser.js';
+import { CocktailRecipe } from './CocktailRecipe.js';
+import { CocktailButtons } from './CocktailButtons.js';
 
 // make debug a global variable
 declare global {

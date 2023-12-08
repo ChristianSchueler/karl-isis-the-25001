@@ -1,6 +1,6 @@
 // Karl-Isis the 25001 Cocktail Mixing Bot (c) 2022-2023 by Christian Schüler, christianschueler.at
 
-import { CocktailDispenser } from "./CocktailDispenser";
+import { CocktailDispenser } from "./CocktailDispenser.js";
 
 export interface ICocktailRecipe {
     ingredients: number[];      // a list of amounts of all ingridients, ordered
