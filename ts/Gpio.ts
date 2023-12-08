@@ -9,7 +9,7 @@ export type ValueCallback = (err: Error | null | undefined, value: BinaryValue) 
 
 export class Gpio {
 	constructor(x: number, y: string, dir?: string, opts?: {}) {
-		console.log('Running on Windows - only for development!');
+		//console.log('Running on Windows - only for development!');
 	}
 	static HIGH: number = 1;
 	static LOW: number = 0;

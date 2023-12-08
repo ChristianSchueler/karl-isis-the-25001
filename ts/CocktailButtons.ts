@@ -1,6 +1,7 @@
 // Karl-Isis the 25001 Cocktail Mixing Bot (c) 2022-2023 by Christian Schüler, christianschueler.at
 
 import { Gpio } from './Gpio.js';
+import { sleep } from './sleep.js';
 //import { Gpio } from 'onoff';
 
 // either load onoff of a stub
@@ -8,16 +9,21 @@ import { Gpio } from './Gpio.js';
 // if (process.platform == 'win32') moduleName = "./Gpio.js";		// for windows replace onoff with stub
 // const { Gpio } = await import(moduleName);
 
-// 
+// hardware buttons and LEDs
 export class CocktailButtons {
     public enabled: boolean = false;
-    public onButton1?: () => void;
-    public onButton2?: () => void;
+    public onButton1?: () => void;          // override this to enable the callback
+    public onButton2?: () => void;          // override this to enable the callback
 
     button1: Gpio;
     button2: Gpio;
 
-    constructor(gpioPinAlcButton: number, gpioPinNonAlcButton: number) {
+    led1: Gpio;
+    led2: Gpio;
+    led3: Gpio;
+
+    // number are GPIO numbers
+    constructor(gpioPinAlcButton: number, gpioPinNonAlcButton: number, led1: number, led2: number, led3: number) {
 
         this.button1 = new Gpio(gpioPinAlcButton, 'in', 'rising', { debounceTimeout: 30 });
         this.button2 = new Gpio(gpioPinNonAlcButton, 'in', 'rising', { debounceTimeout: 30 });
@@ -37,5 +43,41 @@ export class CocktailButtons {
 
             if (this.onButton2) this.onButton2();       // execute event handler
         });
+
+        this.led1 = new Gpio(led1, 'out');
+        this.led2 = new Gpio(led2, 'out');
+        this.led3 = new Gpio(led3, 'out');
+    }
+
+    // all leds off
+    async ledsOff() {
+        await this.led1.write(0);
+        await this.led2.write(0);
+        await this.led3.write(0);
+    }
+
+    // number: 1, 2, 3
+    async ledOn(led: number) {
+        switch (led) {
+            case 1: await this.led1.write(1); break;
+            case 2: await this.led2.write(1); break;
+            case 3: await this.led3.write(1); break;
+        }
+    }
+
+    // number: 1, 2, 3
+    async ledOff(led: number) {
+        switch (led) {
+            case 1: await this.led1.write(0); break;
+            case 2: await this.led2.write(0); break;
+            case 3: await this.led3.write(0); break;
+        }
+    }
+
+    // short on, then off
+    async ledBlink(led: number, duration_ms: number = 300) {
+        await this.ledOn(led);      // on
+        await sleep(duration_ms);   // wait
+        await this.ledOff(led);     // off
     }
 }

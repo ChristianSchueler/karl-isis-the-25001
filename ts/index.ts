@@ -102,8 +102,8 @@ async function main() {
 	// used for storing the current recipe
 	let recipe: CocktailRecipe;
 
-	// set up hardware buttons
-	let buttons = new CocktailButtons(4, 17);
+	// set up hardware buttons and LEDs
+	let buttons = new CocktailButtons(5, 6, 7, 8, 11);
 	buttons.enabled = false;		// disable buttons first
 
 	// AI cocktail
