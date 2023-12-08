@@ -1,8 +1,8 @@
 // Karl-Isis the 25001 Cocktail Mixing Bot (c) 2022-2023 by Christian Schüler, christianschueler.at
 
-import { Gpio } from './Gpio.js';
+//import { Gpio } from './Gpio.js';
 import { sleep } from './sleep.js';
-//import { Gpio } from 'onoff';
+import { Gpio } from 'onoff';
 
 // either load onoff of a stub
 // let moduleName = "onoff";
