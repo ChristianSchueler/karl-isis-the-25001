@@ -2,8 +2,6 @@
 
 import { Detection, FaceDetector, FilesetResolver } from "@mediapipe/tasks-vision"
 import { ScaleToFitWindow } from "./ScaleToFitWindow.js";
-import { gsap } from "gsap";
-import { Dir } from "fs";
 import { io, Socket } from "socket.io-client";
 import * as SocketIOInterfaces from './SocketIOInterfaces.js';
 
