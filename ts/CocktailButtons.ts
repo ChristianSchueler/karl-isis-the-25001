@@ -36,7 +36,7 @@ export class CocktailButtons {
         this.button1.watch((err, value) => {
             console.log("button1:", value, err);
 
-            if (!this.enabled) { console.log("button 2 pressed, but not enabled. exiting."); return; }
+            if (!this.enabled) { console.log("button 1 pressed, but not enabled. exiting."); return; }
 
             if (this.onButton1) this.onButton1();       // execute event handler
         });
