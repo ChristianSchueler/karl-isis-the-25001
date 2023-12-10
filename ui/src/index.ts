@@ -118,7 +118,12 @@ export class SquatBot {
     if (face.valid) this.lastFaceTime = Date.now();
 
     // if recently won a game -> exit (game paused)
-    if (Date.now() - this.lastWinTime <= this.config.gameWinTimeout_s*1000) return;
+    if (this.cocktailUnlocked) {
+      if (Date.now() - this.lastWinTime <= this.config.gameWinTimeout_s*1000) return;     // exit when in timeout after winning a game
+
+      // when we come here, timeout is over, so signal to lock buttons again
+      this.cocktailUnlocked = false;
+    }
 
     if (this.gameRunning) {
 
