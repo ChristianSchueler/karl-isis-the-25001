@@ -269,8 +269,8 @@ async function main() {
 		var mainWindow = new BrowserWindow({
 			title: "Karl-Isis the 25001",
 			show: false,
-			fullscreen: true,
-			kiosk: true,
+			//fullscreen: true,
+			//kiosk: true,
 			autoHideMenuBar: true
 		});
 		
@@ -279,7 +279,8 @@ async function main() {
 			app.quit();
 		});
 
-		mainWindow.maximize();
+		//mainWindow.maximize();
+		mainWindow.webContents.openDevTools();
 		console.log("opening URL: http://localhost:5000");
 		mainWindow.loadURL("http://localhost:5000");
 		mainWindow.show();
