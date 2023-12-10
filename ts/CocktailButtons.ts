@@ -63,7 +63,7 @@ export class CocktailButtons {
 
     // number: 1, 2, 3
     async ledOn(led: number) {
-        console.log("LED #" + led + " on");
+        //console.log("LED #" + led + " on");
         switch (led) {
             case 1: await this.led1.write(1); break;
             case 2: await this.led2.write(1); break;
@@ -73,7 +73,7 @@ export class CocktailButtons {
 
     // number: 1, 2, 3
     async ledOff(led: number) {
-        console.log("LED #" + led + " off");
+        //console.log("LED #" + led + " off");
         switch (led) {
             case 1: await this.led1.write(0); break;
             case 2: await this.led2.write(0); break;
@@ -91,6 +91,8 @@ export class CocktailButtons {
     // short on, then off
     async ledBlinkContinuous(led: number, duration_ms: number = 300) {
         
+        console.log("LED #" + led + " blink continous");
+
         this.timer = setInterval(async () => {
 
             await this.ledOn(led);      // on
@@ -102,7 +104,11 @@ export class CocktailButtons {
 
     async ledBlinkStopContinuous(led: number) {
 
+        console.log("LED #" + led + " blink continous STOP");
+
         if (this.timer) {
+            console.log("LED #" + led + " blink continous: timer cleared");
+
             clearInterval(this.timer);
             this.timer = undefined;
         }

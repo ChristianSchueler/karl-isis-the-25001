@@ -97,7 +97,7 @@ async function main() {
 	if (process.env.OPENAI_API_KEY == undefined) {
 		console.log("OpenAI API key not defined. Please set OPENAI_API_KEY environment variable. Exiting.");
 		process.exit(1);
-	}
+	} 
 
 	// used for storing the current recipe
 	let recipe: CocktailRecipe;
@@ -124,9 +124,9 @@ async function main() {
 		// et voilà
 		await cocktailDispenser.dispenseRecipe(recipe); 
 
-		buttons.ledBlinkStopContinuous(1);
-		buttons.ledBlinkStopContinuous(2);
-		buttons.ledsOff();
+		await buttons.ledBlinkStopContinuous(1);
+		await buttons.ledBlinkStopContinuous(2);
+		await buttons.ledsOff();
 
 		console.log('Dispensing finished.');
 	};
