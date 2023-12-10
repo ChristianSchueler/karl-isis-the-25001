@@ -1,4 +1,5 @@
-const Gpio = require('onoff').Gpio;
+import { Gpio } from 'onoff';
+
 const led = new Gpio(7, 'out');
 const button = new Gpio(5, 'in', 'both');
 
