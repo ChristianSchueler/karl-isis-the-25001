@@ -135,11 +135,19 @@ async function main() {
 	buttons.onButton2 = async () => {
 		buttons.enabled = false;		// disable buttons again to prevent pressing again
 
+		await buttons.ledsOff();		// turn off the lights
+		buttons.ledBlinkContinuous(1, 100);		// dont await...
+		buttons.ledBlinkContinuous(2, 100);
+
 		recipe = CocktailRecipe.randomRecipe(false);
 		console.log(recipe.toString(cocktailDispenser));
 
 		// et voilà
 		await cocktailDispenser.dispenseRecipe(recipe);
+
+		await buttons.ledBlinkStopContinuous(1);
+		await buttons.ledBlinkStopContinuous(2);
+		await buttons.ledsOff();
 
 		console.log('Dispensing finished.');
 	};
@@ -236,12 +244,12 @@ async function main() {
 
 	s.onSquatDown = async () => {
 		console.log("SquatBot: squat down");
-		await buttons.ledBlink(2);
+		await buttons.ledBlink(2, 500);
 	}
 
 	s.onSquatUp = async () => {
 		console.log("SquatBot: squat up");
-		await buttons.ledBlink(1);
+		await buttons.ledBlink(1, 500);
 	}
 
 	// start electron app (i.e. window) only when using electron
