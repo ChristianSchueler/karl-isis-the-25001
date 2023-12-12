@@ -213,14 +213,20 @@ export class Application {
 
     console.log("video running", this.video);
 
+    console.log("getting media pipe vision tasks...");
     // https://snyk.io/advisor/npm-package/@mediapipe/tasks-vision
-    const vision = await FilesetResolver.forVisionTasks(
+    /*const vision = await FilesetResolver.forVisionTasks(
       "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm"
-    );
+    );*/
 
-    this.faceDetector = await FaceDetector.createFromModelPath(vision,
+    console.log("creating media pipe face detector...");
+    const vision = await FilesetResolver.forVisionTasks("wasm");
+
+    /*this.faceDetector = await FaceDetector.createFromModelPath(vision,
       "https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite"
-    );
+    );*/
+
+    this.faceDetector = await FaceDetector.createFromModelPath(vision, "models/blaze_face_short_range.tflite");
 
     console.log("mediapipe loaded");
 
