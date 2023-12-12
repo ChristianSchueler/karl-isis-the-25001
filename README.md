@@ -1,7 +1,7 @@
 # Karl-Isis the 25001
 Source code for Cocktail Bot for Roboexotica 2023
 
-(c) 2023 Christian Schüler, christianschueler.at
+(c) 2023 Christian Schüler, [christianschueler.at](http://christianschueler.at/)
 
 Using TypeScript, Electron, Google Media Pipe (vision), Socket.IO, onoff and of course OpenAI API.
 

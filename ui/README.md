@@ -1,6 +1,6 @@
 # Google Media Pipe Face Detection in the Browser with TypeScript for Karl-Isis the 25001
 
-(c) 2023 Christian Schüler, christianschueler.at
+(c) 2023 Christian Schüler, [christianschueler.at](http://christianschueler.at/)
 
 Using microbuild, TypeScript, Google Media Pipe (vision) and Socket.IO.
 
