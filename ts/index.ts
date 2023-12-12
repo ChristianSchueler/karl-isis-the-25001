@@ -103,7 +103,7 @@ async function main() {
 	let recipe: CocktailRecipe;
 
 	// set up hardware buttons and LEDs
-	let buttons = new CocktailButtons(5, 6, 7, 8, 11);
+	let buttons = new CocktailButtons(5, 6, 7, 8);
 	buttons.enabled = false;		// disable buttons first
 
 	// AI cocktail
