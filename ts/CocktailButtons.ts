@@ -21,12 +21,11 @@ export class CocktailButtons {
 
     led1: Gpio;
     led2: Gpio;
-    led3: Gpio;
 
     timer: Array<NodeJS.Timeout | undefined> = [];
 
     // number are GPIO numbers
-    constructor(gpioPinAlcButton: number, gpioPinNonAlcButton: number, led1: number, led2: number, led3: number) {
+    constructor(gpioPinAlcButton: number, gpioPinNonAlcButton: number, led1: number, led2: number) {
 
         console.log("Setting up buttons...");
         
@@ -51,7 +50,6 @@ export class CocktailButtons {
 
         this.led1 = new Gpio(led1, 'out');
         this.led2 = new Gpio(led2, 'out');
-        this.led3 = new Gpio(led3, 'out');
     }
 
     // all leds off
@@ -59,7 +57,6 @@ export class CocktailButtons {
         console.log("All LEDs off");
         await this.led1.write(0);
         await this.led2.write(0);
-        await this.led3.write(0);
     }
 
     // number: 1, 2, 3
@@ -68,7 +65,6 @@ export class CocktailButtons {
         switch (led) {
             case 1: await this.led1.write(1); break;
             case 2: await this.led2.write(1); break;
-            case 3: await this.led3.write(1); break;
         }
     }
 
@@ -78,7 +74,6 @@ export class CocktailButtons {
         switch (led) {
             case 1: await this.led1.write(0); break;
             case 2: await this.led2.write(0); break;
-            case 3: await this.led3.write(0); break;
         }
     }
 

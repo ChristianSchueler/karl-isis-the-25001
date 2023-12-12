@@ -19,6 +19,7 @@ import * as OpenAICocktailBot from './OpenAICocktailBot.js';
 import { CocktailDispenser } from './CocktailDispenser.js';
 import { CocktailRecipe } from './CocktailRecipe.js';
 import { CocktailButtons } from './CocktailButtons.js';
+import { sleep } from './sleep.js';
 
 // make debug a global variable
 declare global {
@@ -233,9 +234,23 @@ async function main() {
 	// create the server, hosting the html app for the camera
 	let s = new KarlIsisServer();
 	await s.start();
+
+	s.onGameStarted = async () => {
+		buttons.ledBlink(1, 1000);		// game started - on both for s second
+		buttons.ledBlink(2, 1000);
+	}
+
+	s.onGameCancelled = async () => {
+
+		await buttons.ledsOff();		// game cancelled - switch off the lights
+	}
+
 	s.onGameWon = async () => {
 		console.log("SquatBot: Yay! Game won! Buttons are now enabled.");
 
+		await sleep(550);		// hacky... wait until led1 is again off
+
+		// both led's on
 		await buttons.ledOn(1);
 		await buttons.ledOn(2);
 

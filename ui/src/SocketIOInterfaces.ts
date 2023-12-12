@@ -22,9 +22,11 @@ export interface ServerToClientEvents {
   }
   
   export interface ClientToServerEvents {
+    gameStarted: () => void;
+    gameCancelled: () => void;
     gameWon: () => void;                            // signal game won
-    squatDown: () => void;
-    squatUp: () => void;
+    squatDown: () => void;                          // squat down
+    squatUp: () => void;                            // squat up
   }
   
   export interface InterServerEvents {

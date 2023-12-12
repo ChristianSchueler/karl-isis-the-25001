@@ -126,7 +126,7 @@ export class SquatBot {
     if (this.gameRunning) {
 
       // if the player left, abort the game
-      if (Date.now() - this.lastFaceTime > this.config.gameLeftTimeout_s*1000) { this.gameRunning = false; console.log("SquatBot: game cancelled"); return; }
+      if (Date.now() - this.lastFaceTime > this.config.gameLeftTimeout_s*1000) { this.gameRunning = false; this.socket.emit("gameCancelled"); console.log("SquatBot: game cancelled"); return; }
 
       // get current squat position and possibly count up
       let position = this.computePosition(face);
@@ -164,6 +164,7 @@ export class SquatBot {
     this.direction = Direction.down;
     this.gameRunning = true;
     this.cocktailUnlocked = false;
+    this.socket.emit("gameStarted");
 
     console.log("SquatBot: topY=", this.topY);
     console.log("SquatBot: bottomY=", this.bottomY); 

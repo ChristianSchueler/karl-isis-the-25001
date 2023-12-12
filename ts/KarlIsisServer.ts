@@ -8,6 +8,8 @@ import { Server } from 'socket.io';
 import * as SocketIOInterfaces from '../ui/src/SocketIOInterfaces.js';
 
 export class KarlIsisServer {
+    public onGameStarted?: () => void;                              // overwrite this to catch game won events
+    public onGameCancelled?: () => void;                              // overwrite this to catch game won events
     public onGameWon?: () => void;                              // overwrite this to catch game won events
     public onSquatDown?: () => void;
     public onSquatUp?: () => void;
@@ -75,6 +77,18 @@ export class KarlIsisServer {
         // set up socket events
         this.io.on("connect", (socket) => {
             console.log("socket.io connect");
+
+            socket.on("gameStarted", () => {
+                console.log("socket: gameStarted");
+
+                if (this.onGameStarted) this.onGameStarted();       // execute event handler
+            });
+
+            socket.on("gameCancelled", () => {
+                console.log("socket: gameCancelled");
+
+                if (this.onGameCancelled) this.onGameCancelled();       // execute event handler
+            });
 
             socket.on("gameWon", () => {
                 console.log("socket: gameWon");
