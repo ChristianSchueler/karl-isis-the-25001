@@ -112,6 +112,12 @@ export class SquatBot {
     // find single valid face
     let face = this.extractFace(d);
 
+    if (debug)
+    {
+       if (face.valid) console.log("face valid");
+       else console.log("face invalid", face.x, face.y);
+    }
+    
     // update time we last saw a valid face
     if (face.valid) this.lastFaceTime = Date.now();
 
@@ -160,7 +166,7 @@ export class SquatBot {
     this.squats = 0;
     this.lastFaceTime = Date.now();
     this.topY = face.y + this.config.topOffset_px;
-    this.bottomY = face.y * this.config.squatFactor - this.config.bottomOffset_px;
+    this.bottomY = Math.min(face.y * this.config.squatFactor - this.config.bottomOffset_px, 400);
     this.direction = Direction.down;
     this.gameRunning = true;
     this.cocktailUnlocked = false;
@@ -211,6 +217,7 @@ export class Application {
 
     this.video = document.getElementById("video") as HTMLVideoElement;
     this.video.srcObject = stream;
+    console.log("Video: ", this.video.videoWidth, this.video.videoHeight);
 
     console.log("video running", this.video);
 
@@ -241,9 +248,14 @@ export class Application {
 
     if (this.video?.currentTime !== this.lastVideoTime) {
       const d = this.faceDetector?.detectForVideo(this.video!, this.lastVideoTime);
+
+      if (debug) console.log("face detection finished");
       
       if (d && d.detections) {
         this.squatBot.analyzeFaces(d.detections);
+      }
+      else {
+        if (debug) console.log("no faces found");
       }
       
       //console.log(detections);

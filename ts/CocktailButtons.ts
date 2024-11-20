@@ -33,18 +33,24 @@ export class CocktailButtons {
         this.button2 = new Gpio(gpioPinNonAlcButton, 'in', 'rising', { debounceTimeout: 30 });
 
         this.button1.watch((err, value) => {
-            console.log("button1:", value, err);
+            //console.log("button1:", value, err);
 
-            if (!this.enabled) { console.log("button 1 pressed, but not enabled. exiting."); return; }
+            if (!this.enabled) { 
+		//console.log("button 1 pressed, but not enabled. exiting."); 
+		return; 
+	     }
 
             console.log("button 1 pressed.");
             if (this.onButton1) this.onButton1();       // execute event handler
         });
 
         this.button2.watch((err, value) => {
-            console.log("button2:", value, err);
+            //console.log("button2:", value, err);
 
-            if (!this.enabled) { console.log("button 2 pressed, but not enabled. exiting."); return; }
+            if (!this.enabled) { 
+		//console.log("button 2 pressed, but not enabled. exiting."); 
+		return;
+	    }
 
             console.log("button 2 pressed.");
             if (this.onButton2) this.onButton2();       // execute event handler
