@@ -107,6 +107,10 @@ async function main() {
 	let buttons = new CocktailButtons(5, 6, 7, 8);
 	buttons.enabled = false;		// disable buttons first
 
+	await buttons.ledsOff();		// turn off the lights
+	await buttons.ledOn(1);
+	await buttons.ledOn(2);
+		
 	// AI cocktail
 	buttons.onButton1 = async () => {
 		buttons.enabled = false;		// disable buttons again to prevent pressing again
@@ -130,7 +134,14 @@ async function main() {
 		await buttons.ledsOff();
 
 		console.log('Dispensing finished.');
-	};
+		
+		// ROBOEXOTICA
+		buttons.enabled = true;
+		
+		await sleep(500);
+		await buttons.ledOn(1);
+		await buttons.ledOn(2);
+		};
 
 	// non-alcoholic cocktail
 	buttons.onButton2 = async () => {
@@ -151,7 +162,14 @@ async function main() {
 		await buttons.ledsOff();
 
 		console.log('Dispensing finished.');
-	};
+		
+		// ROBOEXOTICA
+		buttons.enabled = true;
+		
+		await sleep(500);
+		await buttons.ledOn(1);
+		await buttons.ledOn(2);
+		};
 
 	// set up dispenser hardware
 	let cocktailDispenser = new CocktailDispenser();
@@ -196,6 +214,8 @@ async function main() {
 			case "f12": cocktailDispenser.togglePump(11); break;
 
 			case "a":		// AI cocktail
+				console.log("AI cocktail");
+				
 				recipe = await bot.pourMeADrink();
 				console.log(recipe.toString(cocktailDispenser));
 				if (!recipe.isValid()) {
@@ -231,6 +251,9 @@ async function main() {
 		}
 	});
 
+	// ROBOEXOTICA
+	buttons.enabled = false;
+		
 	// create the server, hosting the html app for the camera
 	let s = new KarlIsisServer();
 	await s.start();
