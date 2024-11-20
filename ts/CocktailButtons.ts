@@ -2,8 +2,8 @@
 
 import { sleep } from './sleep.js';
 
-//import { Gpio } from './Gpio.js';
-import { Gpio } from 'onoff';
+import { Gpio } from './Gpio.js';
+//import { Gpio } from 'onoff';
 
 // either load onoff of a stub
 // let moduleName = "onoff";
@@ -37,6 +37,7 @@ export class CocktailButtons {
 
             if (!this.enabled) { console.log("button 1 pressed, but not enabled. exiting."); return; }
 
+            console.log("button 1 pressed.");
             if (this.onButton1) this.onButton1();       // execute event handler
         });
 
@@ -45,6 +46,7 @@ export class CocktailButtons {
 
             if (!this.enabled) { console.log("button 2 pressed, but not enabled. exiting."); return; }
 
+            console.log("button 2 pressed.");
             if (this.onButton2) this.onButton2();       // execute event handler
         });
 
