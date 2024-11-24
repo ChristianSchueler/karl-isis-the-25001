@@ -42,7 +42,7 @@ export class CocktailButtons {
 		        return; 
 	        }
 
-            console.log("button 1 pressed.");npm run watch
+            console.log("button 1 pressed.");
             if (this.onButton1) this.onButton1();       // execute event handler
         });
 
