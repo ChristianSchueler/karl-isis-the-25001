@@ -252,7 +252,7 @@ async function main() {
 	});
 
 	// ROBOEXOTICA
-	buttons.enabled = false;
+	buttons.enabled = true;
 		
 	// create the server, hosting the html app for the camera
 	let s = new KarlIsisServer();
