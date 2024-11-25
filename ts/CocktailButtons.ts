@@ -13,7 +13,7 @@ import { Gpio } from 'onoff';
 // hardware buttons and LEDs
 export class CocktailButtons {
     public enabled: boolean = false;        // enable / disable the buttons. disabling causes the onButtonX events to not be triggered
-    public minHoldDuration_ms = 250;       // hold at least the duration to trigger a butten press. set to undefined to register any press
+    public minHoldDuration_ms = 100;       // hold at least the duration to trigger a butten press. set to undefined to register any press
     public onButton1?: () => void;          // override this to enable the callback
     public onButton2?: () => void;          // override this to enable the callback
     
@@ -73,7 +73,7 @@ export class CocktailButtons {
                 console.log("button 1: pressed and released");
                 if (this.onButton1) this.onButton1();       // execute event handler immediately
             }
-            else console.log("fuck it!")
+            else if (global.debug) console.log("fuck it!")
         });
 
         // ***** button 2 logic
@@ -105,7 +105,7 @@ export class CocktailButtons {
                 console.log("button 2: pressed and released");
                 if (this.onButton2) this.onButton2();       // execute event handler immediately
             }
-            else console.log("fuck it!")
+            else if (global.debug) console.log("fuck it!")
         });
 
         this.led1 = new Gpio(led1, 'out');
