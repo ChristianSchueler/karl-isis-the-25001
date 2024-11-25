@@ -2,8 +2,8 @@
 
 import { sleep } from './sleep.js';
 
-import { Gpio } from './Gpio.js';
-//import { Gpio } from 'onoff';
+//import { Gpio } from './Gpio.js';
+import { Gpio } from 'onoff';
 
 // either load onoff of a stub
 // let moduleName = "onoff";
@@ -13,7 +13,7 @@ import { Gpio } from './Gpio.js';
 // hardware buttons and LEDs
 export class CocktailButtons {
     public enabled: boolean = false;        // enable / disable the buttons. disabling causes the onButtonX events to not be triggered
-    public minHoldDuration_ms = 100;       // hold at least the duration to trigger a butten press. set to undefined to register any press
+    public minHoldDuration_ms = 250;       // hold at least the duration to trigger a butten press. set to undefined to register any press
     public onButton1?: () => void;          // override this to enable the callback
     public onButton2?: () => void;          // override this to enable the callback
     
@@ -26,8 +26,8 @@ export class CocktailButtons {
     //buttonTimer: Array<NodeJS.Timeout | undefined> = [];  // for watching buttons
     //buttonPressed: Array<boolean | undefined> = [];       // for watching buttons, true if button is already pressed
 
-    buttonPressedTime1: number = Date.now(); 
-    buttonPressedTime2: number = Date.now(); 
+    buttonPressedTime1: number = 0;
+    buttonPressedTime2: number = 0;
 
     // initialize the hardware. param number are GPIO numbers
     constructor(gpioPinAlcButton: number, gpioPinNonAlcButton: number, led1: number, led2: number) {
@@ -35,7 +35,7 @@ export class CocktailButtons {
         console.log("Setting up buttons...");
         
         this.button1 = new Gpio(gpioPinAlcButton, 'in', 'both', { debounceTimeout: 30 });
-        this.button2 = new Gpio(gpioPinNonAlcButton, 'in', 'rising', { debounceTimeout: 30 });
+        this.button2 = new Gpio(gpioPinNonAlcButton, 'in', 'both', { debounceTimeout: 30 });
 
         // set up long button press mechanics if we want long presses
         /*if (this.minHoldDuration_ms) {
@@ -47,7 +47,7 @@ export class CocktailButtons {
         // TODO: refactor this to use an array for any number of buttons instead
         this.button1.watch((err, value) => {
             if (global.debug) {
-                if (err) console.log("button1:", value, err); console.log("button1:", value);
+                if (err) console.log("button1:", value, err); else console.log("button1:", value);
             }
 
             if (!this.enabled) { 
@@ -55,64 +55,31 @@ export class CocktailButtons {
 		        return; 
 	        }
 
-            if (value == 1) {       // button pressed / down -> start press
+            if (value == 0) {       // button pressed / down -> start press
 
                 this.buttonPressedTime1 = Date.now();
             }
-            else if (value == 0)    // button released / up -> end of press
+            else if (value == 1 && this.buttonPressedTime1 > 0)    // button released / up -> end of press
             {
                 let duration_ms = Date.now() - this.buttonPressedTime1;
+
+                this.buttonPressedTime1 = 0;    // reset
+
                 if (duration_ms < this.minHoldDuration_ms) {
                     if (global.debug) console.log("button 1: released too early. cancelling press.");
                     return;
                 }
 
-                if (global.debug) console.log("button 1: released too early. cancelling press.");
-
                 console.log("button 1: pressed and released");
                 if (this.onButton1) this.onButton1();       // execute event handler immediately
             }
             else console.log("fuck it!")
-
-            /*
-            // first time pressed and long press desired
-            if (this.minHoldDuration_ms && !this.buttonPressed[1]) {
-                
-                if (global.debug) { console.log("button 1: long press started..."); }
-                this.buttonTimer[1] = setTimeout(async () => {
-
-                    if (global.debug) { console.log("button 1: long press triggered."); }
-
-                    clearInterval(this.buttonTimer[1]);     // remove timer, so be sure
-                    this.buttonTimer[1] = undefined;
-
-                    this.buttonPressed[1] = true;           // remember we are pressing the button
-
-                    if (this.onButton1) this.onButton1();    // execute event handler after long press
-
-                }, this.minHoldDuration_ms);
-            }
-            else if (this.onButton1) this.onButton1();       // execute event handler immediately
-            */
         });
 
         // ***** button 2 logic
         this.button2.watch((err, value) => {
-            /*if (global.debug) {
-                if (err) console.log("button2:", value, err); console.log("button2:", value);
-            }
-
-            if (!this.enabled) { 
-		        console.log("button 2 pressed, but not enabled. exiting."); 
-		        return;
-	        }
-
-            console.log("button 2 pressed.");
-            if (this.onButton2) this.onButton2();       // execute event handler
-            */
-
             if (global.debug) {
-                if (err) console.log("button2:", value, err); console.log("button2:", value);
+                if (err) console.log("button2:", value, err); else console.log("button2:", value);
             }
 
             if (!this.enabled) { 
@@ -120,19 +87,20 @@ export class CocktailButtons {
 		        return; 
 	        }
 
-            if (value == 1) {       // button pressed / down -> start press
+            if (value == 0) {       // button pressed / down -> start press
 
                 this.buttonPressedTime2 = Date.now();
             }
-            else if (value == 0)    // button released / up -> end of press
+            else if (value == 1 && this.buttonPressedTime2 > 0)    // button released / up -> end of press
             {
                 let duration_ms = Date.now() - this.buttonPressedTime2;
+
+                this.buttonPressedTime2 = 0;    // reset
+
                 if (duration_ms < this.minHoldDuration_ms) {
                     if (global.debug) console.log("button 2: released too early. cancelling press.");
                     return;
                 }
-
-                if (global.debug) console.log("button 2: released too early. cancelling press.");
 
                 console.log("button 2: pressed and released");
                 if (this.onButton2) this.onButton2();       // execute event handler immediately

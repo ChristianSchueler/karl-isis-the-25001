@@ -135,13 +135,12 @@ async function main() {
 
 		console.log('Dispensing finished.');
 		
-		// ROBOEXOTICA
-		buttons.enabled = true;
-		
 		await sleep(500);
 		await buttons.ledOn(1);
 		await buttons.ledOn(2);
-		};
+
+		buttons.enabled = true;
+	};
 
 	// non-alcoholic cocktail
 	buttons.onButton2 = async () => {
@@ -163,13 +162,12 @@ async function main() {
 
 		console.log('Dispensing finished.');
 		
-		// ROBOEXOTICA
-		buttons.enabled = true;
-		
 		await sleep(500);
 		await buttons.ledOn(1);
 		await buttons.ledOn(2);
-		};
+
+		buttons.enabled = true;
+	};
 
 	// set up dispenser hardware
 	let cocktailDispenser = new CocktailDispenser();
