@@ -2,8 +2,8 @@
 
 import {sleep } from './sleep.js';
 
-import { Gpio } from './Gpio.js';
-//import { Gpio } from 'onoff';
+//import { Gpio } from './Gpio.js';
+import { Gpio } from 'onoff';
 
 // either load onoff of a stub
 // let moduleName = "onoff";
