@@ -1,3 +1,5 @@
+/* Karl-Isis the 25001, (c) 2022-2024 Christian Schüler, christianschueler.at */
+
 html, body {
 	width: 100%;
 	height: 100%;
@@ -44,6 +46,8 @@ html, body {
 	visibility: visible;
 }
 
+/* ----- areas ----- */
+
 .area {
 	display: block;
 	position: relative;	
@@ -56,13 +60,15 @@ html, body {
 
 .content {
 	height: 70%;
-	background-color: 0;
+	background-color: rgb(90, 90, 90);
 }
 
 .bottom {
 	height: 15%;
 	background-color: lightgray;
 }
+
+/* ----- top  area ----- */
 
 .top .chatgpt-logo-wide {
 	position: absolute;
@@ -73,9 +79,9 @@ html, body {
 .top .title {
 	position: absolute;
 	left:38%;
-	top:-2%;
+	top:0%;
 	color: white;
-	font-size: 400%;
+	font-size: 380%;
 }
 
 .top .cocktail {
@@ -83,4 +89,10 @@ html, body {
 	left:78%;
 	top:2%;
 	width: 8%;
+}
+
+/* ----- content area ----- */
+
+.content .cup {
+	width: 20%;
 }
