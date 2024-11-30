@@ -4,6 +4,7 @@ import { Detection, FaceDetector, FilesetResolver } from "@mediapipe/tasks-visio
 import { ScaleToFitWindow } from "./ScaleToFitWindow.js";
 import { io, Socket } from "socket.io-client";
 import * as SocketIOInterfaces from './SocketIOInterfaces.js';
+import { gsap } from "gsap";
 
 const debug = false;
 
@@ -275,6 +276,9 @@ export class Application {
     });
   }
 }
+
+console.log("Animation...");
+gsap.to(".content .screen2 .logo, .content .screen2a .logo", {rotation: 360, transformOrigin: "center", ease: "none", duration: 3, repeat: -1});
 
 // go!
 const app = new Application();
