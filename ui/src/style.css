@@ -166,6 +166,41 @@ html, body {
 	text-align: left;
 }
 
+/* ----- screen 4 ----- */
+
+.content .screen4 .logo {
+	position: absolute;
+	top: 10%;
+	left: 8%;
+	width: 20%;
+}
+
+.content .screen4 h1 {
+	position: absolute;
+	top: 5%;
+	left: 35%;
+	text-align: left;
+}
+
+.content .screen4 .cocktail-name {
+	position: absolute;
+	top: 20%;
+	left: 35%;
+	text-align: left;
+}
+
+.content .screen4 .cocktail-recipe {
+	position: absolute;
+	top: 40%;
+	left: 40%;
+	text-align: left;
+}
+
+.content .screen4 .cocktail-recipe li {
+	color: white;
+	font-size: 300%;	
+}
+
 /* ----- bottom  area ----- */
 
 .bottom h1 {
