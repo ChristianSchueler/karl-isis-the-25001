@@ -280,6 +280,22 @@ export class Application {
 console.log("Animation...");
 gsap.to(".content .screen2 .logo, .content .screen2a .logo", {rotation: 360, transformOrigin: "center", ease: "none", duration: 3, repeat: -1});
 
+//gsap.to("#stop5", { offset: 0, ease: "none", duration: 3, repeat: -1});
+
+// let x = document.getElementById("stop5");
+// console.log(x);
+// x.offset = 0;
+
+// gsap.set("#stop5", { attr: {offset: 0} });
+
+gsap
+.timeline({
+  repeat: -1,
+  defaults: { ease: "none", duration: 3 }
+})
+  .from("#stop5", { attr: { offset: 0 } })
+  .to("#stop5", {attr: { offset: 1 } });
+
 // go!
 const app = new Application();
 await app.setup();

@@ -131,6 +131,7 @@ html, body {
 	width: 8%;
 }
 
+/* ----- screen 2 + 2a ----- */
 .content .screen2 {
 	height: 100%;
 }
@@ -143,6 +144,22 @@ html, body {
 }
 
 .content .screen2 h1, .content .screen2a h1 {
+	position: absolute;
+	top: 30%;
+	left: 35%;
+	text-align: left;
+}
+
+/* ----- screen 3 ----- */
+
+.content .screen3 .drink-status {
+	position: absolute;
+	top: 0%;
+	left: 8%;
+	width: 30%;
+}
+
+.content .screen3 h1 {
 	position: absolute;
 	top: 30%;
 	left: 35%;
