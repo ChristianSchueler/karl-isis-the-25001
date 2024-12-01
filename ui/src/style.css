@@ -221,4 +221,9 @@ html, body {
 	font-size: 380%;
 	top: 50%;
 	margin-top: 0%;
+	width: 100%;
+	top: 8%;
+    /* left: 50%; */
+    position: absolute;
+	/* text-align: left; */
 }
