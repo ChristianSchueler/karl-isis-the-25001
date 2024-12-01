@@ -30,6 +30,13 @@ socket.on("setRecipe", ( recipe: ICocktailRecipe, ingredientNames: string[]) => 
   app.setRecipe(recipe, ingredientNames);
 });
 
+// we recieved a recipe from the server via socket.io
+socket.on("showScreen", ( screen: string) => { 
+  console.log("Karl-Isis: socket.io showScreen: ", screen);
+
+  app.showScreen(screen);
+});
+
 /** @class Application */
 export class Application {
   socket: Socket<SocketIOInterfaces.ServerToClientEvents, SocketIOInterfaces.ClientToServerEvents>;
@@ -73,12 +80,30 @@ export class Application {
         cocktaiIngredients_ul!.appendChild(newIngredientItem_li);
       }
     }
-    
-    // for (const view of views) {
-    //   const origWidth = view.clientWidth;
-    //   const origHeight = view.clientHeight;
-    //   console.log("View:", view, "size:", origWidth,origHeight);
-    // }
+  }
+
+  showScreen(screen: string) {
+    console.log("Showing screen '" + screen + "'...");
+
+    const allScreens = document.querySelectorAll(".screen1, .screen2, .screen2a, .screen3, .screen4");
+    const screenDoc = document.getElementsByClassName(screen)[0];
+
+    for (const s of allScreens) {
+      s.classList.remove("visible");
+      s.classList.add("invisible");
+    }
+    screenDoc.classList.remove("invisible");
+    screenDoc.classList.add("visible");
+
+    /*switch (screen) {
+      case "start":
+
+        break;
+
+        default:
+          console.log("trying to switch to undefined screen:", screen);
+          break;
+    }*/
   }
 
   async setup(): Promise<void> {

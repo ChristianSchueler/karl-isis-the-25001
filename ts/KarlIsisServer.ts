@@ -113,6 +113,9 @@ export class KarlIsisServer {
 
             // post config values to app
             // socket.emit("setConfig", this.squatBotConfig);
+
+            // always when connect show start screen
+            this.showScreen("screen1");
         });
 
         let path = './ui';
@@ -142,6 +145,10 @@ export class KarlIsisServer {
 
     setRecipe(recipe: ICocktailRecipe, ingredientsList: string[]) {
         this.socket.emit("setRecipe", recipe, ingredientsList);
+    }
+
+    showScreen(screen: string) {
+        this.socket.emit("showScreen", screen);
     }
 }
 

@@ -98,6 +98,7 @@ async function main() {
 	// create the server, hosting the html app
 	let s = new KarlIsisServer();
 	await s.start();
+	// TODO: problem here, socket might not already connected!
 
 	await buttons.ledsOff();		// turn off the lights
 	await buttons.ledOn(1);
@@ -106,6 +107,9 @@ async function main() {
 	// AI cocktail
 	buttons.onButton1 = async () => {
 		buttons.enabled = false;		// disable buttons again to prevent pressing again
+
+		// move to ChatGPT waiting screen
+		s.showScreen("screen2");
 
 		await buttons.ledsOff();		// turn off the lights
 		buttons.ledBlinkContinuous(1, 100);		// dont await...
@@ -215,6 +219,9 @@ async function main() {
 			case "a":		// AI cocktail
 				console.log("AI cocktail");
 				
+				// move to ChatGPT waiting screen
+				s.showScreen("screen2");
+
 				recipe = await bot.pourMeADrink();
 				console.log(recipe.toString(cocktailDispenser));
 				if (!recipe.isValid()) {
@@ -226,9 +233,15 @@ async function main() {
 				console.log("sending recipe to ui...");
 				s.setRecipe(recipe, CocktailRecipe.ingredientNamesList(cocktailDispenser));
 
+				// move to ChatGPT pouring screen
+				s.showScreen("screen3");
+
 				// et voilà
 				await cocktailDispenser.dispenseRecipe(recipe); 
 	
+				// move to ChatGPT enjoy screen
+				s.showScreen("screen4");
+
 				console.log('Dispensing finished.');
 			break;
 	
