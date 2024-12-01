@@ -192,7 +192,14 @@ html, body {
 	top: 20%;
 	left: 35%;
 	text-align: left;
-	/* font-size: 480%; */
+	font-size: 550%;
+
+	color: greenyellow;
+   	text-shadow:
+       3px 3px 0 #000,
+    -3px 3px 0 #000,
+    -3px -3px 0 #000,
+    3px -3px 0 #000;
 }
 
 .content .screen4 .cocktail-recipe {
@@ -203,7 +210,7 @@ html, body {
 }
 
 .content .screen4 .cocktail-recipe li {
-	color: white;
+	color: greenyellow;
 	font-size: 300%;	
 }
 

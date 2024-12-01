@@ -53,7 +53,12 @@ export class Application {
   setRecipe(recipe: ICocktailRecipe) {
     this.recipe = {...recipe};    // do a copy
 
+    //this.video = document.getElementById("video") as HTMLVideoElement;
+    //NodeListOf<HTMLElement> = document.querySelectorAll(this.viewSelector);
     // TODO TODO TODO
+
+    let cocktailName_h1 = document.querySelector(".content .screen4 .cocktail-name");
+    cocktailName_h1!.textContent = this.recipe.name;
   }
 
   async setup(): Promise<void> {
