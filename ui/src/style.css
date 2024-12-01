@@ -161,7 +161,7 @@ html, body {
 
 .content .screen3 h1 {
 	position: absolute;
-	top: 30%;
+	top: 5%;
 	left: 35%;
 	text-align: left;
 }
@@ -187,7 +187,7 @@ html, body {
 	text-align: left;
 }
 
-.content .screen4 .cocktail-name {
+.content .screen4 .cocktail-name, .content .screen3 .cocktail-name {
 	position: absolute;
 	top: 20%;
 	left: 35%;
@@ -202,14 +202,14 @@ html, body {
     3px -3px 0 #000;
 }
 
-.content .screen4 .cocktail-recipe {
+.content .screen4 .cocktail-recipe, .content .screen3 .cocktail-recipe {
 	position: absolute;
 	top: 40%;
 	left: 40%;
 	text-align: left;
 }
 
-.content .screen4 .cocktail-recipe li {
+.content .screen4 .cocktail-recipe li, .content .screen3 .cocktail-recipe li {
 	color: greenyellow;
 	font-size: 300%;	
 }

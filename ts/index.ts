@@ -243,6 +243,10 @@ async function main() {
 				s.showScreen("screen4");
 
 				console.log('Dispensing finished.');
+
+				await sleep(20000);
+
+				s.showScreen("screen1"); 
 			break;
 	
 			case "r":		// random

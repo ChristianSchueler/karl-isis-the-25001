@@ -27,7 +27,8 @@ socket.on("connect", () => {
 socket.on("setRecipe", ( recipe: ICocktailRecipe, ingredientNames: string[]) => { 
   console.log("Karl-Isis: socket.io setRecipe cocktail recipe received: ", recipe, ingredientNames);
 
-  app.setRecipe(recipe, ingredientNames);
+  app.setRecipe(recipe, ingredientNames, "screen3");
+  app.setRecipe(recipe, ingredientNames, "screen4");
 });
 
 // we recieved a recipe from the server via socket.io
@@ -54,24 +55,20 @@ export class Application {
   }
 
   // explicitely set config values
-  setRecipe(recipe: ICocktailRecipe, ingredientNames: string[]) {
-    this.recipe = {...recipe};    // do a copy
-
-    //this.video = document.getElementById("video") as HTMLVideoElement;
-    //NodeListOf<HTMLElement> = document.querySelectorAll(this.viewSelector);
-    // TODO TODO TODO
+  setRecipe(recipe: ICocktailRecipe, ingredientNames: string[], screen: string) {
+    
+    this.recipe = {...recipe};    // make a copy
 
     // first set name of cocktail
-    const cocktailName_h1 = document.querySelector(".content .screen4 .cocktail-name");
+    const cocktailName_h1 = document.querySelector(".content ." + screen + " .cocktail-name");  // fuckin ugly!
     cocktailName_h1!.textContent = this.recipe.name;
 
     // remove all existing ingredients
-    const cocktaiIngredients_ul = document.querySelector(".content .screen4 .cocktail-recipe");
+    const cocktaiIngredients_ul = document.querySelector(".content ." + screen + " .cocktail-recipe");
     cocktaiIngredients_ul!.innerHTML = "";
 
     for (const [index, ingredient_ml] of recipe.ingredients.entries()) {
       
-      //let  = recipe.ingredients[ingredientIndex];
       if (ingredient_ml > 0) {
         
         let newIngredientItem_li = document.createElement('li');
