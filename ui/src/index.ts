@@ -24,17 +24,14 @@ socket.on("connect", () => {
 });
 
 // we recieved a recipe from the server via socket.io
-socket.on("setRecipe", (recipe: ICocktailRecipe) => { 
-  console.log("Karl-Isis: socket.io setRecipe cocktail recipe received: ", recipe);
+socket.on("setRecipe", ( recipe: ICocktailRecipe, ingredientNames: string[]) => { 
+  console.log("Karl-Isis: socket.io setRecipe cocktail recipe received: ", recipe, ingredientNames);
 
-  app.setRecipe(recipe);
+  app.setRecipe(recipe, ingredientNames);
 });
 
 /** @class Application */
 export class Application {
-  lastVideoTime = -1;
-  video?: HTMLVideoElement;
-  faceDetector?: FaceDetector;
   socket: Socket<SocketIOInterfaces.ServerToClientEvents, SocketIOInterfaces.ClientToServerEvents>;
   recipe: ICocktailRecipe = CocktailRecipe.randomRecipe();
 
@@ -50,15 +47,38 @@ export class Application {
   }
 
   // explicitely set config values
-  setRecipe(recipe: ICocktailRecipe) {
+  setRecipe(recipe: ICocktailRecipe, ingredientNames: string[]) {
     this.recipe = {...recipe};    // do a copy
 
     //this.video = document.getElementById("video") as HTMLVideoElement;
     //NodeListOf<HTMLElement> = document.querySelectorAll(this.viewSelector);
     // TODO TODO TODO
 
-    let cocktailName_h1 = document.querySelector(".content .screen4 .cocktail-name");
+    // first set name of cocktail
+    const cocktailName_h1 = document.querySelector(".content .screen4 .cocktail-name");
     cocktailName_h1!.textContent = this.recipe.name;
+
+    // remove all existing ingredients
+    const cocktaiIngredients_ul = document.querySelector(".content .screen4 .cocktail-recipe");
+    cocktaiIngredients_ul!.innerHTML = "";
+
+    for (const [index, ingredient_ml] of recipe.ingredients.entries()) {
+      
+      //let  = recipe.ingredients[ingredientIndex];
+      if (ingredient_ml > 0) {
+        
+        let newIngredientItem_li = document.createElement('li');
+        newIngredientItem_li.textContent = ingredient_ml.toPrecision(2) + " cl " + ingredientNames[index];
+
+        cocktaiIngredients_ul!.appendChild(newIngredientItem_li);
+      }
+    }
+    
+    // for (const view of views) {
+    //   const origWidth = view.clientWidth;
+    //   const origHeight = view.clientHeight;
+    //   console.log("View:", view, "size:", origWidth,origHeight);
+    // }
   }
 
   async setup(): Promise<void> {

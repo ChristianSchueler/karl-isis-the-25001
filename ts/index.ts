@@ -120,7 +120,7 @@ async function main() {
 
 		// send recipe to UI
 		console.log("sending recipe to ui...");
-		s.setRecipe(recipe);
+		s.setRecipe(recipe, CocktailRecipe.ingredientNamesList(cocktailDispenser));
 
 		// et voilà
 		await cocktailDispenser.dispenseRecipe(recipe); 
@@ -152,7 +152,7 @@ async function main() {
 
 		// send recipe to UI
 		console.log("sending recipe to ui...");
-		s.setRecipe(recipe);
+		s.setRecipe(recipe, CocktailRecipe.ingredientNamesList(cocktailDispenser));
 
 		// et voilà
 		await cocktailDispenser.dispenseRecipe(recipe);
@@ -224,7 +224,7 @@ async function main() {
 	
 				// send recipe to UI
 				console.log("sending recipe to ui...");
-				s.setRecipe(recipe);
+				s.setRecipe(recipe, CocktailRecipe.ingredientNamesList(cocktailDispenser));
 
 				// et voilà
 				await cocktailDispenser.dispenseRecipe(recipe); 
@@ -238,7 +238,7 @@ async function main() {
 	
 				// send recipe to UI
 				console.log("sending recipe to ui...");
-				s.setRecipe(recipe);
+				s.setRecipe(recipe, CocktailRecipe.ingredientNamesList(cocktailDispenser));
 
 				// et voilà
 				await cocktailDispenser.dispenseRecipe(recipe);
@@ -252,7 +252,7 @@ async function main() {
 	
 				// send recipe to UI
 				console.log("sending recipe to ui...");
-				s.setRecipe(recipe);
+				s.setRecipe(recipe, CocktailRecipe.ingredientNamesList(cocktailDispenser));
 
 				// et voilà
 				await cocktailDispenser.dispenseRecipe(recipe);

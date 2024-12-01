@@ -140,8 +140,8 @@ export class KarlIsisServer {
         });
     }
 
-    setRecipe(recipe: ICocktailRecipe) {
-        this.socket.emit("setRecipe", recipe);
+    setRecipe(recipe: ICocktailRecipe, ingredientsList: string[]) {
+        this.socket.emit("setRecipe", recipe, ingredientsList);
     }
 }
 

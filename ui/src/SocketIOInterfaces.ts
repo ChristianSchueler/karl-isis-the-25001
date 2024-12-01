@@ -10,7 +10,7 @@ export interface ServerToClientEvents {
     //hi: () => void;
     //setConfig: (config: SquatBotConfig) => void;    // transmit config settings to frontend ui app
 
-    setRecipe: (Recipe: ICocktailRecipe) => void;
+    setRecipe: (Recipe: ICocktailRecipe, ingredientNames: string[]) => void;
   }
   
   export interface ClientToServerEvents {

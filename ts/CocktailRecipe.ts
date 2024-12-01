@@ -3,8 +3,8 @@
 import { CocktailDispenser } from "./CocktailDispenser.js";
 
 export interface ICocktailRecipe {
-    ingredients: number[];      // a list of amounts of all ingridients, ordered
-    name: string;
+    ingredients: number[];      // a list of amounts of all ingredients in cl, ordered (!)
+    name: string;               // cocktail name
 }
 
 // compute a random integer number between min and max, including min and max
@@ -15,7 +15,7 @@ function getRandomIntInclusive(min: number, max: number) {
 }
 
 export class CocktailRecipe implements ICocktailRecipe {
-    ingredients: number[] = [];      // a list of amounts of all ingridients, ordered
+    ingredients: number[] = [];      // a list of amounts of all ingredients in cl, ordered (!)
     name: string = "";
 
     constructor(ingredients: number[], name: string) {
@@ -105,6 +105,24 @@ export class CocktailRecipe implements ICocktailRecipe {
         }
 
         return r;
+    }
+
+    // returns the in n-th cocktail name from given dispenser
+    static ingredientName(n: number, dispenser: CocktailDispenser): string {
+
+        return dispenser.pumps[n].name;
+    }
+
+    // returns the in n-th cocktail name from given dispenser
+    static ingredientNamesList(dispenser: CocktailDispenser): string[] {
+
+        let result:string[] = [];
+
+        for (const pump of dispenser.pumps) {
+            result.push(pump.name);
+        }
+
+        return result;
     }
 
     isValid(): boolean {
