@@ -280,6 +280,11 @@ export class Application {
 console.log("Animation...");
 gsap.to(".content .screen2 .logo, .content .screen2a .logo", {rotation: 360, transformOrigin: "center", ease: "none", duration: 3, repeat: -1});
 
+//gsap.set(".screen", {perspective:10000});//This is the key
+
+// TODO: 3D
+gsap.to(".content .screen4 .logo", { rotationY: 360, transformOrigin: "center", ease: "none", duration: 3, repeat: -1});
+
 //gsap.to("#stop5", { offset: 0, ease: "none", duration: 3, repeat: -1});
 
 // let x = document.getElementById("stop5");
