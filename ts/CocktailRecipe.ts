@@ -87,7 +87,8 @@ export class CocktailRecipe implements ICocktailRecipe {
             amounts[juiceIndex] += juiceAmount;         // increase, since we may add more water
         }
 
-        let recipe = new CocktailRecipe(amounts, "random cocktail");
+        let name = alcohol ? "random cocktail" : "non-alcoholic cocktail";
+        let recipe = new CocktailRecipe(amounts, name);
         recipe.normalize(10, 20);
         return recipe;
     }
