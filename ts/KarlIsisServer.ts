@@ -6,36 +6,38 @@ import * as fs from 'fs';
 import { Server } from 'socket.io';
 
 import * as SocketIOInterfaces from '../ui/src/SocketIOInterfaces.js';
+import { ICocktailRecipe } from './CocktailRecipe.js';
 
 export class KarlIsisServer {
-    public onGameStarted?: () => void;                              // overwrite this to catch game won events
-    public onGameCancelled?: () => void;                              // overwrite this to catch game won events
-    public onGameWon?: () => void;                              // overwrite this to catch game won events
-    public onSquatDown?: () => void;
-    public onSquatUp?: () => void;
-    squatBotConfig: SocketIOInterfaces.SquatBotConfig;          // config values ready from .env
+    // public onGameStarted?: () => void;                              // overwrite this to catch game won events
+    // public onGameCancelled?: () => void;                              // overwrite this to catch game won events
+    // public onGameWon?: () => void;                              // overwrite this to catch game won events
+    // public onSquatDown?: () => void;
+    // public onSquatUp?: () => void;
+    // squatBotConfig: SocketIOInterfaces.SquatBotConfig;          // config values ready from .env
 
     server: any;
     io: Server<SocketIOInterfaces.ClientToServerEvents, SocketIOInterfaces.ServerToClientEvents, SocketIOInterfaces.InterServerEvents, SocketIOInterfaces.SocketData>;
+    socket: any;
 
     constructor() {
 
-        console.log("Reading squat bot config...");
+        console.log("Reading Karl-Isis config...");
 
         // set config
         // get config from .env file or ENV
-        this.squatBotConfig = new SocketIOInterfaces.SquatBotConfig();
-        if (process.env.targetSquats) this.squatBotConfig.targetSquats = parseInt(process.env.targetSquats);
-        if (process.env.gameWinTimeout_s) this.squatBotConfig.gameWinTimeout_s = parseInt(process.env.gameWinTimeout_s);
-        if (process.env.faceMinX) this.squatBotConfig.faceMinX = parseInt(process.env.faceMinX);
-        if (process.env.faceMaxX) this.squatBotConfig.faceMaxX = parseInt(process.env.faceMaxX);
-        if (process.env.gameStartTimeout_s) this.squatBotConfig.gameStartTimeout_s = parseInt(process.env.gameStartTimeout_s);
-        if (process.env.topOffset_px) this.squatBotConfig.topOffset_px = parseInt(process.env.topOffset_px);
-        if (process.env.bottomOffset_px) this.squatBotConfig.bottomOffset_px = parseInt(process.env.bottomOffset_px);
-        if (process.env.gameLeftTimeout_s) this.squatBotConfig.gameLeftTimeout_s = parseInt(process.env.gameLeftTimeout_s);
-        if (process.env.squatFactor) this.squatBotConfig.squatFactor = parseFloat(process.env.squatFactor);
+        // this.squatBotConfig = new SocketIOInterfaces.SquatBotConfig();
+        // if (process.env.targetSquats) this.squatBotConfig.targetSquats = parseInt(process.env.targetSquats);
+        // if (process.env.gameWinTimeout_s) this.squatBotConfig.gameWinTimeout_s = parseInt(process.env.gameWinTimeout_s);
+        // if (process.env.faceMinX) this.squatBotConfig.faceMinX = parseInt(process.env.faceMinX);
+        // if (process.env.faceMaxX) this.squatBotConfig.faceMaxX = parseInt(process.env.faceMaxX);
+        // if (process.env.gameStartTimeout_s) this.squatBotConfig.gameStartTimeout_s = parseInt(process.env.gameStartTimeout_s);
+        // if (process.env.topOffset_px) this.squatBotConfig.topOffset_px = parseInt(process.env.topOffset_px);
+        // if (process.env.bottomOffset_px) this.squatBotConfig.bottomOffset_px = parseInt(process.env.bottomOffset_px);
+        // if (process.env.gameLeftTimeout_s) this.squatBotConfig.gameLeftTimeout_s = parseInt(process.env.gameLeftTimeout_s);
+        // if (process.env.squatFactor) this.squatBotConfig.squatFactor = parseFloat(process.env.squatFactor);
 
-        console.log("Ssquat bot config:", this.squatBotConfig);
+        // console.log("Ssquat bot config:", this.squatBotConfig);
 
         console.log("Creating web server...");
 
@@ -78,38 +80,39 @@ export class KarlIsisServer {
         this.io.on("connect", (socket) => {
             console.log("socket.io connect");
 
-            socket.on("gameStarted", () => {
-                console.log("socket: gameStarted");
+            this.socket = socket;
+            // socket.on("gameStarted", () => {
+            //     console.log("socket: gameStarted");
 
-                if (this.onGameStarted) this.onGameStarted();       // execute event handler
-            });
+            //     if (this.onGameStarted) this.onGameStarted();       // execute event handler
+            // });
 
-            socket.on("gameCancelled", () => {
-                console.log("socket: gameCancelled");
+            // socket.on("gameCancelled", () => {
+            //     console.log("socket: gameCancelled");
 
-                if (this.onGameCancelled) this.onGameCancelled();       // execute event handler
-            });
+            //     if (this.onGameCancelled) this.onGameCancelled();       // execute event handler
+            // });
 
-            socket.on("gameWon", () => {
-                console.log("socket: gameWon");
+            // socket.on("gameWon", () => {
+            //     console.log("socket: gameWon");
 
-                if (this.onGameWon) this.onGameWon();       // execute event handler
-            });
+            //     if (this.onGameWon) this.onGameWon();       // execute event handler
+            // });
 
-            socket.on("squatDown", () => {
-                console.log("socket: squatDown");
+            // socket.on("squatDown", () => {
+            //     console.log("socket: squatDown");
 
-                if (this.onSquatDown) this.onSquatDown();       // execute event handler
-            });
+            //     if (this.onSquatDown) this.onSquatDown();       // execute event handler
+            // });
 
-            socket.on("squatUp", () => {
-                console.log("socket: squatUp");
+            // socket.on("squatUp", () => {
+            //     console.log("socket: squatUp");
 
-                if (this.onSquatUp) this.onSquatUp();       // execute event handler
-            });
+            //     if (this.onSquatUp) this.onSquatUp();       // execute event handler
+            // });
 
             // post config values to app
-            socket.emit("setConfig", this.squatBotConfig);
+            // socket.emit("setConfig", this.squatBotConfig);
         });
 
         let path = './ui';
@@ -135,6 +138,10 @@ export class KarlIsisServer {
                 }
             });
         });
+    }
+
+    setRecipe(recipe: ICocktailRecipe) {
+        this.socket.emit("setRecipe", recipe);
     }
 }
 

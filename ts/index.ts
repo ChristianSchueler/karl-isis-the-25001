@@ -70,18 +70,6 @@ function isElectron() {
 // main entry point
 async function main() {
 
-	// button test
-	/*const button = new Gpio(4, 'in', 'rising', { debounceTimeout: 30 });
-	const led = new Gpio(17, 'out');
-	led.writeSync(0)
-	button.watch((err, value) => {
-		console.log("button:", value, err);
-		led.writeSync(value);
-	});*/
-
-	//let ai = new OpenAICocktailRecipes();
-	//await ai.test();
-
 	console.log("Karl-Isis the 25001 (c) 2022 - 2023 by Christian Schüler. Welcome.");
 	console.log("Press Ctrl-C to exit.");
 
@@ -107,6 +95,10 @@ async function main() {
 	let buttons = new CocktailButtons(5, 6, 7, 8);
 	buttons.enabled = false;		// disable buttons first
 
+	// create the server, hosting the html app
+	let s = new KarlIsisServer();
+	await s.start();
+
 	await buttons.ledsOff();		// turn off the lights
 	await buttons.ledOn(1);
 	await buttons.ledOn(2);
@@ -125,6 +117,10 @@ async function main() {
 			console.log("error, invalid recipe, maybe wrong formatting by GPT. I'll get you a radnom cocktail");
 			recipe = CocktailRecipe.randomRecipe(true, 2, 4);
 		}
+
+		// send recipe to UI
+		console.log("sending recipe to ui...");
+		s.setRecipe(recipe);
 
 		// et voilà
 		await cocktailDispenser.dispenseRecipe(recipe); 
@@ -151,7 +147,12 @@ async function main() {
 		buttons.ledBlinkContinuous(2, 100);
 
 		recipe = CocktailRecipe.randomRecipe(false);
+		// alternative with alcohol: recipe = CocktailRecipe.randomRecipe(true, 2, 4);
 		console.log(recipe.toString(cocktailDispenser));
+
+		// send recipe to UI
+		console.log("sending recipe to ui...");
+		s.setRecipe(recipe);
 
 		// et voilà
 		await cocktailDispenser.dispenseRecipe(recipe);
@@ -179,7 +180,7 @@ async function main() {
 	console.log("f1...f12 start/stop dispensing");
 	console.log("a        AI cocktail");
 	console.log("r        (r)andom cocktail");
-	console.log("n        random (n)icolas cocktail with alcohol");
+	console.log("n        random (n)icolas non-alcoholic cocktail");
 	console.log("Ctrl-c   quit");
 
 	// ***** main loop starts here
@@ -221,6 +222,10 @@ async function main() {
 					recipe = CocktailRecipe.randomRecipe(true, 2, 4);
 				}
 	
+				// send recipe to UI
+				console.log("sending recipe to ui...");
+				s.setRecipe(recipe);
+
 				// et voilà
 				await cocktailDispenser.dispenseRecipe(recipe); 
 	
@@ -231,6 +236,10 @@ async function main() {
 				recipe = CocktailRecipe.randomRecipe(true, 2, 4);
 				console.log(recipe.toString(cocktailDispenser));
 	
+				// send recipe to UI
+				console.log("sending recipe to ui...");
+				s.setRecipe(recipe);
+
 				// et voilà
 				await cocktailDispenser.dispenseRecipe(recipe);
 	
@@ -241,6 +250,10 @@ async function main() {
 				recipe = CocktailRecipe.randomRecipe(false);
 				console.log(recipe.toString(cocktailDispenser));
 	
+				// send recipe to UI
+				console.log("sending recipe to ui...");
+				s.setRecipe(recipe);
+
 				// et voilà
 				await cocktailDispenser.dispenseRecipe(recipe);
 	
@@ -249,44 +262,8 @@ async function main() {
 		}
 	});
 
-	// ROBOEXOTICA
+	// GO: enable buttons
 	buttons.enabled = true;
-		
-	// create the server, hosting the html app for the camera
-	let s = new KarlIsisServer();
-	await s.start();
-
-	s.onGameStarted = async () => {
-		buttons.ledBlink(1, 1000);		// game started - on both for s second
-		buttons.ledBlink(2, 1000);
-	}
-
-	s.onGameCancelled = async () => {
-
-		await buttons.ledsOff();		// game cancelled - switch off the lights
-	}
-
-	s.onGameWon = async () => {
-		console.log("SquatBot: Yay! Game won! Buttons are now enabled.");
-
-		await sleep(550);		// hacky... wait until led1 is again off
-
-		// both led's on
-		await buttons.ledOn(1);
-		await buttons.ledOn(2);
-
-		buttons.enabled = true;
-	}
-
-	s.onSquatDown = async () => {
-		console.log("SquatBot: squat down");
-		await buttons.ledBlink(2, 500);
-	}
-
-	s.onSquatUp = async () => {
-		console.log("SquatBot: squat up");
-		await buttons.ledBlink(1, 500);
-	}
 
 	// start electron app (i.e. window) only when using electron
 	if (isElectron()) {
