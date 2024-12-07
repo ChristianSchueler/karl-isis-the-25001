@@ -202,6 +202,7 @@ async function main() {
 	// get some ENV settings
 	let fullscreen = process.env.FULLSCREEN?.toLowerCase() == "true";
 	let buttonMinHoldDuration_ms = Number(process.env.BUTTON_MIN_HOLD_DURATION_MS) ?? 100;
+	let openAiModel = process.env.OPENAI_MODEL ?? "gpt-3.5-turbo-1106";
 
 	console.log("options:");
 	console.log("fullscreen:", fullscreen);
@@ -224,9 +225,13 @@ async function main() {
 	// set up dispenser hardware
 	let cocktailDispenser = new CocktailDispenser();
 	const ingredients = cocktailDispenser.getIngredientList();
-
+ 
 	// set up OpenAI cocktail recipe generator
-	let bot = new OpenAICocktailBot.OpenAICocktailBot("alcohol", ingredients, OpenAICocktailBot.AISystem.PreventAlcoholicGpt, { apiKey: process.env.OPENAI_API_KEY, organization: process.env.OPENAI_ORGANIZATION, model: "gpt-3.5-turbo-1106" });
+	let bot = new OpenAICocktailBot.OpenAICocktailBot("alcohol", ingredients, OpenAICocktailBot.AISystem.PreventAlcoholicGpt, { 
+		apiKey: process.env.OPENAI_API_KEY, 
+		organization: process.env.OPENAI_ORGANIZATION, 
+		model: openAiModel		// from .ENV 
+	});
 
 	// AI cocktail
 	buttons.onButton1 = async () => {
@@ -307,7 +312,7 @@ async function main() {
 
 		await app.whenReady();		// wait until electron window is open
 
-		var mainWindow = new BrowserWindow({
+		var mainWindow: Electron.BrowserWindow = new BrowserWindow({
 			title: "Karl-Isis the 25001",
 			show: false,
 			fullscreen: fullscreen,
@@ -322,11 +327,13 @@ async function main() {
 
 		// function handleKeyPress (event) {
 		// 	// You can put code here to handle the keypress.
-		// 	document.getElementById('last-keypress').innerText = event.key
+		// 	// document.getElementById('last-keypress').innerText = event.key
 		// 	console.log(`You pressed ${event.key}`)
 		//   }
-		  
-		// window.addEventListener('keyup', handleKeyPress, true)
+		   
+		// mainWindow.webContents.addListener("input-event", (e) => {
+		// 	console.log(e);
+		// });
 
 		//mainWindow.maximize();
 		mainWindow.webContents.openDevTools();
