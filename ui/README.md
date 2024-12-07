@@ -1,12 +1,10 @@
-# Google Media Pipe Face Detection in the Browser with TypeScript for Karl-Isis the 25001
+# (c) 2023 Christian Schüler, [christianschueler.at](http://christianschueler.at/)
 
-(c) 2023 Christian Schüler, [christianschueler.at](http://christianschueler.at/)
-
-Using microbuild, TypeScript, Google Media Pipe (vision) and Socket.IO.
+Using microbuild, TypeScript and Socket.IO.
 
 This is part of the Karl-Isis the 25001 cocktail mixing robot source code.
 
-It connects via socket.io and transmits detection events.
+It connects via socket.io and transmits UI events.
 
 ### Prerequisites
 
@@ -18,9 +16,7 @@ It connects via socket.io and transmits detection events.
 
 ```
 git clone git@github.com:https://github.com/ChristianSchueler/karl-isis-the-25001.git
-npm i
+npm install
 npm run build
 ```
 You might use npm run watch.
-
-When updating, please make sure you download latest model file into /models folder and copy latest wasm files from node_modules into /wasm folder.

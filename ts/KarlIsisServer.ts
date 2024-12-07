@@ -18,7 +18,7 @@ export class KarlIsisServer {
 
     server: any;
     io: Server<SocketIOInterfaces.ClientToServerEvents, SocketIOInterfaces.ServerToClientEvents, SocketIOInterfaces.InterServerEvents, SocketIOInterfaces.SocketData>;
-    socket: any;
+    socket: any = undefined;
 
     constructor() {
 
@@ -144,11 +144,17 @@ export class KarlIsisServer {
     }
 
     setRecipe(recipe: ICocktailRecipe, ingredientsList: string[]) {
-        this.socket.emit("setRecipe", recipe, ingredientsList);
+
+        // ignore socket commands if there's no socket, i.e. we're probably running on the console without x server
+        if (this.socket) this.socket.emit("setRecipe", recipe, ingredientsList);
+        else if (global.debug) console.log("setRecipe: no socket available. are you running on x?");
     }
 
     showScreen(screen: string) {
-        this.socket.emit("showScreen", screen);
+        
+        // ignore socket commands if there's no socket, i.e. we're probably running on the console without x server
+        if (this.socket) this.socket.emit("showScreen", screen);
+        else if (global.debug) console.log("setRecipe: no socket available. are you running on x?");
     }
 }
 

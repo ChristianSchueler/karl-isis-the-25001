@@ -2,8 +2,8 @@
 
 import {sleep } from './sleep.js';
 
-import { Gpio } from './Gpio.js';
-//import { Gpio } from 'onoff';
+//import { Gpio } from './Gpio.js';
+import { Gpio } from 'onoff';
 
 // either load onoff of a stub
 // let moduleName = "onoff";
@@ -22,13 +22,13 @@ export class IngredientPump {
 	pin: Gpio;								// interface to GPIO using onoff
 	isDispensing: boolean = false;
 	
-	constructor(name: string, isAlcohol: boolean, gpioId: number) {
+	constructor(name: string, isAlcohol: boolean, gpioId: number, pumpNo: number) {
 		
 		this.name = name;
 		//this.description = ...
 		this.isAlcohol = isAlcohol;
 		this.gpioId = gpioId;
-		console.log(`Ingredient: ${name}, ${isAlcohol ? `alcohol` : `no alcohol`}, GPIO ID: ${gpioId}`);
+		console.log(`Pump ${pumpNo} - Ingredient: ${name}, ${isAlcohol ? `alcohol` : `no alcohol`}, GPIO ID: ${gpioId}`);
 
 		this.pin = new Gpio(gpioId, 'out');		// open GPIO with given number (not: pin number!) for output
 		this.pin.writeSync(Gpio.HIGH);		// disable by default

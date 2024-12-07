@@ -70,6 +70,12 @@ function isElectron() {
 // main entry point
 async function main() {
 
+	// create logs directory if not already existing
+	let logDir = process.cwd() + '/logs/';
+	if (!fs.existsSync(logDir)){
+    	fs.mkdirSync(logDir);
+	}
+	
 	console.log("Karl-Isis the 25001 (c) 2022 - 2023 by Christian Schüler. Welcome.");
 	console.log("Press Ctrl-C to exit.");
 
@@ -86,7 +92,7 @@ async function main() {
 	if (process.env.OPENAI_API_KEY == undefined) {
 		console.log("OpenAI API key not defined. Please set OPENAI_API_KEY environment variable. Exiting.");
 		process.exit(1);
-	} 
+	}
 
 	// used for storing the current recipe
 	let recipe: CocktailRecipe;
@@ -328,7 +334,7 @@ async function main() {
 			running = false;
 		} catch (e) {
 			console.error("error in main:", e);
-			if (debug) running = false;		// if not in production mode, terminate immediately after first error. otherwise, continue into endless loop
+			if (global.debug) running = false;		// if not in production mode, terminate immediately after first error. otherwise, continue into endless loop
 			
 			// by default -> restart using a loop in case of error to keep it running
 		}

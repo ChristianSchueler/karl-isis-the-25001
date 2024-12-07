@@ -50,7 +50,7 @@ export class CocktailDispenser {
 			// find punp GPIO definition
 			let pumpGpio = this.pumpGpioMap.find(x => x.pumpNo === pumpNumber);
 			if (pumpGpio !== undefined) {
-				let p = new IngredientPump(this.drinkRepository[index].name, this.drinkRepository[index].isAlcohol, pumpGpio.gpioNumber);
+				let p = new IngredientPump(this.drinkRepository[index].name, this.drinkRepository[index].isAlcohol, pumpGpio.gpioNumber, pumpNumber);
 				this.pumps.push(p);
 			}
 			else { console.warn(`Setup drink: #${index}: pump number #${pumpNumber} undefined! Skipping.`); }

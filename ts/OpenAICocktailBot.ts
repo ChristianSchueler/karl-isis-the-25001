@@ -189,6 +189,10 @@ export class OpenAICocktailBot {
         console.log("Waiting for OpenAI GTP API reply...");
 
         try {
+            // // this should not be necessary, probably remove again
+            // let options: OpenAI.RequestOptions = {
+            //     timeout: 30
+            // };
 			const completion = await this.openAI.chat.completions.create(request) as ChatCompletion;          // query OpenAI, that might take a few secs
 		
             console.log(`OpenAICocktailBot '${this.name}' completion returned successfully.`);
@@ -231,14 +235,19 @@ export class OpenAICocktailBot {
 
 		} catch (err) {
 
+            if (global.debug) console.log("OpenAI GPT error:", err);
+
             // https://github.com/openai/openai-node
-            if (err instanceof OpenAI.APIError) {
-                console.log(err.status); // 400
-                console.log(err.name); // BadRequestError
-                console.log(err.headers); // {server: 'nginx', ...}
+            if (err instanceof OpenAI.APIError) { 
+                if (global.debug) {
+                    console.log("Name:", err.name); // BadRequestError
+                    console.log("Cause:", err.cause);
+                    console.log("Status:", err.status); // 400
+                    console.log("Headers:", err.headers); // {server: 'nginx', ...}
+                }
             }
 
-            console.log(`OpenAICocktailBot '${this.name}' error during OpenAI request: ${err}. We'll pour you a random drink instead.`);
+            console.log(`OpenAICocktailBot '${this.name}' error during OpenAI request: ${err}. We'll pour you a random alcoholic drink instead.`);
             return CocktailRecipe.randomRecipe(true, 2, 4);
         }
     }

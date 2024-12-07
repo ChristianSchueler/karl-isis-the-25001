@@ -15,9 +15,15 @@ This is the main repo of the Karl-Isis the 25001 cocktail mixing robot.
 
 ### Installing
 
+Instructions for first build the server, then electron-rebuild and then the UI.
+
 ```
 git clone git@github.com:https://github.com/ChristianSchueler/karl-isis-the-25001.git
-npm i
+npm install
+npm run build
+./node_modules/.bin/electron-rebuild
+cd ui
+npm install
 npm run build
 ```
 Please see below for config.
@@ -36,7 +42,7 @@ There is IngredientPump.ts and CocktailButtons.ts having import from either Gpio
 npm run start
 ```
 
-To start the web server. Browse to http://localhost:5000 to enable face tracking using the web cam.
+To start the web server. Browse to http://localhost:5000 to show the UI
 
 Or use
 ```
@@ -58,14 +64,15 @@ OPENAI_ORGANIZATION="org-INSERT HERE"
 
 DEBUG="false"
 
-targetSquats = 2                # how many squats to perform
-gameWinTimeout_s = 10           # how long until the next game might start
-faceMinX = 100                  # only use faces in the center region
-faceMaxX = 540                  # only use faces in the center region
-gameStartTimeout_s = 3          # how long to see a face for starting a game
-topOffset_px = 20               #
-bottomOffset_px = 0             #
-gameLeftTimeout_s = 3           # cancel the game after 3 consecutive seconds without a face detected
-squatFactor = 1.2               #
+### Troubleshooting
 
+I found that on Raspberry Pi and using our home internet provied, OpenAI API throws ConnectionErrors. It's working using the 
+Windows Dev machine, however. Changing the used internet connection on Raspi worked. 
+
+```
+sudo nano /etc/wpa_supplicant/wpa_supplicant.conf
+sudo wpa_cli -i wlan0 reconfigure
+hostname -I
+iwconfig wlan0
+ifconfig
 ```
