@@ -47,6 +47,7 @@ console.log = function(...d) {
 // 	//const pluginName = await import('../js/plugin_name.js');
 //}
 
+// return true when we are running inside Electron (instead of NodeJS)
 function isElectron() {
     // Renderer process
     if (typeof window !== 'undefined' && typeof window.process === 'object' && window.process.type === 'renderer') {
@@ -64,6 +65,111 @@ function isElectron() {
     }
 
     return false;
+}
+
+// let ChatGPT invent and dispense your cocktail
+async function AICocktail(buttons: CocktailButtons, server: KarlIsisServer, cocktailDispenser: CocktailDispenser, bot: OpenAICocktailBot.OpenAICocktailBot) {
+	
+	// used for storing the current recipe
+	let recipe: CocktailRecipe;
+
+	buttons.enabled = false;		// disable buttons again to prevent pressing again
+
+	// move to ChatGPT waiting screen
+	server.showScreen("screen2");
+
+	await buttons.ledsOff();		// turn off the lights
+	buttons.ledBlinkContinuous(1, 100);		// dont await...
+	buttons.ledBlinkContinuous(2, 100);
+
+	recipe = await bot.pourMeADrink();
+	console.log(recipe.toString(cocktailDispenser));
+	if (!recipe.isValid()) {
+		console.log("error, invalid recipe, maybe wrong formatting by GPT. I'll get you a random alcoholic cocktail");
+		recipe = CocktailRecipe.randomRecipe(true, 2, 4);
+	}
+
+	// send recipe to UI
+	console.log("sending recipe to ui...");
+	server.setRecipe(recipe, CocktailRecipe.ingredientNamesList(cocktailDispenser));
+
+	// move to dispensing screen
+	server.showScreen("screen3");
+
+	// et voilà
+	await cocktailDispenser.dispenseRecipe(recipe); 
+
+	await buttons.ledBlinkStopContinuous(1);
+	await buttons.ledBlinkStopContinuous(2);
+	await buttons.ledsOff();
+
+	// move to enjoy screen
+	server.showScreen("screen4");
+
+	console.log('Dispensing finished.');
+	
+	// keep message with recipe for 20 s visible in case of UI. otherwise it's all the time visible on console
+	if (isElectron()) await sleep(20000);
+
+	// back to start screen
+	server.showScreen("screen1"); 
+
+	await sleep(500);
+	await buttons.ledOn(1);
+	await buttons.ledOn(2);
+
+	// important, do this after the leds and motors have all (!) stopped. otherwise we might trigger false presses.
+	buttons.enabled = true;
+}
+
+// random cocktail
+async function RandomCocktail(alcohol: boolean, buttons: CocktailButtons, server: KarlIsisServer, cocktailDispenser: CocktailDispenser, bot: OpenAICocktailBot.OpenAICocktailBot) {
+
+	// used for storing the current recipe
+	let recipe: CocktailRecipe;
+
+	buttons.enabled = false;		// disable buttons again to prevent pressing again
+
+	// move to random cocktail waiting screen
+	server.showScreen("screen2a");
+
+	await buttons.ledsOff();		// turn off the lights
+	buttons.ledBlinkContinuous(1, 100);		// dont await...
+	buttons.ledBlinkContinuous(2, 100);
+
+	recipe = CocktailRecipe.randomRecipe(alcohol);		// with or without alcohol
+	console.log(recipe.toString(cocktailDispenser));
+
+	// send recipe to UI
+	console.log("sending recipe to ui...");
+	server.setRecipe(recipe, CocktailRecipe.ingredientNamesList(cocktailDispenser));
+
+	// move to dispensing screen
+	server.showScreen("screen3");
+
+	// et voilà
+	await cocktailDispenser.dispenseRecipe(recipe);
+
+	await buttons.ledBlinkStopContinuous(1);
+	await buttons.ledBlinkStopContinuous(2);
+	await buttons.ledsOff();
+
+	// move to enjoy screen
+	server.showScreen("screen4");
+
+	console.log('Dispensing finished.');
+	
+	// keep message with recipe for 20 s visible in case of UI. otherwise it's all the time visible on console
+	if (isElectron()) await sleep(20000);
+
+	// back to start screen
+	server.showScreen("screen1"); 
+
+	await sleep(500);
+	await buttons.ledOn(1);
+	await buttons.ledOn(2);
+
+	buttons.enabled = true;
 }
 
 // main entry point
@@ -93,91 +199,27 @@ async function main() {
 		process.exit(1);
 	}
 
-	// used for storing the current recipe
-	let recipe: CocktailRecipe;
+	// get some ENV settings
+	let fullscreen = process.env.FULLSCREEN?.toLowerCase() == "true";
+	let buttonMinHoldDuration_ms = Number(process.env.BUTTON_MIN_HOLD_DURATION_MS) ?? 100;
+
+	console.log("options:");
+	console.log("fullscreen:", fullscreen);
+	console.log("buttonMinHoldDuration_ms:", buttonMinHoldDuration_ms);
 
 	// set up hardware buttons and LEDs
-	let buttons = new CocktailButtons(5, 6, 7, 8);
+	let buttons = new CocktailButtons(5, 6, 7, 8, buttonMinHoldDuration_ms);
 	buttons.enabled = false;		// disable buttons first
 
 	// create the server, hosting the html app
-	let s = new KarlIsisServer();
-	await s.start();
+	let server = new KarlIsisServer();
+	await server.start();
 	// TODO: problem here, socket might not already connected!
+	// hint: when server has started, socket get's connected and moves automatically to "screen1"
 
 	await buttons.ledsOff();		// turn off the lights
 	await buttons.ledOn(1);
 	await buttons.ledOn(2);
-		
-	// AI cocktail
-	buttons.onButton1 = async () => {
-		buttons.enabled = false;		// disable buttons again to prevent pressing again
-
-		// move to ChatGPT waiting screen
-		s.showScreen("screen2");
-
-		await buttons.ledsOff();		// turn off the lights
-		buttons.ledBlinkContinuous(1, 100);		// dont await...
-		buttons.ledBlinkContinuous(2, 100);
-
-		recipe = await bot.pourMeADrink();
-		console.log(recipe.toString(cocktailDispenser));
-		if (!recipe.isValid()) {
-			console.log("error, invalid recipe, maybe wrong formatting by GPT. I'll get you a radnom cocktail");
-			recipe = CocktailRecipe.randomRecipe(true, 2, 4);
-		}
-
-		// send recipe to UI
-		console.log("sending recipe to ui...");
-		s.setRecipe(recipe, CocktailRecipe.ingredientNamesList(cocktailDispenser));
-
-		// et voilà
-		await cocktailDispenser.dispenseRecipe(recipe); 
-
-		await buttons.ledBlinkStopContinuous(1);
-		await buttons.ledBlinkStopContinuous(2);
-		await buttons.ledsOff();
-
-		console.log('Dispensing finished.');
-		
-		await sleep(500);
-		await buttons.ledOn(1);
-		await buttons.ledOn(2);
-
-		buttons.enabled = true;
-	};
-
-	// non-alcoholic cocktail
-	buttons.onButton2 = async () => {
-		buttons.enabled = false;		// disable buttons again to prevent pressing again
-
-		await buttons.ledsOff();		// turn off the lights
-		buttons.ledBlinkContinuous(1, 100);		// dont await...
-		buttons.ledBlinkContinuous(2, 100);
-
-		recipe = CocktailRecipe.randomRecipe(false);
-		// alternative with alcohol: recipe = CocktailRecipe.randomRecipe(true, 2, 4);
-		console.log(recipe.toString(cocktailDispenser));
-
-		// send recipe to UI
-		console.log("sending recipe to ui...");
-		s.setRecipe(recipe, CocktailRecipe.ingredientNamesList(cocktailDispenser));
-
-		// et voilà
-		await cocktailDispenser.dispenseRecipe(recipe);
-
-		await buttons.ledBlinkStopContinuous(1);
-		await buttons.ledBlinkStopContinuous(2);
-		await buttons.ledsOff();
-
-		console.log('Dispensing finished.');
-		
-		await sleep(500);
-		await buttons.ledOn(1);
-		await buttons.ledOn(2);
-
-		buttons.enabled = true;
-	};
 
 	// set up dispenser hardware
 	let cocktailDispenser = new CocktailDispenser();
@@ -186,6 +228,18 @@ async function main() {
 	// set up OpenAI cocktail recipe generator
 	let bot = new OpenAICocktailBot.OpenAICocktailBot("alcohol", ingredients, OpenAICocktailBot.AISystem.PreventAlcoholicGpt, { apiKey: process.env.OPENAI_API_KEY, organization: process.env.OPENAI_ORGANIZATION, model: "gpt-3.5-turbo-1106" });
 
+	// AI cocktail
+	buttons.onButton1 = async () => {
+		
+		await AICocktail(buttons, server, cocktailDispenser, bot);
+	};
+
+	// non-alcoholic cocktail
+	buttons.onButton2 = async () => {
+		
+		await RandomCocktail(false, buttons, server, cocktailDispenser, bot);
+	};
+
 	console.log("f1...f12 start/stop dispensing");
 	console.log("a        AI cocktail");
 	console.log("r        (r)andom cocktail");
@@ -193,6 +247,7 @@ async function main() {
 	console.log("Ctrl-c   quit");
 
 	// ***** main loop starts here
+	
 	// set up keyboard debug and maintenace controls
 
 	readline.emitKeypressEvents(process.stdin);
@@ -222,64 +277,15 @@ async function main() {
 			case "f12": cocktailDispenser.togglePump(11); break;
 
 			case "a":		// AI cocktail
-				console.log("AI cocktail");
-				
-				// move to ChatGPT waiting screen
-				s.showScreen("screen2");
-
-				recipe = await bot.pourMeADrink();
-				console.log(recipe.toString(cocktailDispenser));
-				if (!recipe.isValid()) {
-					console.log("error, invalid recipe, maybe wrong formatting by GPT. I'll get you a radnom cocktail");
-					recipe = CocktailRecipe.randomRecipe(true, 2, 4);
-				}
-	
-				// send recipe to UI
-				console.log("sending recipe to ui...");
-				s.setRecipe(recipe, CocktailRecipe.ingredientNamesList(cocktailDispenser));
-
-				// move to ChatGPT pouring screen
-				s.showScreen("screen3");
-
-				// et voilà
-				await cocktailDispenser.dispenseRecipe(recipe); 
-	
-				// move to ChatGPT enjoy screen
-				s.showScreen("screen4");
-
-				console.log('Dispensing finished.');
-
-				await sleep(20000);
-
-				s.showScreen("screen1"); 
+				await AICocktail(buttons, server, cocktailDispenser, bot);
 			break;
 	
-			case "r":		// random
-				recipe = CocktailRecipe.randomRecipe(true, 2, 4);
-				console.log(recipe.toString(cocktailDispenser));
-	
-				// send recipe to UI
-				console.log("sending recipe to ui...");
-				s.setRecipe(recipe, CocktailRecipe.ingredientNamesList(cocktailDispenser));
-
-				// et voilà
-				await cocktailDispenser.dispenseRecipe(recipe);
-	
-				console.log('Dispensing finished.');
+			case "r":		// random with alcohol
+				await RandomCocktail(true, buttons, server, cocktailDispenser, bot);
 			break;
 
 			case "n":		// Nicolas alcohol-free random cocktails
-				recipe = CocktailRecipe.randomRecipe(false);
-				console.log(recipe.toString(cocktailDispenser));
-	
-				// send recipe to UI
-				console.log("sending recipe to ui...");
-				s.setRecipe(recipe, CocktailRecipe.ingredientNamesList(cocktailDispenser));
-
-				// et voilà
-				await cocktailDispenser.dispenseRecipe(recipe);
-	
-				console.log('Dispensing finished.');
+				await RandomCocktail(false, buttons, server, cocktailDispenser, bot);
 			break;
 		}
 	});
@@ -304,8 +310,8 @@ async function main() {
 		var mainWindow = new BrowserWindow({
 			title: "Karl-Isis the 25001",
 			show: false,
-			//fullscreen: true,
-			//kiosk: true,
+			fullscreen: fullscreen,
+			kiosk: fullscreen,
 			autoHideMenuBar: true
 		});
 		
@@ -313,6 +319,14 @@ async function main() {
 			app.relaunch();
 			app.quit();
 		});
+
+		// function handleKeyPress (event) {
+		// 	// You can put code here to handle the keypress.
+		// 	document.getElementById('last-keypress').innerText = event.key
+		// 	console.log(`You pressed ${event.key}`)
+		//   }
+		  
+		// window.addEventListener('keyup', handleKeyPress, true)
 
 		//mainWindow.maximize();
 		mainWindow.webContents.openDevTools();

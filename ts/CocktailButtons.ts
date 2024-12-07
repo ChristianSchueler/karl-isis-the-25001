@@ -30,10 +30,14 @@ export class CocktailButtons {
     buttonPressedTime2: number = 0;
 
     // initialize the hardware. param number are GPIO numbers
-    constructor(gpioPinAlcButton: number, gpioPinNonAlcButton: number, led1: number, led2: number) {
+    constructor(gpioPinAlcButton: number, gpioPinNonAlcButton: number, led1: number, led2: number, buttonMinHoldDuration_ms?: number) {
 
         console.log("Setting up buttons...");
         
+        this.minHoldDuration_ms = buttonMinHoldDuration_ms ?? 100;
+
+        if (global.debug) console.log("minHoldDuration_ms:", this.minHoldDuration_ms);
+
         this.button1 = new Gpio(gpioPinAlcButton, 'in', 'both', { debounceTimeout: 30 });
         this.button2 = new Gpio(gpioPinNonAlcButton, 'in', 'both', { debounceTimeout: 30 });
 

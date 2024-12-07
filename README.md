@@ -30,11 +30,17 @@ Please see below for config.
 
 You might use npm run watch.
 
-When updating, please make sure you download latest model file into /models folder and copy latest wasm files from node_modules into /wasm folder.
-
 ### Building on Raspberry Pi / Windows
 
 There is IngredientPump.ts and CocktailButtons.ts having import from either Gpio mock class or onoff. Uncomment onoff on Rasperry Pi. Uncomment Gpio.ts on Windows.
+
+### Running on NodeJS instead of Electron
+
+Might need a
+
+```
+npm rebuild
+```
 
 ### Starting
 
@@ -49,7 +55,7 @@ Or use
 npm run startui
 ```
 
-to fire of Electron as web broswer and all is done.
+to fire of Electron as web broswer and all is done. You might want to disable the screensaver / screen blank: https://forums.raspberrypi.com/viewtopic.php?t=219854
 
 ### Configuration
 
