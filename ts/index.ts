@@ -1,10 +1,9 @@
-// Karl-Isis the 25001 Cocktail Mixing Bot (c) 2022-2023 by Christian Schüler, christianschueler.at
+// Karl-Isis the 25001 Cocktail Mixing Bot (c) 2022-2024 by Christian Schüler, christianschueler.at
 
-// references
-// - https://github.com/fivdi/onoff
-//
-//
-//
+// References
+// - Author: https://christianschueler.at/
+// - GitHub Repo: https://github.com/ChristianSchueler/karl-isis-the-25001
+// - Project description: https://christianschueler.at/technologie/karl-isis-der-250100-ki-cocktail-bot/
 
 import * as dotenv from 'dotenv' // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
 import fs from 'fs';
