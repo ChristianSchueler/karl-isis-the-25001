@@ -216,14 +216,28 @@ html, body {
 
 /* ----- bottom  area ----- */
 
-.bottom h1 {
+.bottom h1.text {
 	color: white;
 	font-size: 380%;
-	top: 50%;
+	/* top: 50%; */
 	margin-top: 0%;
-	width: 100%;
+	/* width: 100%; */
 	top: 8%;
+	left: 10%;
     /* left: 50%; */
     position: absolute;
 	/* text-align: left; */
+}
+
+.bottom h1.url {
+	color: yellow;
+   	text-shadow:
+    3px 3px 0 #000,
+    -3px 3px 0 #000,
+    -3px -3px 0 #000,
+    3px -3px 0 #000;
+	font-size: 300%;
+	position: absolute;
+	right: 1.1%;
+	bottom: -15%;
 }
