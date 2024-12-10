@@ -236,7 +236,7 @@ async function main() {
 	const ingredients = cocktailDispenser.getIngredientList();
  
 	// set up OpenAI cocktail recipe generator
-	let bot = new OpenAICocktailBot.OpenAICocktailBot("alcohol", ingredients, OpenAICocktailBot.AISystem.PreventAlcoholicGpt, { 
+	let bot = new OpenAICocktailBot.OpenAICocktailBot("alcohol", ingredients, OpenAICocktailBot.AISystem.ChatGpt2024, { 
 		apiKey: process.env.OPENAI_API_KEY, 
 		organization: process.env.OPENAI_ORGANIZATION, 
 		model: openAiModel		// from .ENV 

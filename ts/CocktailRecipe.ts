@@ -53,6 +53,7 @@ export class CocktailRecipe implements ICocktailRecipe {
     }
 
     // return a random recipe
+    // minAlc and maxAlc: range of amount of alcohol in drink
     static randomRecipe(alcohol: boolean = true, minAlc?: number, maxAlc?: number): CocktailRecipe {
         console.log(`OpenAICocktailBot creating random cocktail...`);
 
@@ -61,6 +62,7 @@ export class CocktailRecipe implements ICocktailRecipe {
 
         let amounts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
+        // either use alcohol or water
         if (alcohol) {
             let alcoholIndex = getRandomIntInclusive(0, 3);             // single alcohol selection
             let alcoholAmount = getRandomIntInclusive(minAlc, maxAlc);  // limit alcoholo
@@ -71,7 +73,9 @@ export class CocktailRecipe implements ICocktailRecipe {
             amounts[11] = waterAmount;      // currently, water is always P12 (index 11)
         }
 
-        let juiceCount = getRandomIntInclusive(1, 5);               // 1 to 5 more ingredients
+        let minIngredients = 1;
+        let maxIngredients = 11;
+        let juiceCount = getRandomIntInclusive(1, 7);               // 1 to 8 more ingredients
         for (let i=1; i<=juiceCount; i++) {
 
             // search for unused ingredient

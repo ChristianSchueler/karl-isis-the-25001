@@ -6,7 +6,7 @@ import { ChatCompletion } from "openai/resources";
 
 import { CocktailRecipe, ICocktailRecipe } from "./CocktailRecipe.js";
 
-export enum AISystem { JsonResult, ListResult, PreventAlcoholicGpt }
+export enum AISystem { JsonResult, ListResult, PreventAlcoholicGpt, ChatGpt2024 }
 
 // OLD
 let cocktailPrompt = `
@@ -56,6 +56,17 @@ What I ask you to "pour me a cocktail", you preform the following steps:
 First, select an alcoholic ingredient exclusively from the following list: vodka, gin, rum, blue curacao and select an amount between 2 cl and 4 cl.
 Second, select one to five non-alcoholic ingredients exclusively from the following list: ananas juice, cherry juice, orange juice, bitter lemon, tonic water, herbal lemonade, bitter orange sirup, soda and for each ingredient select an amount between 2 cl and 6 cl.
 Third, select a fancy cocktail name.
+Format your response as comma separated text: cocktail name, amount of alcoholic ingredient and alcoholic ingredient name separated by a single space, all non-alcoholic ingredients including amounts
+`
+
+const karlIsisSystem2024 = `
+You are a cocktail mixing robot, you are able to pour cocktails.
+Ingredients are measured in cl.
+Be creative, create recipes which never existed before, don't repeat a cocktail recipe.
+What I ask you to "pour me a cocktail", you perform the following steps:
+First, select an alcoholic ingredient exclusively from the following list: vodka, gin, rum, blue curacao and select an amount between 2 cl and 4 cl.
+Second, select one to eight non-alcoholic ingredients exclusively from the following list: ananas juice, cherry juice, orange juice, bitter lemon, tonic water, herbal lemonade, bitter orange sirup, soda and for each ingredient select an amount between 0.5 cl and 6 cl.
+Third, select a fancy cocktail name, preferably a nerdy wordplay with cocktails and robots and nerd stuff. Don't repeat names. You are allowed to invent new words.
 Format your response as comma separated text: cocktail name, amount of alcoholic ingredient and alcoholic ingredient name separated by a single space, all non-alcoholic ingredients including amounts
 `
 
@@ -115,6 +126,7 @@ export class OpenAICocktailBot {
                 this.system.replace("%INGREDIENTS%", ingredientsString);
                 break;
             case AISystem.PreventAlcoholicGpt: this.system = karlIsisSystem2; break;
+            case AISystem.ChatGpt2024: this.system = karlIsisSystem2024; break;
         }
 
         this.model = openAIConfig.model ?? "gpt-3.5-turbo-1106";    // defaults to latest gpt-3 turbo
@@ -219,6 +231,7 @@ export class OpenAICocktailBot {
                     break;
 
                 case AISystem.PreventAlcoholicGpt: // "Pirate's Paradise, 3 cl rum, 4 cl ananas juice, 3 cl cherry juice"
+                case AISystem.ChatGpt2024:
                     //let split = result?.content?.split(",") ?? ["",""];
                     //let name = split?.shift()?.trim() ?? "";
                     //let ingredients = [];
