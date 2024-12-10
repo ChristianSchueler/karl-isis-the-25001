@@ -82,7 +82,9 @@ async function AICocktail(buttons: CocktailButtons, server: KarlIsisServer, cock
 	buttons.ledBlinkContinuous(1, 100);		// dont await...
 	buttons.ledBlinkContinuous(2, 100);
 
-	recipe = await bot.pourMeADrink();
+	const result = [await sleep(5000), await bot.pourMeADrink()];
+	recipe = result[1] as CocktailRecipe;
+
 	console.log(recipe.toString(cocktailDispenser));
 	if (!recipe.isValid()) {
 		console.log("error, invalid recipe, maybe wrong formatting by GPT. I'll get you a random alcoholic cocktail");
@@ -137,7 +139,9 @@ async function RandomCocktail(alcohol: boolean, buttons: CocktailButtons, server
 	buttons.ledBlinkContinuous(1, 100);		// dont await...
 	buttons.ledBlinkContinuous(2, 100);
 
-	recipe = CocktailRecipe.randomRecipe(alcohol);		// with or without alcohol
+	const result = [await sleep(5000), await CocktailRecipe.randomRecipe(alcohol)];		// with or without alcohol
+	recipe = result[1] as CocktailRecipe;
+
 	console.log(recipe.toString(cocktailDispenser));
 
 	// send recipe to UI
@@ -203,10 +207,13 @@ async function main() {
 	let fullscreen = process.env.FULLSCREEN?.toLowerCase() == "true";
 	let buttonMinHoldDuration_ms = Number(process.env.BUTTON_MIN_HOLD_DURATION_MS) ?? 100;
 	let openAiModel = process.env.OPENAI_MODEL ?? "gpt-3.5-turbo-1106";
-
+	let devtools = process.env.DEVTOOLS?.toLowerCase() == "true";
+	
 	console.log("options:");
 	console.log("fullscreen:", fullscreen);
 	console.log("buttonMinHoldDuration_ms:", buttonMinHoldDuration_ms);
+	console.log("openAiModel:", openAiModel);
+	console.log("devtools:", devtools);
 
 	// set up hardware buttons and LEDs
 	let buttons = new CocktailButtons(5, 6, 7, 8, buttonMinHoldDuration_ms);
@@ -336,8 +343,11 @@ async function main() {
 		// });
 
 		//mainWindow.maximize();
-		mainWindow.webContents.openDevTools();
+		
+		if (devtools) mainWindow.webContents.openDevTools();
+
 		console.log("opening URL: http://localhost:5000");
+		
 		mainWindow.loadURL("http://localhost:5000");
 		mainWindow.show();
 	}

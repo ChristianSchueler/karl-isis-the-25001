@@ -189,10 +189,6 @@ export class OpenAICocktailBot {
         console.log("Waiting for OpenAI GTP API reply...");
 
         try {
-            // // this should not be necessary, probably remove again
-            // let options: OpenAI.RequestOptions = {
-            //     timeout: 30
-            // };
 			const completion = await this.openAI.chat.completions.create(request) as ChatCompletion;          // query OpenAI, that might take a few secs
 		
             console.log(`OpenAICocktailBot '${this.name}' completion returned successfully.`);
