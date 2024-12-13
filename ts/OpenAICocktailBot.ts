@@ -2,14 +2,42 @@
 
 import OpenAI from "openai";
 import * as util from 'util';
-import { ChatCompletion } from "openai/resources";
+import { ChatCompletion, ChatCompletionMessage } from "openai/resources";
+import { zodResponseFormat } from "openai/helpers/zod";
+import { z } from "zod";
 
 import { CocktailRecipe, ICocktailRecipe } from "./CocktailRecipe.js";
 
 // which kind of requests are being used and which response format, e.g. JSON or comma separated lists
-export enum AISystem { JsonResult, ListResult, PreventAlcoholicGpt, ChatGpt2024 }
+export enum AISystem { JsonResult, ListResult, PreventAlcoholicGpt, ChatGpt2024, StructuredOutput2024 }
 
-// OLD
+// current ingredients:
+// vodka, gin, rum, blue curacao, ananas juice, cherry juice, orange juice, bitter lemon, tonic water, herbal lemonade, bitter orange sirup, soda
+// TODO: this should come from the pump definitions and inserted int the prompt automagically
+
+// original testing
+// - a list of whole numbers separated by a single space character
+// - each number should represent the amount of the ingredient in cl
+// - use the ingredient order given by this list: vodka, gin, rum, blue curacao, ananas juice, cherry juice, orange juice, bitter lemon, tonic water, herbal lemonade, bitter orange sirup, soda
+// - Include unused ingrediets as 0 in the list.
+// - append to your response a comma and the cocktail name you chose
+
+// some old prompt from 2022 oder JSON
+// let karlIsisSystem = `
+// You are a cocktail mixing robot, you are able to pour cocktails with up to 12 different ingredients.
+// You can use the following ingredients: vodka, gin, rum, orange juice, cherry juice, bitter lemon, tonic, pineapple juice, soda.
+// What I ask you to "pour me a cocktail", you create a recipe with your available ingredients and you create a cocktail name.
+// Do not repeat cocktail recipes. Be creative.
+// Use ingredients such that after pouring 60 cocktails roughly 1 liter of every ingredient has been used.
+// The sum of all cocktail amounts must be at least 10 cl and at most 20 cl.
+// Format your response as JSON object. Each entry in the JSON object should consist of the ingredient name (labeled as "ingredient") and the amount of the ingredient in cl (labeled as "amount").
+// Label the array of ingredients as "ingredients". 
+// Add an extra field in the JSON object for the sum of all "amount" fields (labeled as "drinkSize"). The sum should be in cl.
+// Add an extra filed on the JSON object for the cocktail name (labeled "name") containing the cocktail name.
+// Return a valid JSON object.
+// `
+
+// initial, using JSON format, very unstable as of 2022
 let cocktailPrompt = `
 restrict yourself to the use only ingredients from this list: ["vodka", "rum", "gin",  "whisky", "campari", "lime juice", "orange juice", "strawberry juice", "raspberry juice", "pineapple juice", "bitter lemon", "tonic water", "water", "soda", "slice of orange", "slice of lemon"].
 
@@ -24,8 +52,6 @@ add an extra field in the JSON object for the sum of all "amount" fields (labele
 add an extra filed on the JSON object for the cocktail name (labeled "name"). 
 Return a valid JSON object.
 `
-
-// vodka, gin, rum, blue curacao, ananas juice, cherry juice, orange juice, bitter lemon, tonic water, herbal lemonade, bitter orange sirup, soda
 
 // this is what defines the scope or context of the AI bot
 const karlIsisSystem = `
@@ -60,6 +86,7 @@ Third, select a fancy cocktail name.
 Format your response as comma separated text: cocktail name, amount of alcoholic ingredient and alcoholic ingredient name separated by a single space, all non-alcoholic ingredients including amounts
 `
 
+// be more creative with names 2024
 const karlIsisSystem2024 = `
 You are a cocktail mixing robot, you are able to pour cocktails.
 Ingredients are measured in cl.
@@ -71,37 +98,38 @@ Third, select a fancy cocktail name, preferably a nerdy wordplay with cocktails 
 Format your response as comma separated text: cocktail name, amount of alcoholic ingredient and alcoholic ingredient name separated by a single space, all non-alcoholic ingredients including amounts
 `
 
-// - a list of whole numbers separated by a single space character
-// - each number should represent the amount of the ingredient in cl
-// - use the ingredient order given by this list: vodka, gin, rum, blue curacao, ananas juice, cherry juice, orange juice, bitter lemon, tonic water, herbal lemonade, bitter orange sirup, soda
-// - Include unused ingrediets as 0 in the list.
-// - append to your response a comma and the cocktail name you chose
+// use new 2024 structured output format
+// @see https://platform.openai.com/docs/guides/structured-outputs?lang=node.js
+const karlIsisSystemStructuredOutput2024 = `
+You are a cocktail mixing robot, you are able to invent and pour cocktails.
+Ingredients are measured in cl.
+Be creative, create recipes which never existed before and don't output a cocktail recipe twice.
+What I ask you to "pour me a cocktail", you perform the following steps:
+First, cycle through the alcoholic ingredients exclusively from the following list: vodka, gin, rum, blue curacao, select a single alcohol and select an amount between 2 cl and 4 cl.
+Second, select one to eight non-alcoholic ingredients exclusively from the following list: ananas juice, cherry juice, orange juice, bitter lemon, tonic water, herbal lemonade, bitter orange sirup, soda and for each ingredient select an amount between 0.5 cl and 6 cl.
+Third, select a fancy cocktail name, preferably a nerdy wordplay with cocktails, robots, technology, coding, AI and geek stuff. Don't output the same cocktail name twice. You are allowed to invent new words.
+Format your response as JSON. Return an array with 12 elements as numbers. The order of the ingredients in the array is: vodka, gin, rum, blue curacao, ananas juice, cherry juice, orange juice, bitter lemon, tonic water, herbal lemonade, bitter orange sirup, soda.
+This means as example: for 4 cl of vodka and 3.5 cl of orange juice return: 4, 0, 0, 0, 0, 0, 3.5, 0, 0, 0, 0, 0.
+Label the array of ingredients as "ingredients".
+Add an extra filed on the JSON object for the cocktail name (labeled "name") containing the cocktail name.
+`
 
-// let karlIsisSystem = `
-// You are a cocktail mixing robot, you are able to pour cocktails with up to 12 different ingredients.
-// You can use the following ingredients: vodka, gin, rum, orange juice, cherry juice, bitter lemon, tonic, pineapple juice, soda.
-// What I ask you to "pour me a cocktail", you create a recipe with your available ingredients and you create a cocktail name.
-// Do not repeat cocktail recipes. Be creative.
-// Use ingredients such that after pouring 60 cocktails roughly 1 liter of every ingredient has been used.
-// The sum of all cocktail amounts must be at least 10 cl and at most 20 cl.
-// Format your response as JSON object. Each entry in the JSON object should consist of the ingredient name (labeled as "ingredient") and the amount of the ingredient in cl (labeled as "amount").
-// Label the array of ingredients as "ingredients". 
-// Add an extra field in the JSON object for the sum of all "amount" fields (labeled as "drinkSize"). The sum should be in cl.
-// Add an extra filed on the JSON object for the cocktail name (labeled "name") containing the cocktail name.
-// Return a valid JSON object.
-// `
-
+// basic configuration for OpenAI API, like credentials and used model
 export interface OpenAIConfig {
     apiKey: string;             // from https://platform.openai.com/api-keys
-    organization?: string;       // from https://platform.openai.com/account/organization
+    organization?: string;      // from https://platform.openai.com/account/organization
     model?: string;             // e.g. gpt-3.5-turbo-1106
 };
 
+// a structured output format data type for OpenAI, see https://platform.openai.com/docs/guides/structured-outputs?lang=node.js
+const AICocktailRecipe = z.object({
+    ingredients: z.array(z.number()),
+    name: z.string(),
+    });
+
 /** @class OpenAICocktailBot
  * 
- * @param ... 
- * 
- * 
+ * Creates ChatGPT prompts and requests to OpenAI API.
  */
 export class OpenAICocktailBot {
     name: string = "";			                    // unique name, used for writing files to disk
@@ -128,6 +156,7 @@ export class OpenAICocktailBot {
                 break;
             case AISystem.PreventAlcoholicGpt: this.system = karlIsisSystem2; break;
             case AISystem.ChatGpt2024: this.system = karlIsisSystem2024; break;
+            case AISystem.StructuredOutput2024: this.system = karlIsisSystemStructuredOutput2024; break;
         }
 
         this.model = openAIConfig.model ?? "gpt-3.5-turbo-1106";    // defaults to latest gpt-3 turbo
@@ -157,7 +186,7 @@ export class OpenAICocktailBot {
     }
 
     // build a OpenAI chat request object from previous conversation
-     createChatRequest(): OpenAI.Chat.Completions.ChatCompletionCreateParams  {
+     createChatRequest(): OpenAI.Chat.Completions.ChatCompletionCreateParamsNonStreaming  {
 
         //openai.chat.completions.ChatRe 
         
@@ -179,10 +208,19 @@ export class OpenAICocktailBot {
 
         if (global.debug) console.log(`OpenAICocktailBot '${this.name}' request: ${util.inspect(this.messages)}`);
 
-        return {
+        // basic request consists of the used model and the message from the past, i.e. a chat
+        let result: OpenAI.Chat.Completions.ChatCompletionCreateParams = {
             model: this.model,
-            messages: this.messages,
-        };
+            messages: this.messages
+        }
+
+        // in case of 2024 structured output: tell the output format type
+        // see: https://platform.openai.com/docs/guides/structured-outputs?lang=node.js
+        if (this.aiSystem == AISystem.StructuredOutput2024) {
+            result.response_format = zodResponseFormat(AICocktailRecipe, "cocktailRecipe")
+        }
+
+        return result;
     }
 
     // creates a cocktail recipe via OpenAI
@@ -202,21 +240,53 @@ export class OpenAICocktailBot {
         console.log("Waiting for OpenAI GTP API reply...");
 
         try {
-			const completion = await this.openAI.chat.completions.create(request) as ChatCompletion;          // query OpenAI, that might take a few secs
-		
-            console.log(`OpenAICocktailBot '${this.name}' completion returned successfully.`);
 
-            // parse and interpret the result
-            let result = completion.choices[0].message;
-            let totalTokens: number = completion?.usage?.total_tokens ?? 0;     // 0 if undefined
+            // for strucutured output
+            let parsedRecipe: CocktailRecipe = new CocktailRecipe([], "");      // empty default recipe
 
-            if (global.debug) console.log(util.inspect(completion));
+            // for "classic" output
+            let result: ChatCompletionMessage | undefined = undefined;
+
+            let totalTokens: number = 0;
+
+            // for new 2024 structured output system, make it quick and return
+            if (this.aiSystem == AISystem.StructuredOutput2024) {
+                const parsedCompletion = await this.openAI.beta.chat.completions.parse(request);
+                parsedRecipe = parsedCompletion.choices[0].message.parsed as unknown as CocktailRecipe;
+
+                if (global.debug) console.log("parsed recipe:", parsedRecipe);
+    
+                result = parsedCompletion.choices[0].message;
+                totalTokens = parsedCompletion?.usage?.total_tokens ?? 0;     // 0 if undefined
+
+                if (global.debug) console.log(util.inspect(parsedCompletion));
+
+                // make sure to tell gtp (in the next run) about the whole conversion, also the response
+                this.messages.push({
+                    role: "assistant",
+                    content: result.content
+                });
+            }
+            else {
+    
+                const completion = await this.openAI.chat.completions.create(request) as ChatCompletion;          // query OpenAI, that might take a few secs
+            
+                console.log(`OpenAICocktailBot '${this.name}' completion returned successfully.`);
+
+                // parse and interpret the result
+                result = completion.choices[0].message;
+                totalTokens = completion?.usage?.total_tokens ?? 0;     // 0 if undefined
+
+                if (global.debug) console.log(util.inspect(completion));
+
+                // make sure to tell gtp (in the next run) about the whole conversion, also the response
+                this.messages.push(result);
+            }
+            
             console.log("result:", result);
+
             console.log("tokens:", totalTokens);
-
-            // make sure to tell gtp (in the next run) about the whole conversion, also the response
-            this.messages.push(result);
-
+            
             // interpret result based on prompt
             switch (this.aiSystem) {
                 case AISystem.JsonResult: return new CocktailRecipe([], ""); break; // NOPE
@@ -231,13 +301,14 @@ export class OpenAICocktailBot {
                     return recipe;        
                     break;
 
+                // both prompts using the same output format
                 case AISystem.PreventAlcoholicGpt: // "Pirate's Paradise, 3 cl rum, 4 cl ananas juice, 3 cl cherry juice"
                 case AISystem.ChatGpt2024:
-                    //let split = result?.content?.split(",") ?? ["",""];
-                    //let name = split?.shift()?.trim() ?? "";
-                    //let ingredients = [];
                     return CocktailRecipe.fromPreventAlcoholicGpt(result?.content ?? "", this.ingredients);
-                    
+                    break;
+
+                case AISystem.StructuredOutput2024:
+                    return new CocktailRecipe(parsedRecipe.ingredients, parsedRecipe.name);
                     break;
 
                 default: return new CocktailRecipe([], "");

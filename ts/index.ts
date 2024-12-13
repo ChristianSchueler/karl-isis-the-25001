@@ -68,7 +68,7 @@ function isElectron() {
 }
 
 // let ChatGPT invent and dispense your cocktail
-async function AICocktail(buttons: CocktailButtons, server: KarlIsisServer, cocktailDispenser: CocktailDispenser, bot: OpenAICocktailBot.OpenAICocktailBot, recipeDisplayDuration_ms: number) {
+async function AICocktail(buttons: CocktailButtons, server: KarlIsisServer, cocktailDispenser: CocktailDispenser, bot: OpenAICocktailBot.OpenAICocktailBot, recipeDisplayDuration_ms: number, openAiQueryDuration_ms: number) {
 	
 	// used for storing the current recipe
 	let recipe: CocktailRecipe;
@@ -82,7 +82,7 @@ async function AICocktail(buttons: CocktailButtons, server: KarlIsisServer, cock
 	buttons.ledBlinkContinuous(1, 100);		// dont await...
 	buttons.ledBlinkContinuous(2, 100);
 
-	const result = [await sleep(5000), await bot.pourMeADrink()];
+	const result = [await sleep(openAiQueryDuration_ms), await bot.pourMeADrink()];
 	recipe = result[1] as CocktailRecipe;
 
 	console.log(recipe.toString(cocktailDispenser));
@@ -125,7 +125,7 @@ async function AICocktail(buttons: CocktailButtons, server: KarlIsisServer, cock
 }
 
 // random cocktail
-async function RandomCocktail(alcohol: boolean, buttons: CocktailButtons, server: KarlIsisServer, cocktailDispenser: CocktailDispenser, bot: OpenAICocktailBot.OpenAICocktailBot, recipeDisplayDuration_ms: number) {
+async function RandomCocktail(alcohol: boolean, buttons: CocktailButtons, server: KarlIsisServer, cocktailDispenser: CocktailDispenser, bot: OpenAICocktailBot.OpenAICocktailBot, recipeDisplayDuration_ms: number, openAiQueryDuration_ms: number) {
 
 	// used for storing the current recipe
 	let recipe: CocktailRecipe;
@@ -139,7 +139,7 @@ async function RandomCocktail(alcohol: boolean, buttons: CocktailButtons, server
 	buttons.ledBlinkContinuous(1, 100);		// dont await...
 	buttons.ledBlinkContinuous(2, 100);
 
-	const result = [await sleep(5000), await CocktailRecipe.randomRecipe(alcohol)];		// with or without alcohol
+	const result = [await sleep(openAiQueryDuration_ms), await CocktailRecipe.randomRecipe(alcohol)];		// with or without alcohol
 	recipe = result[1] as CocktailRecipe;
 
 	console.log(recipe.toString(cocktailDispenser));
@@ -210,6 +210,7 @@ async function main() {
 	let devtools = process.env.DEVTOOLS?.toLowerCase() == "true";
 	let recipeDisplayDuration_ms = Number(process.env.RECIPE_DISPLAY_DURATION_MS) ?? 20000;
 	let aiSystem: OpenAICocktailBot.AISystem = (<any>OpenAICocktailBot.AISystem)[(process.env.AI_SYSTEM ?? "ChatGpt2024")];
+	let openAiQueryDuration_ms = Number(process.env.OPENAI_MIN_QUERY_DURATION_MS) ?? 5000;
 	 
 	console.log("Options from ENV or .ENV file:");
 	console.log("fullscreen:", fullscreen);
@@ -218,6 +219,7 @@ async function main() {
 	console.log("devtools:", devtools);
 	console.log("recipeDisplayDuration_ms:", recipeDisplayDuration_ms);
 	console.log("aiSystem:", OpenAICocktailBot.AISystem[aiSystem]);
+	console.log("openAiQueryDuration_ms", openAiQueryDuration_ms);
 
 	// set up hardware buttons and LEDs
 	let buttons = new CocktailButtons(5, 6, 7, 8, buttonMinHoldDuration_ms);
@@ -247,13 +249,13 @@ async function main() {
 	// AI cocktail
 	buttons.onButton1 = async () => {
 		
-		await AICocktail(buttons, server, cocktailDispenser, bot, recipeDisplayDuration_ms);
+		await AICocktail(buttons, server, cocktailDispenser, bot, recipeDisplayDuration_ms, openAiQueryDuration_ms);
 	};
 
 	// non-alcoholic cocktail
 	buttons.onButton2 = async () => {
 		
-		await RandomCocktail(false, buttons, server, cocktailDispenser, bot, recipeDisplayDuration_ms);
+		await RandomCocktail(false, buttons, server, cocktailDispenser, bot, recipeDisplayDuration_ms, openAiQueryDuration_ms);
 	};
 
 	console.log("f1...f12 start/stop dispensing");
@@ -288,20 +290,21 @@ async function main() {
 			case "f7": cocktailDispenser.togglePump(6); break;
 			case "f8": cocktailDispenser.togglePump(7); break;
 			case "f9": cocktailDispenser.togglePump(8); break;
+			case "0":	// additionally use 0, since Linux Desktop interprets F10 internally
 			case "f10": cocktailDispenser.togglePump(9); break;
 			case "f11": cocktailDispenser.togglePump(10); break;
 			case "f12": cocktailDispenser.togglePump(11); break;
 
 			case "a":		// AI cocktail
-				await AICocktail(buttons, server, cocktailDispenser, bot, recipeDisplayDuration_ms);
+				await AICocktail(buttons, server, cocktailDispenser, bot, recipeDisplayDuration_ms, openAiQueryDuration_ms);
 			break;
 	
 			case "r":		// random with alcohol
-				await RandomCocktail(true, buttons, server, cocktailDispenser, bot, recipeDisplayDuration_ms);
+				await RandomCocktail(true, buttons, server, cocktailDispenser, bot, recipeDisplayDuration_ms, openAiQueryDuration_ms);
 			break;
 
 			case "n":		// Nicolas alcohol-free random cocktails
-				await RandomCocktail(false, buttons, server, cocktailDispenser, bot, recipeDisplayDuration_ms);
+				await RandomCocktail(false, buttons, server, cocktailDispenser, bot, recipeDisplayDuration_ms, openAiQueryDuration_ms);
 			break;
 		}
 	});
