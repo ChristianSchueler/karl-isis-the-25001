@@ -208,7 +208,7 @@ async function main() {
 	let buttonMinHoldDuration_ms = Number(process.env.BUTTON_MIN_HOLD_DURATION_MS) ?? 100;
 	let openAiModel = process.env.OPENAI_MODEL ?? "gpt-3.5-turbo-1106";
 	let devtools = process.env.DEVTOOLS?.toLowerCase() == "true";
-	let recipeDisplayDuration_ms = Number(process.env.RECIPE_DISPLAY_DURATION_MS) ?? 20000;
+	let recipeDisplayDuration_ms: number = Number(process.env.RECIPE_DISPLAY_DURATION_MS) ?? 20000;
 	let aiSystem: OpenAICocktailBot.AISystem = (<any>OpenAICocktailBot.AISystem)[(process.env.AI_SYSTEM ?? "ChatGpt2024")];
 	let openAiQueryDuration_ms = Number(process.env.OPENAI_MIN_QUERY_DURATION_MS) ?? 5000;
 	 
