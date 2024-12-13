@@ -85,12 +85,28 @@ export class Application {
     const allScreens = document.querySelectorAll(".screen1, .screen2, .screen2a, .screen3, .screen4");
     const screenDoc = document.getElementsByClassName(screen)[0];
 
-    for (const s of allScreens) {
-      s.classList.remove("visible");
-      s.classList.add("invisible");
-    }
+    // make new screen visible first
     screenDoc.classList.remove("invisible");
     screenDoc.classList.add("visible");
+
+    gsap.set(screenDoc, { zIndex: 1000 });
+    gsap.set(allScreens, { zIndex: 0 });
+
+    // fade out all screen (this should exclude the new screen... but hey... works)
+    gsap.fromTo(allScreens, { opacity: 1 }, { opacity: 0, duration: 1, onComplete: () => { } });
+
+    // fade in new screen and make all others permanently invisible afterwards
+    gsap.fromTo(screenDoc, { opacity: 0 }, { opacity: 1, duration: 1, onComplete: () => {
+      
+      for (const s of allScreens) {
+        s.classList.remove("visible");
+        s.classList.add("invisible");
+      }
+
+      screenDoc.classList.remove("invisible");
+      screenDoc.classList.add("visible");
+
+    } });
 
     /*switch (screen) {
       case "start":
