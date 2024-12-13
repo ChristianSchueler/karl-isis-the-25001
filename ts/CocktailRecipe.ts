@@ -134,7 +134,7 @@ export class CocktailRecipe implements ICocktailRecipe {
         if (this.name.length ==0 ) return false;
         let sum = 0;
         for (let i of this.ingredients) sum += i;
-        if (sum <= 4) return false;     // too small for cocktail, mabye even 0
+        if (sum < 4) return false;     // too small for cocktail, mabye even 0
 
         return true;
     }
