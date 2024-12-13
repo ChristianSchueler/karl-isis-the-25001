@@ -6,6 +6,7 @@ import { ChatCompletion } from "openai/resources";
 
 import { CocktailRecipe, ICocktailRecipe } from "./CocktailRecipe.js";
 
+// which kind of requests are being used and which response format, e.g. JSON or comma separated lists
 export enum AISystem { JsonResult, ListResult, PreventAlcoholicGpt, ChatGpt2024 }
 
 // OLD
