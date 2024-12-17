@@ -334,10 +334,10 @@ async function main() {
 			autoHideMenuBar: true
 		});
 		
-		mainWindow.webContents.on("crashed", (e) => {
+		/*mainWindow.webContents.on("crashed", (e) => {
 			app.relaunch();
 			app.quit();
-		});
+		});*/
 
 		// function handleKeyPress (event) {
 		// 	// You can put code here to handle the keypress.
