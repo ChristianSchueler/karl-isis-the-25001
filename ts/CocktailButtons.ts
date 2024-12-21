@@ -77,7 +77,7 @@ export class CocktailButtons {
                 console.log("button 1: pressed and released");
                 if (this.onButton1) this.onButton1();       // execute event handler immediately
             }
-            else if (global.debug) console.log("fuck it!")
+            else if (global.debug) console.log("button 1 - probably undesired press event - ignoring")
         });
 
         // ***** button 2 logic
@@ -109,7 +109,7 @@ export class CocktailButtons {
                 console.log("button 2: pressed and released");
                 if (this.onButton2) this.onButton2();       // execute event handler immediately
             }
-            else if (global.debug) console.log("fuck it!")
+            else if (global.debug) console.log("button 2 - probably undesired press event - ignoring")
         });
 
         this.led1 = new Gpio(led1, 'out');
